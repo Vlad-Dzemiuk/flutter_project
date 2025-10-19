@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1038855773515",
+    "project_id": "flutter-dzemiuk",
+    "storage_bucket": "flutter-dzemiuk.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1038855773515:android:f7409889d0f2c942315cce",
+        "android_client_info": {
+          "package_name": "com.example.project"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBfIBsRCqQbeyWuwZ4Dx1mIaY19kIk7Zew"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
