@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:project/core/constants.dart';
 import 'package:project/features/home/home_page.dart';
 import 'package:project/features/favorites/favorites_page.dart';
 import 'package:project/features/profile/profile_page.dart';
+import 'constants.dart';
 
 class AppRouter {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -22,3 +22,4 @@ class AppRouter {
     }
   }
 }
+

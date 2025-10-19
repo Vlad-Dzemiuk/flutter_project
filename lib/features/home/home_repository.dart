@@ -1,12 +1,15 @@
+import 'home_api_service.dart';
+import 'movie_model.dart';
+
 abstract class HomeRepository {
-  Future<String> fetchWelcomeMessage();
+  Future<List<Movie>> fetchMovies();
 }
 
 class HomeRepositoryImpl implements HomeRepository {
+  final HomeApiService apiService = HomeApiService();
+
   @override
-  Future<String> fetchWelcomeMessage() async {
-    // Тут пізніше буде виклик API
-    await Future.delayed(const Duration(seconds: 1));
-    return 'Welcome to Movie Discovery App!';
+  Future<List<Movie>> fetchMovies() async {
+    return await apiService.fetchPopularMovies();
   }
 }

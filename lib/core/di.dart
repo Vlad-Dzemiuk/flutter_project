@@ -1,10 +1,10 @@
 import 'package:get_it/get_it.dart';
-import 'package:project/features/home/home_repository.dart';
-import 'package:project/features/home/home_bloc.dart';
+import '../features/home/home_repository.dart';
+import '../features/home/home_bloc.dart';
 
 final getIt = GetIt.instance;
 
-void setupDI() {
+Future<void> init() async {
   // Repositories
   getIt.registerLazySingleton<HomeRepository>(() => HomeRepositoryImpl());
 
