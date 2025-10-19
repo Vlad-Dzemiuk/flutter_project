@@ -1,0 +1,10 @@
+﻿# Normalize line endings for cross-platform compatibility
+* text=auto eol=lf
+
+# Treat Dart and YAML files as text with LF endings
+*.dart text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.sh text eol=lf
+*.gradle text eol=lf
+*.kts text eol=lf
