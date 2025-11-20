@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'home_bloc.dart';
-import 'movie_model.dart';
-import 'package:project/shared/widgets/loading_widget.dart';
 import 'package:project/core/di.dart';
+import 'package:project/shared/widgets/loading_widget.dart';
+
+import 'home_bloc.dart';
+import 'home_media_item.dart';
 import 'home_repository.dart';
-import 'movies_list_page.dart';
+import 'media_list_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -25,22 +26,40 @@ class HomePage extends StatelessWidget {
               child: ListView(
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 children: [
-                  MoviesSliderSection(
+                  MediaSliderSection(
                     title: 'Популярні фільми',
-                    movies: state.popularMovies.take(10).toList(),
-                    onSeeMore: () => _openMoviesList(
+                    items: state.popularMovies.take(10).toList(),
+                    onSeeMore: () => _openMediaList(
                       context,
-                      MoviesListType.popular,
+                      MediaListCategory.popularMovies,
                       'Популярні фільми',
                     ),
                   ),
-                  MoviesSliderSection(
-                    title: 'Усі фільми',
-                    movies: state.allMovies.take(10).toList(),
-                    onSeeMore: () => _openMoviesList(
+                  MediaSliderSection(
+                    title: 'Популярні серіали',
+                    items: state.popularTvShows.take(10).toList(),
+                    onSeeMore: () => _openMediaList(
                       context,
-                      MoviesListType.all,
+                      MediaListCategory.popularTv,
+                      'Популярні серіали',
+                    ),
+                  ),
+                  MediaSliderSection(
+                    title: 'Усі фільми',
+                    items: state.allMovies.take(10).toList(),
+                    onSeeMore: () => _openMediaList(
+                      context,
+                      MediaListCategory.allMovies,
                       'Усі фільми',
+                    ),
+                  ),
+                  MediaSliderSection(
+                    title: 'Усі серіали',
+                    items: state.allTvShows.take(10).toList(),
+                    onSeeMore: () => _openMediaList(
+                      context,
+                      MediaListCategory.allTv,
+                      'Усі серіали',
                     ),
                   ),
                 ],
@@ -52,11 +71,11 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  void _openMoviesList(BuildContext context, MoviesListType type, String title) {
+  void _openMediaList(BuildContext context, MediaListCategory category, String title) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => MoviesListPage(
-          type: type,
+        builder: (_) => MediaListPage(
+          category: category,
           title: title,
         ),
       ),
@@ -64,15 +83,15 @@ class HomePage extends StatelessWidget {
   }
 }
 
-class MoviesSliderSection extends StatelessWidget {
+class MediaSliderSection extends StatelessWidget {
   final String title;
-  final List<Movie> movies;
+  final List<HomeMediaItem> items;
   final VoidCallback onSeeMore;
 
-  const MoviesSliderSection({
+  const MediaSliderSection({
     super.key,
     required this.title,
-    required this.movies,
+    required this.items,
     required this.onSeeMore,
   });
 
@@ -101,17 +120,17 @@ class MoviesSliderSection extends StatelessWidget {
           ),
           SizedBox(
             height: 260,
-            child: movies.isEmpty
+            child: items.isEmpty
                 ? const Center(child: Text('Немає даних'))
                 : ListView.separated(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     scrollDirection: Axis.horizontal,
                     itemBuilder: (context, index) {
-                      final movie = movies[index];
-                      return MoviePosterCard(movie: movie);
+                      final item = items[index];
+                      return MediaPosterCard(item: item);
                     },
                     separatorBuilder: (_, __) => const SizedBox(width: 12),
-                    itemCount: movies.length,
+                    itemCount: items.length,
                   ),
           ),
         ],
@@ -120,10 +139,10 @@ class MoviesSliderSection extends StatelessWidget {
   }
 }
 
-class MoviePosterCard extends StatelessWidget {
-  final Movie movie;
+class MediaPosterCard extends StatelessWidget {
+  final HomeMediaItem item;
 
-  const MoviePosterCard({super.key, required this.movie});
+  const MediaPosterCard({super.key, required this.item});
 
   @override
   Widget build(BuildContext context) {
@@ -136,9 +155,9 @@ class MoviePosterCard extends StatelessWidget {
             aspectRatio: 2 / 3,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: movie.posterPath != null && movie.posterPath!.isNotEmpty
+              child: item.posterPath != null && item.posterPath!.isNotEmpty
                   ? Image.network(
-                      'https://image.tmdb.org/t/p/w500${movie.posterPath}',
+                      'https://image.tmdb.org/t/p/w500${item.posterPath}',
                       fit: BoxFit.cover,
                     )
                   : Container(
@@ -149,7 +168,7 @@ class MoviePosterCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            movie.title,
+            item.title,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.titleSmall,
@@ -160,7 +179,7 @@ class MoviePosterCard extends StatelessWidget {
               const Icon(Icons.star, size: 14, color: Colors.amber),
               const SizedBox(width: 4),
               Text(
-                movie.voteAverage.toStringAsFixed(1),
+                item.rating.toStringAsFixed(1),
                 style: Theme.of(context).textTheme.bodySmall,
               ),
             ],

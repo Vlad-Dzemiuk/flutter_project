@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'movie_model.dart';
+import 'tv_show_model.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class HomeApiService {
@@ -31,6 +32,32 @@ class HomeApiService {
       return results.map<Movie>((json) => Movie.fromJson(json as Map<String, dynamic>)).toList();
     } else {
       throw Exception('Failed to fetch movies catalog');
+    }
+  }
+
+  Future<List<TvShow>> fetchPopularTvShows({int page = 1}) async {
+    final url = Uri.parse('$baseUrl/tv/popular?api_key=$apiKey&language=en-US&page=$page');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+      final results = data['results'] as List<dynamic>;
+      return results.map<TvShow>((json) => TvShow.fromJson(json as Map<String, dynamic>)).toList();
+    } else {
+      throw Exception('Failed to fetch tv shows');
+    }
+  }
+
+  Future<List<TvShow>> fetchAllTvShows({int page = 1}) async {
+    final url = Uri.parse('$baseUrl/discover/tv?api_key=$apiKey&language=en-US&sort_by=popularity.desc&page=$page');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+      final results = data['results'] as List<dynamic>;
+      return results.map<TvShow>((json) => TvShow.fromJson(json as Map<String, dynamic>)).toList();
+    } else {
+      throw Exception('Failed to fetch tv catalog');
     }
   }
 

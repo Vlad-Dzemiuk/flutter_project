@@ -2,48 +2,64 @@ import 'package:flutter/material.dart';
 import 'package:project/core/di.dart';
 import 'package:project/shared/widgets/loading_widget.dart';
 
+import 'home_media_item.dart';
 import 'home_repository.dart';
-import 'movie_model.dart';
 
-enum MoviesListType { popular, all }
+enum MediaListCategory { popularMovies, popularTv, allMovies, allTv }
 
-class MoviesListPage extends StatefulWidget {
-  final MoviesListType type;
+class MediaListPage extends StatefulWidget {
+  final MediaListCategory category;
   final String title;
 
-  const MoviesListPage({
+  const MediaListPage({
     super.key,
-    required this.type,
+    required this.category,
     required this.title,
   });
 
   @override
-  State<MoviesListPage> createState() => _MoviesListPageState();
+  State<MediaListPage> createState() => _MediaListPageState();
 }
 
-class _MoviesListPageState extends State<MoviesListPage> {
+class _MediaListPageState extends State<MediaListPage> {
   late final HomeRepository _repository = getIt<HomeRepository>();
-  List<Movie> _movies = [];
+  List<HomeMediaItem> _items = [];
   bool _loading = true;
   String _error = '';
 
   @override
   void initState() {
     super.initState();
-    _loadMovies();
+    _loadItems();
   }
 
-  Future<void> _loadMovies() async {
+  Future<void> _loadItems() async {
     setState(() {
       _loading = true;
       _error = '';
     });
     try {
-      final result = widget.type == MoviesListType.popular
-          ? await _repository.fetchPopularMovies(page: 1)
-          : await _repository.fetchAllMovies(page: 1);
+      List<HomeMediaItem> items;
+      switch (widget.category) {
+        case MediaListCategory.popularMovies:
+          final movies = await _repository.fetchPopularMovies(page: 1);
+          items = movies.map((m) => HomeMediaItem.fromMovie(m)).toList();
+          break;
+        case MediaListCategory.popularTv:
+          final tvShows = await _repository.fetchPopularTvShows(page: 1);
+          items = tvShows.map((t) => HomeMediaItem.fromTvShow(t)).toList();
+          break;
+        case MediaListCategory.allMovies:
+          final movies = await _repository.fetchAllMovies(page: 1);
+          items = movies.map((m) => HomeMediaItem.fromMovie(m)).toList();
+          break;
+        case MediaListCategory.allTv:
+          final tvShows = await _repository.fetchAllTvShows(page: 1);
+          items = tvShows.map((t) => HomeMediaItem.fromTvShow(t)).toList();
+          break;
+      }
       setState(() {
-        _movies = result;
+        _items = items;
         _loading = false;
       });
     } catch (e) {
@@ -63,25 +79,25 @@ class _MoviesListPageState extends State<MoviesListPage> {
           : _error.isNotEmpty
               ? Center(child: Text(_error))
               : RefreshIndicator(
-                  onRefresh: _loadMovies,
+                  onRefresh: _loadItems,
                   child: ListView.separated(
                     padding: const EdgeInsets.all(16),
                     itemBuilder: (context, index) {
-                      final movie = _movies[index];
+                      final item = _items[index];
                       return ListTile(
                         contentPadding: const EdgeInsets.symmetric(vertical: 8),
                         leading: SizedBox(
                           width: 60,
-                          child: movie.posterPath != null && movie.posterPath!.isNotEmpty
+                          child: item.posterPath != null && item.posterPath!.isNotEmpty
                               ? Image.network(
-                                  'https://image.tmdb.org/t/p/w200${movie.posterPath}',
+                                  'https://image.tmdb.org/t/p/w200${item.posterPath}',
                                   fit: BoxFit.cover,
                                 )
                               : const Icon(Icons.movie, size: 40),
                         ),
-                        title: Text(movie.title),
+                        title: Text(item.title),
                         subtitle: Text(
-                          movie.overview,
+                          item.overview,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -90,13 +106,13 @@ class _MoviesListPageState extends State<MoviesListPage> {
                           children: [
                             const Icon(Icons.star, size: 16, color: Colors.amber),
                             const SizedBox(width: 4),
-                            Text(movie.voteAverage.toStringAsFixed(1)),
+                            Text(item.rating.toStringAsFixed(1)),
                           ],
                         ),
                       );
                     },
                     separatorBuilder: (_, __) => const Divider(),
-                    itemCount: _movies.length,
+                    itemCount: _items.length,
                   ),
                 ),
     );
