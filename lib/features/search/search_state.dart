@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../favorites/favorites_repository.dart';
-import '../home/home_api_service.dart';
+import '../home/movie_model.dart';
 
 abstract class SearchState extends Equatable {
   const SearchState();

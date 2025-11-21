@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:project/features/favorites/favorites_repository.dart';
+import '../home/movie_model.dart';
 import 'search_event.dart';
 import 'search_state.dart';
 import 'search_repository.dart';
@@ -18,11 +18,11 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     emit(SearchLoading());
     try {
       final movies = await repository.searchMovies(
-        genre: event.genre,
+        genreName: event.genre,
         year: event.year,
         rating: event.rating,
       );
-      emit(SearchLoaded(movies.cast<Movie>()));
+      emit(SearchLoaded(movies));
     } catch (e) {
       emit(SearchError(e.toString()));
     }

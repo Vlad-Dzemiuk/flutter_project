@@ -7,17 +7,20 @@ class SearchRepository {
   SearchRepository(this.apiService);
 
   Future<List<Movie>> searchMovies({
-    String? genre,
+    String? genreName,
     int? year,
     double? rating,
+    int page = 1,
   }) async {
     try {
-      final results = await apiService.searchMovies(
-        genre: genre,
+      final result = await apiService.searchMovies(
+        genreName: genreName,
         year: year,
         rating: rating,
+        page: page,
       );
-      return results;
+      final movies = (result['movies'] as List<dynamic>).cast<Movie>();
+      return movies;
     } catch (e) {
       throw Exception('Помилка при пошуку фільмів: $e');
     }

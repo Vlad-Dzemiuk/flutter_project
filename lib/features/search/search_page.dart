@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../home/home_api_service.dart';
-import '../home/movie_model.dart';
 import 'search_bloc.dart';
 import 'search_event.dart';
 import 'search_state.dart';
@@ -119,7 +118,7 @@ class _SearchPageState extends State<SearchPage> {
                         itemBuilder: (context, index) {
                           final movie = state.movies[index];
                           return ListTile(
-                            leading: movie.posterPath.isNotEmpty
+                            leading: (movie.posterPath?.isNotEmpty ?? false)
                                 ? Image.network(
                               'https://image.tmdb.org/t/p/w200${movie.posterPath}',
                               width: 50,
