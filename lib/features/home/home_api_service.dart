@@ -3,28 +3,49 @@ import 'package:http/http.dart' as http;
 import 'movie_model.dart';
 import 'tv_show_model.dart';
 import 'genre_model.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:project/core/storage/local_cache_db.dart';
+import 'package:project/core/storage/secure_storage_service.dart';
 
 class HomeApiService {
   final String baseUrl = 'https://api.themoviedb.org/3';
-  final String apiKey = dotenv.env['TMDB_API_KEY'] ?? '';
+
+  Future<String> _getApiKey() =>
+      SecureStorageService.instance.getTmdbApiKey();
 
   // Метод для отримання популярних фільмів
   Future<List<Movie>> fetchPopularMovies({int page = 1}) async {
-    final url = Uri.parse('$baseUrl/movie/popular?api_key=$apiKey&language=en-US&page=$page');
+    final cacheKey = 'popular_movies_page_$page';
+    final cached =
+        await LocalCacheDb.instance.getJson(cacheKey, maxAge: const Duration(minutes: 30));
+
+    if (cached != null) {
+      final results = cached['results'] as List<dynamic>;
+      return results
+          .map<Movie>((json) => Movie.fromJson(json as Map<String, dynamic>))
+          .toList();
+    }
+
+    final apiKey = await _getApiKey();
+    final url = Uri.parse(
+        '$baseUrl/movie/popular?api_key=$apiKey&language=en-US&page=$page');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body) as Map<String, dynamic>;
+      await LocalCacheDb.instance.putJson(cacheKey, data);
       final results = data['results'] as List<dynamic>;
-      return results.map<Movie>((json) => Movie.fromJson(json as Map<String, dynamic>)).toList();
+      return results
+          .map<Movie>((json) => Movie.fromJson(json as Map<String, dynamic>))
+          .toList();
     } else {
       throw Exception('Failed to fetch movies');
     }
   }
 
   Future<List<Movie>> fetchAllMovies({int page = 1}) async {
-    final url = Uri.parse('$baseUrl/discover/movie?api_key=$apiKey&language=en-US&sort_by=popularity.desc&page=$page');
+    final apiKey = await _getApiKey();
+    final url = Uri.parse(
+        '$baseUrl/discover/movie?api_key=$apiKey&language=en-US&sort_by=popularity.desc&page=$page');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -37,7 +58,9 @@ class HomeApiService {
   }
 
   Future<List<TvShow>> fetchPopularTvShows({int page = 1}) async {
-    final url = Uri.parse('$baseUrl/tv/popular?api_key=$apiKey&language=en-US&page=$page');
+    final apiKey = await _getApiKey();
+    final url = Uri.parse(
+        '$baseUrl/tv/popular?api_key=$apiKey&language=en-US&page=$page');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -50,7 +73,9 @@ class HomeApiService {
   }
 
   Future<List<TvShow>> fetchAllTvShows({int page = 1}) async {
-    final url = Uri.parse('$baseUrl/discover/tv?api_key=$apiKey&language=en-US&sort_by=popularity.desc&page=$page');
+    final apiKey = await _getApiKey();
+    final url = Uri.parse(
+        '$baseUrl/discover/tv?api_key=$apiKey&language=en-US&sort_by=popularity.desc&page=$page');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -65,7 +90,9 @@ class HomeApiService {
   // ===== Деталі фільму / серіалу, відео, відгуки, рекомендації =====
 
   Future<Map<String, dynamic>> fetchMovieDetails(int movieId) async {
-    final url = Uri.parse('$baseUrl/movie/$movieId?api_key=$apiKey&language=en-US');
+    final apiKey = await _getApiKey();
+    final url =
+        Uri.parse('$baseUrl/movie/$movieId?api_key=$apiKey&language=en-US');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -76,6 +103,7 @@ class HomeApiService {
   }
 
   Future<Map<String, dynamic>> fetchTvDetails(int tvId) async {
+    final apiKey = await _getApiKey();
     final url = Uri.parse('$baseUrl/tv/$tvId?api_key=$apiKey&language=en-US');
     final response = await http.get(url);
 
@@ -87,6 +115,7 @@ class HomeApiService {
   }
 
   Future<List<dynamic>> fetchMovieVideos(int movieId) async {
+    final apiKey = await _getApiKey();
     final url = Uri.parse(
       '$baseUrl/movie/$movieId/videos?api_key=$apiKey&language=en-US&include_video_language=en,null,uk,ru',
     );
@@ -101,6 +130,7 @@ class HomeApiService {
   }
 
   Future<List<dynamic>> fetchTvVideos(int tvId) async {
+    final apiKey = await _getApiKey();
     final url = Uri.parse(
       '$baseUrl/tv/$tvId/videos?api_key=$apiKey&language=en-US&include_video_language=en,null,uk,ru',
     );
@@ -115,7 +145,9 @@ class HomeApiService {
   }
 
   Future<List<dynamic>> fetchMovieReviews(int movieId) async {
-    final url = Uri.parse('$baseUrl/movie/$movieId/reviews?api_key=$apiKey&language=en-US');
+    final apiKey = await _getApiKey();
+    final url = Uri.parse(
+        '$baseUrl/movie/$movieId/reviews?api_key=$apiKey&language=en-US');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -127,7 +159,9 @@ class HomeApiService {
   }
 
   Future<List<dynamic>> fetchTvReviews(int tvId) async {
-    final url = Uri.parse('$baseUrl/tv/$tvId/reviews?api_key=$apiKey&language=en-US');
+    final apiKey = await _getApiKey();
+    final url =
+        Uri.parse('$baseUrl/tv/$tvId/reviews?api_key=$apiKey&language=en-US');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -139,7 +173,9 @@ class HomeApiService {
   }
 
   Future<List<Movie>> fetchMovieRecommendations(int movieId) async {
-    final url = Uri.parse('$baseUrl/movie/$movieId/recommendations?api_key=$apiKey&language=en-US');
+    final apiKey = await _getApiKey();
+    final url = Uri.parse(
+        '$baseUrl/movie/$movieId/recommendations?api_key=$apiKey&language=en-US');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -152,7 +188,9 @@ class HomeApiService {
   }
 
   Future<List<TvShow>> fetchTvRecommendations(int tvId) async {
-    final url = Uri.parse('$baseUrl/tv/$tvId/recommendations?api_key=$apiKey&language=en-US');
+    final apiKey = await _getApiKey();
+    final url = Uri.parse(
+        '$baseUrl/tv/$tvId/recommendations?api_key=$apiKey&language=en-US');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -166,7 +204,9 @@ class HomeApiService {
 
   // Метод для отримання списку жанрів фільмів
   Future<List<Genre>> fetchMovieGenres() async {
-    final url = Uri.parse('$baseUrl/genre/movie/list?api_key=$apiKey&language=en-US');
+    final apiKey = await _getApiKey();
+    final url = Uri.parse(
+        '$baseUrl/genre/movie/list?api_key=$apiKey&language=en-US');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -180,7 +220,9 @@ class HomeApiService {
 
   // Метод для отримання списку жанрів серіалів
   Future<List<Genre>> fetchTvGenres() async {
-    final url = Uri.parse('$baseUrl/genre/tv/list?api_key=$apiKey&language=en-US');
+    final apiKey = await _getApiKey();
+    final url =
+        Uri.parse('$baseUrl/genre/tv/list?api_key=$apiKey&language=en-US');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -194,7 +236,9 @@ class HomeApiService {
 
   // Метод для пошуку за назвою (фільми + серіали)
   Future<Map<String, dynamic>> searchByName(String query, {int page = 1}) async {
-    final url = Uri.parse('$baseUrl/search/multi?api_key=$apiKey&language=en-US&query=${Uri.encodeComponent(query)}&page=$page');
+    final apiKey = await _getApiKey();
+    final url = Uri.parse(
+        '$baseUrl/search/multi?api_key=$apiKey&language=en-US&query=${Uri.encodeComponent(query)}&page=$page');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -235,14 +279,16 @@ class HomeApiService {
     int page = 1,
   }) async {
     final queryParams = <String, String>{
-      'api_key': apiKey,
+      'api_key': await _getApiKey(),
       'language': 'en-US',
       'page': page.toString(),
     };
 
     if (query != null && query.isNotEmpty) {
       // Пошук за назвою
-      final url = Uri.parse('$baseUrl/search/movie?api_key=$apiKey&language=en-US&query=${Uri.encodeComponent(query)}&page=$page');
+      final apiKey = await _getApiKey();
+      final url = Uri.parse(
+          '$baseUrl/search/movie?api_key=$apiKey&language=en-US&query=${Uri.encodeComponent(query)}&page=$page');
       final response = await http.get(url);
       
       if (response.statusCode == 200) {
@@ -304,14 +350,16 @@ class HomeApiService {
     int page = 1,
   }) async {
     final queryParams = <String, String>{
-      'api_key': apiKey,
+      'api_key': await _getApiKey(),
       'language': 'en-US',
       'page': page.toString(),
     };
 
     if (query != null && query.isNotEmpty) {
       // Пошук за назвою
-      final url = Uri.parse('$baseUrl/search/tv?api_key=$apiKey&language=en-US&query=${Uri.encodeComponent(query)}&page=$page');
+      final apiKey = await _getApiKey();
+      final url = Uri.parse(
+          '$baseUrl/search/tv?api_key=$apiKey&language=en-US&query=${Uri.encodeComponent(query)}&page=$page');
       final response = await http.get(url);
       
       if (response.statusCode == 200) {
