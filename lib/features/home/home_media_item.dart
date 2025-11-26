@@ -7,6 +7,7 @@ class HomeMediaItem {
   final String overview;
   final String? posterPath;
   final double rating;
+  final bool isMovie;
 
   const HomeMediaItem({
     required this.id,
@@ -14,6 +15,7 @@ class HomeMediaItem {
     required this.overview,
     required this.posterPath,
     required this.rating,
+    required this.isMovie,
   });
 
   factory HomeMediaItem.fromMovie(Movie movie) {
@@ -23,6 +25,7 @@ class HomeMediaItem {
       overview: movie.overview,
       posterPath: movie.posterPath,
       rating: movie.voteAverage,
+      isMovie: true,
     );
   }
 
@@ -33,6 +36,7 @@ class HomeMediaItem {
       overview: show.overview,
       posterPath: show.posterPath,
       rating: show.voteAverage,
+      isMovie: false,
     );
   }
 }

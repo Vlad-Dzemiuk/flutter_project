@@ -62,6 +62,108 @@ class HomeApiService {
     }
   }
 
+  // ===== Деталі фільму / серіалу, відео, відгуки, рекомендації =====
+
+  Future<Map<String, dynamic>> fetchMovieDetails(int movieId) async {
+    final url = Uri.parse('$baseUrl/movie/$movieId?api_key=$apiKey&language=en-US');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body) as Map<String, dynamic>;
+    } else {
+      throw Exception('Failed to fetch movie details');
+    }
+  }
+
+  Future<Map<String, dynamic>> fetchTvDetails(int tvId) async {
+    final url = Uri.parse('$baseUrl/tv/$tvId?api_key=$apiKey&language=en-US');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body) as Map<String, dynamic>;
+    } else {
+      throw Exception('Failed to fetch tv details');
+    }
+  }
+
+  Future<List<dynamic>> fetchMovieVideos(int movieId) async {
+    final url = Uri.parse(
+      '$baseUrl/movie/$movieId/videos?api_key=$apiKey&language=en-US&include_video_language=en,null,uk,ru',
+    );
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+      return (data['results'] as List<dynamic>);
+    } else {
+      throw Exception('Failed to fetch movie videos');
+    }
+  }
+
+  Future<List<dynamic>> fetchTvVideos(int tvId) async {
+    final url = Uri.parse(
+      '$baseUrl/tv/$tvId/videos?api_key=$apiKey&language=en-US&include_video_language=en,null,uk,ru',
+    );
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+      return (data['results'] as List<dynamic>);
+    } else {
+      throw Exception('Failed to fetch tv videos');
+    }
+  }
+
+  Future<List<dynamic>> fetchMovieReviews(int movieId) async {
+    final url = Uri.parse('$baseUrl/movie/$movieId/reviews?api_key=$apiKey&language=en-US');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+      return (data['results'] as List<dynamic>);
+    } else {
+      throw Exception('Failed to fetch movie reviews');
+    }
+  }
+
+  Future<List<dynamic>> fetchTvReviews(int tvId) async {
+    final url = Uri.parse('$baseUrl/tv/$tvId/reviews?api_key=$apiKey&language=en-US');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+      return (data['results'] as List<dynamic>);
+    } else {
+      throw Exception('Failed to fetch tv reviews');
+    }
+  }
+
+  Future<List<Movie>> fetchMovieRecommendations(int movieId) async {
+    final url = Uri.parse('$baseUrl/movie/$movieId/recommendations?api_key=$apiKey&language=en-US');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+      final results = data['results'] as List<dynamic>;
+      return results.map<Movie>((json) => Movie.fromJson(json as Map<String, dynamic>)).toList();
+    } else {
+      throw Exception('Failed to fetch movie recommendations');
+    }
+  }
+
+  Future<List<TvShow>> fetchTvRecommendations(int tvId) async {
+    final url = Uri.parse('$baseUrl/tv/$tvId/recommendations?api_key=$apiKey&language=en-US');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+      final results = data['results'] as List<dynamic>;
+      return results.map<TvShow>((json) => TvShow.fromJson(json as Map<String, dynamic>)).toList();
+    } else {
+      throw Exception('Failed to fetch tv recommendations');
+    }
+  }
+
   // Метод для отримання списку жанрів фільмів
   Future<List<Genre>> fetchMovieGenres() async {
     final url = Uri.parse('$baseUrl/genre/movie/list?api_key=$apiKey&language=en-US');

@@ -7,6 +7,7 @@ import 'home_bloc.dart';
 import 'home_media_item.dart';
 import 'home_repository.dart';
 import 'media_list_page.dart';
+import 'media_detail_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -268,7 +269,16 @@ class _HomePageState extends State<HomePage> {
                 return const SizedBox.shrink();
               }
               final item = state.searchResults[index];
-              return MediaPosterCard(item: item);
+              return MediaPosterCard(
+                item: item,
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => MediaDetailPage(item: item),
+                    ),
+                  );
+                },
+              );
             },
             separatorBuilder: (_, index) {
               if (index == state.searchResults.length - 1 && state.hasMoreResults) {
@@ -339,7 +349,16 @@ class MediaSliderSection extends StatelessWidget {
                     scrollDirection: Axis.horizontal,
                     itemBuilder: (context, index) {
                       final item = items[index];
-                      return MediaPosterCard(item: item);
+                      return MediaPosterCard(
+                        item: item,
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => MediaDetailPage(item: item),
+                            ),
+                          );
+                        },
+                      );
                     },
                     separatorBuilder: (_, __) => const SizedBox(width: 12),
                     itemCount: items.length,
@@ -353,50 +372,54 @@ class MediaSliderSection extends StatelessWidget {
 
 class MediaPosterCard extends StatelessWidget {
   final HomeMediaItem item;
+  final VoidCallback? onTap;
 
-  const MediaPosterCard({super.key, required this.item});
+  const MediaPosterCard({super.key, required this.item, this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 160,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          AspectRatio(
-            aspectRatio: 2 / 3,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: item.posterPath != null && item.posterPath!.isNotEmpty
-                  ? Image.network(
-                      'https://image.tmdb.org/t/p/w500${item.posterPath}',
-                      fit: BoxFit.cover,
-                    )
-                  : Container(
-                      color: Colors.grey.shade300,
-                      child: const Icon(Icons.movie, size: 48),
-                    ),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            item.title,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.titleSmall,
-          ),
-          const SizedBox(height: 4),
-          Row(
-            children: [
-              const Icon(Icons.star, size: 14, color: Colors.amber),
-              const SizedBox(width: 4),
-              Text(
-                item.rating.toStringAsFixed(1),
-                style: Theme.of(context).textTheme.bodySmall,
+    return InkWell(
+      onTap: onTap,
+      child: SizedBox(
+        width: 160,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AspectRatio(
+              aspectRatio: 2 / 3,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: item.posterPath != null && item.posterPath!.isNotEmpty
+                    ? Image.network(
+                        'https://image.tmdb.org/t/p/w500${item.posterPath}',
+                        fit: BoxFit.cover,
+                      )
+                    : Container(
+                        color: Colors.grey.shade300,
+                        child: const Icon(Icons.movie, size: 48),
+                      ),
               ),
-            ],
-          ),
-        ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              item.title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+            const SizedBox(height: 4),
+            Row(
+              children: [
+                const Icon(Icons.star, size: 14, color: Colors.amber),
+                const SizedBox(width: 4),
+                Text(
+                  item.rating.toStringAsFixed(1),
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

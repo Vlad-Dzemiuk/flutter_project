@@ -4,6 +4,7 @@ import 'package:project/shared/widgets/loading_widget.dart';
 
 import 'home_media_item.dart';
 import 'home_repository.dart';
+import 'media_detail_page.dart';
 
 enum MediaListCategory { popularMovies, popularTv, allMovies, allTv }
 
@@ -109,6 +110,13 @@ class _MediaListPageState extends State<MediaListPage> {
                             Text(item.rating.toStringAsFixed(1)),
                           ],
                         ),
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => MediaDetailPage(item: item),
+                            ),
+                          );
+                        },
                       );
                     },
                     separatorBuilder: (_, __) => const Divider(),

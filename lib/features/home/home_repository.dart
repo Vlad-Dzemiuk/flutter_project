@@ -27,6 +27,16 @@ abstract class HomeRepository {
     double? rating,
     int page = 1,
   });
+
+  // Деталі / відео / відгуки / рекомендації
+  Future<Map<String, dynamic>> fetchMovieDetails(int movieId);
+  Future<Map<String, dynamic>> fetchTvDetails(int tvId);
+  Future<List<dynamic>> fetchMovieVideos(int movieId);
+  Future<List<dynamic>> fetchTvVideos(int tvId);
+  Future<List<dynamic>> fetchMovieReviews(int movieId);
+  Future<List<dynamic>> fetchTvReviews(int tvId);
+  Future<List<Movie>> fetchMovieRecommendations(int movieId);
+  Future<List<TvShow>> fetchTvRecommendations(int tvId);
 }
 
 class HomeRepositoryImpl implements HomeRepository {
@@ -99,5 +109,45 @@ class HomeRepositoryImpl implements HomeRepository {
       rating: rating,
       page: page,
     );
+  }
+
+  @override
+  Future<Map<String, dynamic>> fetchMovieDetails(int movieId) {
+    return apiService.fetchMovieDetails(movieId);
+  }
+
+  @override
+  Future<Map<String, dynamic>> fetchTvDetails(int tvId) {
+    return apiService.fetchTvDetails(tvId);
+  }
+
+  @override
+  Future<List<dynamic>> fetchMovieVideos(int movieId) {
+    return apiService.fetchMovieVideos(movieId);
+  }
+
+  @override
+  Future<List<dynamic>> fetchTvVideos(int tvId) {
+    return apiService.fetchTvVideos(tvId);
+  }
+
+  @override
+  Future<List<dynamic>> fetchMovieReviews(int movieId) {
+    return apiService.fetchMovieReviews(movieId);
+  }
+
+  @override
+  Future<List<dynamic>> fetchTvReviews(int tvId) {
+    return apiService.fetchTvReviews(tvId);
+  }
+
+  @override
+  Future<List<Movie>> fetchMovieRecommendations(int movieId) {
+    return apiService.fetchMovieRecommendations(movieId);
+  }
+
+  @override
+  Future<List<TvShow>> fetchTvRecommendations(int tvId) {
+    return apiService.fetchTvRecommendations(tvId);
   }
 }
