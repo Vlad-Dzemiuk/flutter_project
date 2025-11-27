@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:project/core/constants.dart';
 import 'package:project/core/di.dart';
+import 'package:project/features/collections/media_collections_cubit.dart';
 import 'package:project/shared/widgets/loading_widget.dart';
 
 import 'home_bloc.dart';
@@ -24,6 +25,29 @@ class _HomePageState extends State<HomePage> {
   double _rating = 5.0;
   bool _showFilters = false;
 
+  Future<void> _showAuthRequiredDialog(BuildContext context) async {
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Потрібна авторизація'),
+        content: const Text('Увійдіть, щоб додавати медіа до вподобань.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Скасувати'),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              Navigator.of(context).pushNamed(AppConstants.loginRoute);
+            },
+            child: const Text('Увійти'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _searchController.dispose();
@@ -36,7 +60,7 @@ class _HomePageState extends State<HomePage> {
     final query = _searchController.text.trim();
     final genreName = _genreController.text.trim();
     final year = int.tryParse(_yearController.text);
-    
+
     bloc.search(
       query: query.isEmpty ? null : query,
       genreName: genreName.isEmpty ? null : genreName,
@@ -59,7 +83,9 @@ class _HomePageState extends State<HomePage> {
             },
           ),
           IconButton(
-            icon: Icon(_showFilters ? Icons.filter_list : Icons.filter_list_outlined),
+            icon: Icon(
+              _showFilters ? Icons.filter_list : Icons.filter_list_outlined,
+            ),
             onPressed: () {
               setState(() {
                 _showFilters = !_showFilters;
@@ -68,14 +94,19 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: BlocProvider(
-        create: (_) => HomeBloc(repository: getIt<HomeRepository>()),
+      body: MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (_) => HomeBloc(repository: getIt<HomeRepository>()),
+          ),
+          BlocProvider.value(value: getIt<MediaCollectionsCubit>()),
+        ],
         child: BlocBuilder<HomeBloc, HomeState>(
           builder: (context, state) {
             if (state.loading && state.searchResults.isEmpty) {
               return LoadingWidget(message: 'Завантаження...');
             }
-            
+
             return Column(
               children: [
                 // Пошук та фільтри
@@ -109,7 +140,10 @@ class _HomePageState extends State<HomePage> {
                             context.read<HomeBloc>().clearSearch();
                           }
                         },
-                        onSubmitted: (_) => _performSearch(context.read<HomeBloc>(), loadMore: false),
+                        onSubmitted: (_) => _performSearch(
+                          context.read<HomeBloc>(),
+                          loadMore: false,
+                        ),
                       ),
                       if (_showFilters) ...[
                         const SizedBox(height: 12),
@@ -144,13 +178,16 @@ class _HomePageState extends State<HomePage> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Рейтинг: ${_rating.toStringAsFixed(1)}'),
+                                  Text(
+                                    'Рейтинг: ${_rating.toStringAsFixed(1)}',
+                                  ),
                                   Slider(
                                     min: 0,
                                     max: 10,
                                     divisions: 20,
                                     value: _rating,
-                                    onChanged: (val) => setState(() => _rating = val),
+                                    onChanged: (val) =>
+                                        setState(() => _rating = val),
                                   ),
                                 ],
                               ),
@@ -161,7 +198,8 @@ class _HomePageState extends State<HomePage> {
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: () => _performSearch(context.read<HomeBloc>()),
+                            onPressed: () =>
+                                _performSearch(context.read<HomeBloc>()),
                             child: const Text('Пошук'),
                           ),
                         ),
@@ -169,57 +207,66 @@ class _HomePageState extends State<HomePage> {
                     ],
                   ),
                 ),
-                
+
                 // Результати пошуку або основні секції
                 Expanded(
                   child: state.searchResults.isNotEmpty
                       ? _buildSearchResults(context, state)
                       : state.error.isNotEmpty
-                          ? Center(child: Text(state.error))
-                          : RefreshIndicator(
-                              onRefresh: () => context.read<HomeBloc>().loadContent(),
-                              child: ListView(
-                                padding: const EdgeInsets.symmetric(vertical: 16),
-                                children: [
-                                  MediaSliderSection(
-                                    title: 'Популярні фільми',
-                                    items: state.popularMovies.take(10).toList(),
-                                    onSeeMore: () => _openMediaList(
-                                      context,
-                                      MediaListCategory.popularMovies,
-                                      'Популярні фільми',
-                                    ),
-                                  ),
-                                  MediaSliderSection(
-                                    title: 'Популярні серіали',
-                                    items: state.popularTvShows.take(10).toList(),
-                                    onSeeMore: () => _openMediaList(
-                                      context,
-                                      MediaListCategory.popularTv,
-                                      'Популярні серіали',
-                                    ),
-                                  ),
-                                  MediaSliderSection(
-                                    title: 'Усі фільми',
-                                    items: state.allMovies.take(10).toList(),
-                                    onSeeMore: () => _openMediaList(
-                                      context,
-                                      MediaListCategory.allMovies,
-                                      'Усі фільми',
-                                    ),
-                                  ),
-                                  MediaSliderSection(
-                                    title: 'Усі серіали',
-                                    items: state.allTvShows.take(10).toList(),
-                                    onSeeMore: () => _openMediaList(
-                                      context,
-                                      MediaListCategory.allTv,
-                                      'Усі серіали',
-                                    ),
-                                  ),
-                                ],
+                      ? Center(child: Text(state.error))
+                      : RefreshIndicator(
+                          onRefresh: () =>
+                              context.read<HomeBloc>().loadContent(),
+                          child: ListView(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            children: [
+                              MediaSliderSection(
+                                title: 'Популярні фільми',
+                                items: state.popularMovies.take(10).toList(),
+                                onSeeMore: () => _openMediaList(
+                                  context,
+                                  MediaListCategory.popularMovies,
+                                  'Популярні фільми',
+                                ),
+                                onAuthRequired: () =>
+                                    _showAuthRequiredDialog(context),
                               ),
-                            ),
+                              MediaSliderSection(
+                                title: 'Популярні серіали',
+                                items: state.popularTvShows.take(10).toList(),
+                                onSeeMore: () => _openMediaList(
+                                  context,
+                                  MediaListCategory.popularTv,
+                                  'Популярні серіали',
+                                ),
+                                onAuthRequired: () =>
+                                    _showAuthRequiredDialog(context),
+                              ),
+                              MediaSliderSection(
+                                title: 'Усі фільми',
+                                items: state.allMovies.take(10).toList(),
+                                onSeeMore: () => _openMediaList(
+                                  context,
+                                  MediaListCategory.allMovies,
+                                  'Усі фільми',
+                                ),
+                                onAuthRequired: () =>
+                                    _showAuthRequiredDialog(context),
+                              ),
+                              MediaSliderSection(
+                                title: 'Усі серіали',
+                                items: state.allTvShows.take(10).toList(),
+                                onSeeMore: () => _openMediaList(
+                                  context,
+                                  MediaListCategory.allTv,
+                                  'Усі серіали',
+                                ),
+                                onAuthRequired: () =>
+                                    _showAuthRequiredDialog(context),
+                              ),
+                            ],
+                          ),
+                        ),
                 ),
               ],
             );
@@ -233,11 +280,15 @@ class _HomePageState extends State<HomePage> {
     if (state.searching && state.searchResults.isEmpty) {
       return const LoadingWidget(message: 'Пошук...');
     }
-    
+
     if (state.searchResults.isEmpty && !state.searching) {
       return const Center(child: Text('Нічого не знайдено'));
     }
-    
+
+    final collectionsCubit = context.watch<MediaCollectionsCubit>();
+    final collectionsState = collectionsCubit.state;
+    final canModifyCollections = collectionsState.authorized;
+
     return Column(
       children: [
         Padding(
@@ -268,7 +319,10 @@ class _HomePageState extends State<HomePage> {
                     child: state.loadingMore
                         ? const Center(child: CircularProgressIndicator())
                         : ElevatedButton(
-                            onPressed: () => _performSearch(context.read<HomeBloc>(), loadMore: true),
+                            onPressed: () => _performSearch(
+                              context.read<HomeBloc>(),
+                              loadMore: true,
+                            ),
                             child: const Text('Завантажити більше'),
                           ),
                   );
@@ -278,6 +332,12 @@ class _HomePageState extends State<HomePage> {
               final item = state.searchResults[index];
               return MediaPosterCard(
                 item: item,
+                isFavorite: canModifyCollections
+                    ? collectionsState.isFavorite(item)
+                    : false,
+                onFavoriteToggle: canModifyCollections
+                    ? () => collectionsCubit.toggleFavorite(item)
+                    : () => _showAuthRequiredDialog(context),
                 onTap: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
@@ -288,25 +348,28 @@ class _HomePageState extends State<HomePage> {
               );
             },
             separatorBuilder: (_, index) {
-              if (index == state.searchResults.length - 1 && state.hasMoreResults) {
+              if (index == state.searchResults.length - 1 &&
+                  state.hasMoreResults) {
                 return const SizedBox(height: 12);
               }
               return const SizedBox(height: 12);
             },
-            itemCount: state.searchResults.length + (state.hasMoreResults ? 1 : 0),
+            itemCount:
+                state.searchResults.length + (state.hasMoreResults ? 1 : 0),
           ),
         ),
       ],
     );
   }
 
-  void _openMediaList(BuildContext context, MediaListCategory category, String title) {
+  void _openMediaList(
+    BuildContext context,
+    MediaListCategory category,
+    String title,
+  ) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => MediaListPage(
-          category: category,
-          title: title,
-        ),
+        builder: (_) => MediaListPage(category: category, title: title),
       ),
     );
   }
@@ -316,16 +379,22 @@ class MediaSliderSection extends StatelessWidget {
   final String title;
   final List<HomeMediaItem> items;
   final VoidCallback onSeeMore;
+  final VoidCallback onAuthRequired;
 
   const MediaSliderSection({
     super.key,
     required this.title,
     required this.items,
     required this.onSeeMore,
+    required this.onAuthRequired,
   });
 
   @override
   Widget build(BuildContext context) {
+    final collectionsCubit = context.watch<MediaCollectionsCubit>();
+    final collectionsState = collectionsCubit.state;
+    final canModifyCollections = collectionsState.authorized;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Column(
@@ -336,14 +405,8 @@ class MediaSliderSection extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  title,
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                TextButton(
-                  onPressed: onSeeMore,
-                  child: const Text('Більше'),
-                ),
+                Text(title, style: Theme.of(context).textTheme.titleLarge),
+                TextButton(onPressed: onSeeMore, child: const Text('Більше')),
               ],
             ),
           ),
@@ -358,6 +421,12 @@ class MediaSliderSection extends StatelessWidget {
                       final item = items[index];
                       return MediaPosterCard(
                         item: item,
+                        isFavorite: canModifyCollections
+                            ? collectionsState.isFavorite(item)
+                            : false,
+                        onFavoriteToggle: canModifyCollections
+                            ? () => collectionsCubit.toggleFavorite(item)
+                            : onAuthRequired,
                         onTap: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
@@ -380,31 +449,70 @@ class MediaSliderSection extends StatelessWidget {
 class MediaPosterCard extends StatelessWidget {
   final HomeMediaItem item;
   final VoidCallback? onTap;
+  final VoidCallback? onFavoriteToggle;
+  final bool? isFavorite;
+  final double? width;
 
-  const MediaPosterCard({super.key, required this.item, this.onTap});
+  const MediaPosterCard({
+    super.key,
+    required this.item,
+    this.onTap,
+    this.onFavoriteToggle,
+    this.isFavorite,
+    this.width,
+  });
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
       child: SizedBox(
-        width: 160,
+        width: width ?? 160,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             AspectRatio(
               aspectRatio: 2 / 3,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: item.posterPath != null && item.posterPath!.isNotEmpty
-                    ? Image.network(
-                        'https://image.tmdb.org/t/p/w500${item.posterPath}',
-                        fit: BoxFit.cover,
-                      )
-                    : Container(
-                        color: Colors.grey.shade300,
-                        child: const Icon(Icons.movie, size: 48),
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child:
+                          item.posterPath != null && item.posterPath!.isNotEmpty
+                          ? Image.network(
+                              'https://image.tmdb.org/t/p/w500${item.posterPath}',
+                              fit: BoxFit.cover,
+                            )
+                          : Container(
+                              color: Colors.grey.shade300,
+                              child: const Icon(Icons.movie, size: 48),
+                            ),
+                    ),
+                  ),
+                  if (isFavorite != null && onFavoriteToggle != null)
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: Colors.black54,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: IconButton(
+                          iconSize: 20,
+                          splashRadius: 20,
+                          onPressed: onFavoriteToggle,
+                          icon: Icon(
+                            isFavorite!
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            color: Colors.redAccent,
+                          ),
+                        ),
                       ),
+                    ),
+                ],
               ),
             ),
             const SizedBox(height: 8),

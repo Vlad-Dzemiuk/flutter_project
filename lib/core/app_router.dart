@@ -22,12 +22,6 @@ class AppRouter {
       case AppConstants.homeRoute:
         return MaterialPageRoute(builder: (_) => const HomePage());
       case AppConstants.favoritesRoute:
-        if (!isLoggedIn) {
-          return MaterialPageRoute(
-            builder: (_) =>
-                const LoginPage(redirectRoute: AppConstants.favoritesRoute),
-          );
-        }
         return MaterialPageRoute(builder: (_) => const FavoritesPage());
       case AppConstants.profileRoute:
         if (!isLoggedIn) {
@@ -46,12 +40,6 @@ class AppRouter {
         }
         return MaterialPageRoute(builder: (_) => const EditProfilePage());
       case AppConstants.watchlistRoute:
-        if (!isLoggedIn) {
-          return MaterialPageRoute(
-            builder: (_) =>
-                const LoginPage(redirectRoute: AppConstants.watchlistRoute),
-          );
-        }
         return MaterialPageRoute(builder: (_) => const WatchlistPage());
       case AppConstants.settingsRoute:
         if (!isLoggedIn) {

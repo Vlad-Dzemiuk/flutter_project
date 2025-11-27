@@ -1,5 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:project/core/constants.dart';
 import 'package:project/core/di.dart';
+import 'package:project/features/collections/media_collections_cubit.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 import 'home_media_item.dart';
@@ -17,6 +22,8 @@ class MediaDetailPage extends StatefulWidget {
 
 class _MediaDetailPageState extends State<MediaDetailPage> {
   late final HomeRepository _repository = getIt<HomeRepository>();
+  late final MediaCollectionsCubit _collectionsCubit =
+      getIt<MediaCollectionsCubit>();
 
   bool _loading = true;
   String _error = '';
@@ -26,6 +33,31 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
   String? _trailerKey;
 
   YoutubePlayerController? _youtubeController;
+  bool _watchRecorded = false;
+  StreamSubscription<YoutubePlayerValue>? _playerValueSubscription;
+
+  Future<void> _showAuthDialog() async {
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Потрібна авторизація'),
+        content: const Text('Увійдіть, щоб додати до вподобань.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Скасувати'),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              Navigator.of(context).pushNamed(AppConstants.loginRoute);
+            },
+            child: const Text('Увійти'),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   void initState() {
@@ -36,6 +68,7 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
   @override
   void dispose() {
     _youtubeController?.close();
+    _playerValueSubscription?.cancel();
     super.dispose();
   }
 
@@ -52,15 +85,18 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
         final details = await _repository.fetchMovieDetails(widget.item.id);
         final videos = await _repository.fetchMovieVideos(widget.item.id);
         final reviews = await _repository.fetchMovieReviews(widget.item.id);
-        final recs = await _repository.fetchMovieRecommendations(widget.item.id);
+        final recs = await _repository.fetchMovieRecommendations(
+          widget.item.id,
+        );
 
         trailerKey = _extractTrailerKey(videos);
 
         setState(() {
           _details = details;
           _reviews = reviews;
-          _recommendations =
-              recs.map((m) => HomeMediaItem.fromMovie(m)).toList();
+          _recommendations = recs
+              .map((m) => HomeMediaItem.fromMovie(m))
+              .toList();
           _trailerKey = trailerKey;
         });
       } else {
@@ -74,8 +110,9 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
         setState(() {
           _details = details;
           _reviews = reviews;
-          _recommendations =
-              recs.map((t) => HomeMediaItem.fromTvShow(t)).toList();
+          _recommendations = recs
+              .map((t) => HomeMediaItem.fromTvShow(t))
+              .toList();
           _trailerKey = trailerKey;
         });
       }
@@ -85,9 +122,11 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
         _youtubeController = YoutubePlayerController.fromVideoId(
           videoId: trailerKey,
           autoPlay: false,
-          params: const YoutubePlayerParams(
-            showFullscreenButton: true,
-          ),
+          params: const YoutubePlayerParams(showFullscreenButton: true),
+        );
+        _playerValueSubscription?.cancel();
+        _playerValueSubscription = _youtubeController!.listen(
+          _handlePlayerValueChanged,
         );
       }
 
@@ -122,43 +161,41 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
     final theme = Theme.of(context);
     final title = _details != null
         ? (widget.item.isMovie
-            ? (_details!['title'] as String? ?? widget.item.title)
-            : (_details!['name'] as String? ?? widget.item.title))
+              ? (_details!['title'] as String? ?? widget.item.title)
+              : (_details!['name'] as String? ?? widget.item.title))
         : widget.item.title;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-      ),
+      appBar: AppBar(title: Text(title), actions: [_buildFavoriteAction()]),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error.isNotEmpty
-              ? Center(child: Text(_error))
-              : RefreshIndicator(
-                  onRefresh: _loadData,
-                  child: SingleChildScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildHeader(theme),
-                          const SizedBox(height: 16),
-                          _buildTrailerSection(theme),
-                          const SizedBox(height: 24),
-                          _buildOverviewSection(theme),
-                          const SizedBox(height: 24),
-                          _buildCharacteristics(theme),
-                          const SizedBox(height: 24),
-                          _buildReviewsSection(theme),
-                          const SizedBox(height: 24),
-                          _buildRecommendationsSection(theme),
-                        ],
-                      ),
-                    ),
+          ? Center(child: Text(_error))
+          : RefreshIndicator(
+              onRefresh: _loadData,
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildHeader(theme),
+                      const SizedBox(height: 16),
+                      _buildTrailerSection(theme),
+                      const SizedBox(height: 24),
+                      _buildOverviewSection(theme),
+                      const SizedBox(height: 24),
+                      _buildCharacteristics(theme),
+                      const SizedBox(height: 24),
+                      _buildReviewsSection(theme),
+                      const SizedBox(height: 24),
+                      _buildRecommendationsSection(theme),
+                    ],
                   ),
                 ),
+              ),
+            ),
     );
   }
 
@@ -168,14 +205,15 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
         : null;
     final posterPath = posterPathFromApi ?? widget.item.posterPath;
 
-    final ratingFromApi =
-        _details != null ? (_details!['vote_average'] as num?)?.toDouble() : null;
+    final ratingFromApi = _details != null
+        ? (_details!['vote_average'] as num?)?.toDouble()
+        : null;
     final rating = ratingFromApi ?? widget.item.rating;
 
     final title = _details != null
         ? (widget.item.isMovie
-            ? (_details!['title'] as String? ?? widget.item.title)
-            : (_details!['name'] as String? ?? widget.item.title))
+              ? (_details!['title'] as String? ?? widget.item.title)
+              : (_details!['name'] as String? ?? widget.item.title))
         : widget.item.title;
 
     return Row(
@@ -202,10 +240,7 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                title,
-                style: theme.textTheme.titleLarge,
-              ),
+              Text(title, style: theme.textTheme.titleLarge),
               const SizedBox(height: 8),
               Row(
                 children: [
@@ -231,13 +266,13 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
                       ),
                     if ((_details!['runtime'] as int?) != null)
                       Chip(
-                        label: Text(
-                            'Тривалість: ${_details!['runtime']} хв'),
+                        label: Text('Тривалість: ${_details!['runtime']} хв'),
                       ),
                     if ((_details!['number_of_seasons'] as int?) != null)
                       Chip(
                         label: Text(
-                            'Сезонів: ${_details!['number_of_seasons']}'),
+                          'Сезонів: ${_details!['number_of_seasons']}',
+                        ),
                       ),
                   ],
                 ),
@@ -245,6 +280,24 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildFavoriteAction() {
+    return BlocBuilder<MediaCollectionsCubit, MediaCollectionsState>(
+      bloc: _collectionsCubit,
+      builder: (context, state) {
+        final isFavorite = state.authorized && state.isFavorite(widget.item);
+        return IconButton(
+          icon: Icon(
+            isFavorite ? Icons.favorite : Icons.favorite_border,
+            color: Colors.redAccent,
+          ),
+          onPressed: state.authorized
+              ? () => _collectionsCubit.toggleFavorite(widget.item)
+              : _showAuthDialog,
+        );
+      },
     );
   }
 
@@ -257,10 +310,7 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Трейлер',
-          style: theme.textTheme.titleMedium,
-        ),
+        Text('Трейлер', style: theme.textTheme.titleMedium),
         const SizedBox(height: 8),
         AspectRatio(
           aspectRatio: 16 / 9,
@@ -272,17 +322,15 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
 
   Widget _buildOverviewSection(ThemeData theme) {
     final overview =
-        _details != null && (_details!['overview'] as String?)?.isNotEmpty == true
-            ? _details!['overview'] as String
-            : '';
+        _details != null &&
+            (_details!['overview'] as String?)?.isNotEmpty == true
+        ? _details!['overview'] as String
+        : '';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Опис',
-          style: theme.textTheme.titleMedium,
-        ),
+        Text('Опис', style: theme.textTheme.titleMedium),
         const SizedBox(height: 8),
         Text(
           overview.isNotEmpty ? overview : 'Опис відсутній',
@@ -295,7 +343,8 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
   Widget _buildCharacteristics(ThemeData theme) {
     if (_details == null) return const SizedBox.shrink();
 
-    final genres = (_details!['genres'] as List<dynamic>?)
+    final genres =
+        (_details!['genres'] as List<dynamic>?)
             ?.map((g) => (g as Map<String, dynamic>)['name'] as String?)
             .whereType<String>()
             .toList() ??
@@ -308,10 +357,7 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Характеристики',
-          style: theme.textTheme.titleMedium,
-        ),
+        Text('Характеристики', style: theme.textTheme.titleMedium),
         const SizedBox(height: 8),
         Card(
           child: Padding(
@@ -322,15 +368,17 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
                 if (releaseDate != null && releaseDate.isNotEmpty)
                   _buildCharacteristicRow('Дата виходу', releaseDate),
                 if (genres.isNotEmpty)
-                  _buildCharacteristicRow(
-                      'Жанри', genres.join(', ')),
+                  _buildCharacteristicRow('Жанри', genres.join(', ')),
                 if ((_details!['status'] as String?) != null)
                   _buildCharacteristicRow(
-                      'Статус', _details!['status'] as String),
+                    'Статус',
+                    _details!['status'] as String,
+                  ),
                 if ((_details!['vote_count'] as int?) != null)
                   _buildCharacteristicRow(
-                      'Кількість голосів',
-                      (_details!['vote_count'] as int).toString()),
+                    'Кількість голосів',
+                    (_details!['vote_count'] as int).toString(),
+                  ),
               ],
             ),
           ),
@@ -345,13 +393,8 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            '$label: ',
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          Expanded(
-            child: Text(value),
-          ),
+          Text('$label: ', style: const TextStyle(fontWeight: FontWeight.bold)),
+          Expanded(child: Text(value)),
         ],
       ),
     );
@@ -362,10 +405,7 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Відгуки',
-            style: theme.textTheme.titleMedium,
-          ),
+          Text('Відгуки', style: theme.textTheme.titleMedium),
           const SizedBox(height: 8),
           const Text('Ще немає відгуків'),
         ],
@@ -375,10 +415,7 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Відгуки',
-          style: theme.textTheme.titleMedium,
-        ),
+        Text('Відгуки', style: theme.textTheme.titleMedium),
         const SizedBox(height: 8),
         ListView.separated(
           physics: const NeverScrollableScrollPhysics(),
@@ -399,11 +436,7 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8),
-                    Text(
-                      content,
-                      maxLines: 6,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                    Text(content, maxLines: 6, overflow: TextOverflow.ellipsis),
                   ],
                 ),
               ),
@@ -421,38 +454,53 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
       return const SizedBox.shrink();
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Рекомендовані',
-          style: theme.textTheme.titleMedium,
-        ),
-        const SizedBox(height: 8),
-        SizedBox(
-          height: 260,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            itemBuilder: (context, index) {
-              final item = _recommendations[index];
-              return MediaPosterCard(
-                item: item,
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => MediaDetailPage(item: item),
-                    ),
+    return BlocBuilder<MediaCollectionsCubit, MediaCollectionsState>(
+      bloc: _collectionsCubit,
+      builder: (context, collectionsState) {
+        final canModify = collectionsState.authorized;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Рекомендовані', style: theme.textTheme.titleMedium),
+            const SizedBox(height: 8),
+            SizedBox(
+              height: 260,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemBuilder: (context, index) {
+                  final item = _recommendations[index];
+                  return MediaPosterCard(
+                    item: item,
+                    isFavorite: canModify
+                        ? collectionsState.isFavorite(item)
+                        : false,
+                    onFavoriteToggle: canModify
+                        ? () => _collectionsCubit.toggleFavorite(item)
+                        : _showAuthDialog,
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => MediaDetailPage(item: item),
+                        ),
+                      );
+                    },
                   );
                 },
-              );
-            },
-            separatorBuilder: (_, __) => const SizedBox(width: 12),
-            itemCount: _recommendations.length,
-          ),
-        ),
-      ],
+                separatorBuilder: (_, __) => const SizedBox(width: 12),
+                itemCount: _recommendations.length,
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
+
+  void _handlePlayerValueChanged(YoutubePlayerValue value) {
+    if (_watchRecorded) return;
+    if (value.playerState == PlayerState.playing) {
+      _collectionsCubit.recordWatch(widget.item);
+      _watchRecorded = true;
+    }
+  }
 }
-
-

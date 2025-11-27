@@ -1,34 +1,86 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'favorites_bloc.dart';
-import '../../shared/widgets/loading_widget.dart';
+import 'package:project/core/constants.dart';
+import 'package:project/core/di.dart';
+import 'package:project/features/collections/media_collections_cubit.dart';
+import 'package:project/features/home/media_detail_page.dart';
+import 'package:project/features/home/home_page.dart';
+import 'package:project/shared/widgets/loading_widget.dart';
 
 class FavoritesPage extends StatelessWidget {
   const FavoritesPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final collectionsCubit = getIt<MediaCollectionsCubit>();
     return Scaffold(
-      appBar: AppBar(title: const Text('Favorites')),
-      body: BlocProvider(
-        create: (_) => FavoritesBloc(repository: RepositoryProvider.of(context)),
-        child: BlocBuilder<FavoritesBloc, FavoritesState>(
-          builder: (context, state) {
-            if (state.loading) return const LoadingWidget(message: 'Loading favorites...');
-            if (state.error.isNotEmpty) return Center(child: Text(state.error));
-            return ListView.builder(
-              itemCount: state.movies.length,
-              itemBuilder: (context, index) {
-                final movie = state.movies[index];
-                return ListTile(
-                  leading: Image.network('https://image.tmdb.org/t/p/w200${movie.posterPath}'),
-                  title: Text(movie.title),
-                  subtitle: Text(movie.overview),
-                );
+      appBar: AppBar(title: const Text('Вподобання')),
+      body: BlocBuilder<MediaCollectionsCubit, MediaCollectionsState>(
+        bloc: collectionsCubit,
+        builder: (context, state) {
+          if (state.loading) {
+            return const LoadingWidget(message: 'Завантаження...');
+          }
+          if (!state.authorized) {
+            return _UnauthorizedMessage(
+              onLogin: () {
+                Navigator.of(
+                  context,
+                ).pushReplacementNamed(AppConstants.loginRoute);
               },
             );
-          },
-        ),
+          }
+          if (state.favorites.isEmpty) {
+            return const Center(child: Text('Список вподобань порожній'));
+          }
+          return GridView.builder(
+            padding: const EdgeInsets.all(16),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+              childAspectRatio: 0.62,
+            ),
+            itemCount: state.favorites.length,
+            itemBuilder: (context, index) {
+              final entry = state.favorites[index];
+              final item = entry.toHomeMediaItem();
+              return MediaPosterCard(
+                width: double.infinity,
+                item: item,
+                isFavorite: true,
+                onFavoriteToggle: () => collectionsCubit.toggleFavorite(item),
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => MediaDetailPage(item: item),
+                    ),
+                  );
+                },
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _UnauthorizedMessage extends StatelessWidget {
+  const _UnauthorizedMessage({required this.onLogin});
+
+  final VoidCallback onLogin;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text('Ви не авторизовані'),
+          const SizedBox(height: 12),
+          FilledButton(onPressed: onLogin, child: const Text('Увійти')),
+        ],
       ),
     );
   }
