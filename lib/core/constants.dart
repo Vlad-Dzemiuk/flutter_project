@@ -16,4 +16,5 @@ class AppConstants {
   static const String watchlistRoute = "/watchlist";
   static const String settingsRoute = "/settings";
   static const String aboutRoute = "/about";
+  static const String searchRoute = "/search";
 }

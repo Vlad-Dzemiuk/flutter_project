@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'auth_cubit.dart';
 import 'auth_state.dart';
+import '../../core/constants.dart';
 import '../../core/di.dart';
 
 class LoginPage extends StatefulWidget {
@@ -28,11 +29,16 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _onSuccess(BuildContext context, AuthAuthenticated state) {
+    if (!context.mounted) return;
+    
     if (widget.redirectRoute != null) {
-      Navigator.of(context)
-          .pushReplacementNamed(widget.redirectRoute!);
+      Navigator.of(context).pushReplacementNamed(widget.redirectRoute!);
     } else {
-      Navigator.of(context).pop();
+      // Якщо немає redirectRoute, переходимо на головну сторінку
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        AppConstants.homeRoute,
+        (route) => false,
+      );
     }
   }
 
@@ -45,18 +51,16 @@ class _LoginPageState extends State<LoginPage> {
           if (state is AuthAuthenticated) {
             _onSuccess(context, state);
           } else if (state is AuthError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.message)));
           }
         },
         builder: (context, state) {
           final isLoading = state is AuthLoading;
 
           return Scaffold(
-            appBar: AppBar(
-              title: Text(_isLogin ? 'Вхід' : 'Реєстрація'),
-            ),
+            appBar: AppBar(title: Text(_isLogin ? 'Вхід' : 'Реєстрація')),
             body: Padding(
               padding: const EdgeInsets.all(16),
               child: Form(
@@ -118,8 +122,9 @@ class _LoginPageState extends State<LoginPage> {
                               },
                         child: isLoading
                             ? const CircularProgressIndicator(
-                                valueColor:
-                                    AlwaysStoppedAnimation<Color>(Colors.white),
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
+                                ),
                               )
                             : Text(_isLogin ? 'Увійти' : 'Зареєструватись'),
                       ),
@@ -133,9 +138,28 @@ class _LoginPageState extends State<LoginPage> {
                                 _isLogin = !_isLogin;
                               });
                             },
-                      child: Text(_isLogin
-                          ? 'Немає акаунта? Зареєструватись'
-                          : 'Вже є акаунт? Увійти'),
+                      child: Text(
+                        _isLogin
+                            ? 'Немає акаунта? Зареєструватись'
+                            : 'Вже є акаунт? Увійти',
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    TextButton(
+                      onPressed: isLoading
+                          ? null
+                          : () {
+                              if (widget.redirectRoute != null) {
+                                Navigator.of(
+                                  context,
+                                ).pushReplacementNamed(widget.redirectRoute!);
+                              } else {
+                                Navigator.of(
+                                  context,
+                                ).pushReplacementNamed(AppConstants.homeRoute);
+                              }
+                            },
+                      child: const Text('Пропустити'),
                     ),
                   ],
                 ),
@@ -147,5 +171,3 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
-
-

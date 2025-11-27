@@ -40,7 +40,41 @@ class UserPrefs {
     return (box.get('language_code') as String?) ?? 'en';
   }
 
-  // Тут можна додати останні фільтри пошуку, останню вкладку тощо
+  // === Історія переглянутих фільмів/серіалів з пошуку ===
+
+  Future<void> addToSearchHistory(Map<String, dynamic> mediaItem) async {
+    final box = await _getBox();
+    final rawHistory = box.get('search_history', defaultValue: <dynamic>[]);
+    final history = (rawHistory as List<dynamic>)
+        .map((e) => Map<String, dynamic>.from(e as Map))
+        .toList();
+
+    // Видаляємо якщо вже є (за id та isMovie)
+    history.removeWhere(
+      (item) =>
+          item['id'] == mediaItem['id'] &&
+          item['isMovie'] == mediaItem['isMovie'],
+    );
+
+    // Додаємо на початок
+    history.insert(0, mediaItem);
+
+    // Обмежуємо до 50 елементів
+    if (history.length > 50) history.removeLast();
+
+    await box.put('search_history', history);
+  }
+
+  Future<List<Map<String, dynamic>>> getSearchHistory() async {
+    final box = await _getBox();
+    final rawHistory = box.get('search_history', defaultValue: <dynamic>[]);
+    return (rawHistory as List<dynamic>)
+        .map((e) => Map<String, dynamic>.from(e as Map))
+        .toList();
+  }
+
+  Future<void> clearSearchHistory() async {
+    final box = await _getBox();
+    await box.put('search_history', <Map<String, dynamic>>[]);
+  }
 }
-
-
