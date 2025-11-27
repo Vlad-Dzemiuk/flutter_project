@@ -12,4 +12,5 @@ class AppConstants {
   static const String favoritesRoute = "/favorites";
   static const String profileRoute = "/profile";
   static const String loginRoute = "/login";
+  static const String watchlistRoute = "/watchlist";
 }

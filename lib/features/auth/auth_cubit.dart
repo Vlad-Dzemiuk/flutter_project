@@ -1,5 +1,4 @@
 import 'package:bloc/bloc.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 import 'auth_repository.dart';
 import 'auth_state.dart';
@@ -9,16 +8,14 @@ class AuthCubit extends Cubit<AuthState> {
 
   AuthCubit({required this.repository}) : super(AuthInitial());
 
-  User? get currentUser => repository.currentUser;
+  LocalUser? get currentUser => repository.currentUser;
 
   Future<void> signIn(String email, String password) async {
     emit(AuthLoading());
     try {
-      final cred =
+      final user =
           await repository.signIn(email: email.trim(), password: password);
-      emit(AuthAuthenticated(cred.user!));
-    } on FirebaseAuthException catch (e) {
-      emit(AuthError(e.message ?? 'Authentication error'));
+      emit(AuthAuthenticated(user));
     } catch (e) {
       emit(AuthError(e.toString()));
     }
@@ -27,11 +24,9 @@ class AuthCubit extends Cubit<AuthState> {
   Future<void> register(String email, String password) async {
     emit(AuthLoading());
     try {
-      final cred =
+      final user =
           await repository.register(email: email.trim(), password: password);
-      emit(AuthAuthenticated(cred.user!));
-    } on FirebaseAuthException catch (e) {
-      emit(AuthError(e.message ?? 'Registration error'));
+      emit(AuthAuthenticated(user));
     } catch (e) {
       emit(AuthError(e.toString()));
     }
