@@ -7,6 +7,7 @@ import '../../core/constants.dart';
 import '../../core/di.dart';
 import '../../core/responsive.dart';
 import '../../core/theme.dart';
+import '../../shared/widgets/loading_wrapper.dart';
 
 class LoginPage extends StatefulWidget {
   final String? redirectRoute;
@@ -46,9 +47,10 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<AuthCubit>(
-      create: (_) => getIt<AuthCubit>(),
-      child: BlocConsumer<AuthCubit, AuthState>(
+    return LoadingWrapper(
+      child: BlocProvider<AuthCubit>(
+        create: (_) => getIt<AuthCubit>(),
+        child: BlocConsumer<AuthCubit, AuthState>(
         listener: (context, state) {
           if (state is AuthAuthenticated) {
             _onSuccess(context, state);
@@ -302,6 +304,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
           );
         },
+      ),
       ),
     );
   }

@@ -12,6 +12,7 @@ import 'home_repository.dart';
 import 'home_page.dart'; // для MediaPosterCard
 import 'package:project/core/responsive.dart';
 import 'package:project/core/theme.dart';
+import 'package:project/shared/widgets/animated_loading_widget.dart';
 
 class MediaDetailPage extends StatefulWidget {
   final HomeMediaItem item;
@@ -32,6 +33,7 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
   Map<String, dynamic>? _details;
   List<dynamic> _reviews = [];
   List<HomeMediaItem> _recommendations = [];
+  bool _loadingRecommendations = false;
   String? _trailerKey;
 
   YoutubePlayerController? _youtubeController;
@@ -87,34 +89,24 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
         final details = await _repository.fetchMovieDetails(widget.item.id);
         final videos = await _repository.fetchMovieVideos(widget.item.id);
         final reviews = await _repository.fetchMovieReviews(widget.item.id);
-        final recs = await _repository.fetchMovieRecommendations(
-          widget.item.id,
-        );
 
         trailerKey = _extractTrailerKey(videos);
 
         setState(() {
           _details = details;
           _reviews = reviews;
-          _recommendations = recs
-              .map((m) => HomeMediaItem.fromMovie(m))
-              .toList();
           _trailerKey = trailerKey;
         });
       } else {
         final details = await _repository.fetchTvDetails(widget.item.id);
         final videos = await _repository.fetchTvVideos(widget.item.id);
         final reviews = await _repository.fetchTvReviews(widget.item.id);
-        final recs = await _repository.fetchTvRecommendations(widget.item.id);
 
         trailerKey = _extractTrailerKey(videos);
 
         setState(() {
           _details = details;
           _reviews = reviews;
-          _recommendations = recs
-              .map((t) => HomeMediaItem.fromTvShow(t))
-              .toList();
           _trailerKey = trailerKey;
         });
       }
@@ -140,6 +132,50 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
         _error = e.toString();
         _loading = false;
       });
+    }
+
+    // Завантажуємо рекомендації окремо, щоб помилки не блокували відображення інших даних
+    _loadRecommendations();
+  }
+
+  Future<void> _loadRecommendations() async {
+    if (mounted) {
+      setState(() {
+        _loadingRecommendations = true;
+      });
+    }
+
+    try {
+      List<HomeMediaItem> recommendations;
+      
+      if (widget.item.isMovie) {
+        final recs = await _repository.fetchMovieRecommendations(widget.item.id);
+        debugPrint('Завантажено ${recs.length} рекомендацій для фільму ${widget.item.id}');
+        recommendations = recs.map((m) => HomeMediaItem.fromMovie(m)).toList();
+      } else {
+        final recs = await _repository.fetchTvRecommendations(widget.item.id);
+        debugPrint('Завантажено ${recs.length} рекомендацій для серіалу ${widget.item.id}');
+        recommendations = recs.map((t) => HomeMediaItem.fromTvShow(t)).toList();
+      }
+
+      if (mounted) {
+        setState(() {
+          _recommendations = recommendations;
+          _loadingRecommendations = false;
+        });
+        debugPrint('Рекомендації встановлено: ${recommendations.length} елементів');
+      }
+    } catch (e, stackTrace) {
+      // Якщо не вдалося завантажити рекомендації, просто залишаємо список порожнім
+      // і не показуємо помилку, щоб не блокувати відображення інших даних
+      debugPrint('Помилка завантаження рекомендацій: $e');
+      debugPrint('Stack trace: $stackTrace');
+      if (mounted) {
+        setState(() {
+          _recommendations = [];
+          _loadingRecommendations = false;
+        });
+      }
     }
   }
 
@@ -174,7 +210,7 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
         decoration: AppGradients.background(context),
         child: SafeArea(
           child: _loading
-              ? const Center(child: CircularProgressIndicator())
+              ? const AnimatedLoadingWidget(message: 'Завантаження...')
               : _error.isNotEmpty
                   ? Center(
                       child: Text(
@@ -721,9 +757,27 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
   }
 
   Widget _buildRecommendationsSection() {
+    debugPrint('_buildRecommendationsSection: _loadingRecommendations=$_loadingRecommendations, _recommendations.length=${_recommendations.length}');
+    
+    // Показуємо секцію навіть під час завантаження або якщо є рекомендації
+    if (_loadingRecommendations) {
+      return _Section(
+        title: 'Рекомендовані',
+        child: const Center(
+          child: Padding(
+            padding: EdgeInsets.all(24.0),
+            child: CircularProgressIndicator(),
+          ),
+        ),
+      );
+    }
+
     if (_recommendations.isEmpty) {
+      debugPrint('Рекомендації порожні, не показуємо секцію');
       return const SizedBox.shrink();
     }
+
+    debugPrint('Відображаємо ${_recommendations.length} рекомендацій');
 
     final isDesktop = Responsive.isDesktop(context);
     final isTablet = Responsive.isTablet(context);
@@ -775,8 +829,12 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
                     scrollDirection: Axis.horizontal,
                     itemBuilder: (context, index) {
                       final item = _recommendations[index];
+                      // Розраховуємо ширину картки для горизонтального списку
+                      final cardHeight = isTablet ? 280.0 : 260.0;
+                      final cardWidth = cardHeight * (2 / 3);
                       return MediaPosterCard(
                         item: item,
+                        width: cardWidth,
                         isFavorite: canModify ? collectionsState.isFavorite(item) : false,
                         onFavoriteToggle: canModify
                             ? () => _collectionsCubit.toggleFavorite(item)

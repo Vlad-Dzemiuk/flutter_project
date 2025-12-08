@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/responsive.dart';
 import '../../core/theme.dart';
+import '../../shared/widgets/loading_wrapper.dart';
 
 class AboutAppPage extends StatelessWidget {
   const AboutAppPage({super.key});
@@ -10,7 +11,8 @@ class AboutAppPage extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     
-    return Scaffold(
+    return LoadingWrapper(
+      child: Scaffold(
       backgroundColor: colors.background,
       body: Container(
         decoration: AppGradients.background(context),
@@ -221,6 +223,7 @@ class AboutAppPage extends StatelessWidget {
             },
           ),
         ),
+      ),
       ),
     );
   }

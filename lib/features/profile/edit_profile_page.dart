@@ -9,6 +9,7 @@ import '../../core/di.dart';
 import '../../core/responsive.dart';
 import '../../core/theme.dart';
 import '../auth/auth_repository.dart';
+import '../../shared/widgets/loading_wrapper.dart';
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({super.key});
@@ -246,7 +247,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
 
-    return Scaffold(
+    return LoadingWrapper(
+      child: Scaffold(
       backgroundColor: colors.background,
       body: Container(
         decoration: AppGradients.background(context),
@@ -585,6 +587,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             },
           ),
         ),
+      ),
       ),
     );
   }

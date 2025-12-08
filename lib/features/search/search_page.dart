@@ -14,6 +14,8 @@ import 'package:project/features/home/media_detail_page.dart';
 import 'package:project/features/home/movie_model.dart';
 import 'package:project/features/home/tv_show_model.dart';
 import 'package:project/core/theme.dart';
+import 'package:project/shared/widgets/loading_wrapper.dart';
+import 'package:project/shared/widgets/animated_loading_widget.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -197,7 +199,8 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
+    return LoadingWrapper(
+      child: BlocProvider.value(
         value: getIt<MediaCollectionsCubit>(),
         child: Builder(
           builder: (context) {
@@ -655,6 +658,7 @@ class _SearchPageState extends State<SearchPage> {
             );
           },
         ),
+      ),
     );
   }
 
@@ -667,7 +671,7 @@ class _SearchPageState extends State<SearchPage> {
   final horizontalPadding = Responsive.getHorizontalPadding(context);
 
   if (_loading) {
-    return const Center(child: CircularProgressIndicator());
+    return const AnimatedLoadingWidget(message: 'Завантаження...');
   }
 
   if (_searchResults.isEmpty && !_searching) {

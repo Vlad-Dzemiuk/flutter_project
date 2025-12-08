@@ -7,7 +7,8 @@ import 'package:project/features/collections/media_collections_cubit.dart';
 import 'package:project/features/home/media_detail_page.dart';
 import 'package:project/features/home/home_page.dart';
 import 'package:project/core/theme.dart';
-import 'package:project/shared/widgets/loading_widget.dart';
+import 'package:project/shared/widgets/animated_loading_widget.dart';
+import 'package:project/shared/widgets/loading_wrapper.dart';
 
 class FavoritesPage extends StatelessWidget {
   const FavoritesPage({super.key});
@@ -15,14 +16,15 @@ class FavoritesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final collectionsCubit = getIt<MediaCollectionsCubit>();
-    return BlocBuilder<MediaCollectionsCubit, MediaCollectionsState>(
-      bloc: collectionsCubit,
-      builder: (context, state) {
+    return LoadingWrapper(
+      child: BlocBuilder<MediaCollectionsCubit, MediaCollectionsState>(
+        bloc: collectionsCubit,
+        builder: (context, state) {
         final theme = Theme.of(context);
         final colors = theme.colorScheme;
 
         if (state.loading) {
-          return const LoadingWidget(message: 'Завантаження...');
+          return const AnimatedLoadingWidget(message: 'Завантаження...');
         }
         if (!state.authorized) {
           return _UnauthorizedMessage(
@@ -84,6 +86,7 @@ class FavoritesPage extends StatelessWidget {
           ),
         );
       },
+      ),
     );
   }
 

@@ -9,6 +9,7 @@ import '../../core/theme.dart';
 import '../auth/auth_cubit.dart';
 import '../auth/auth_repository.dart';
 import '../auth/auth_state.dart';
+import '../../shared/widgets/loading_wrapper.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -34,11 +35,12 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     final authRepo = getIt<AuthRepository>();
 
-    return BlocProvider<AuthCubit>(
-      create: (_) => getIt<AuthCubit>(),
-      child: StreamBuilder<LocalUser?>(
-        stream: authRepo.authStateChanges(),
-        builder: (context, snapshot) {
+    return LoadingWrapper(
+      child: BlocProvider<AuthCubit>(
+        create: (_) => getIt<AuthCubit>(),
+        child: StreamBuilder<LocalUser?>(
+          stream: authRepo.authStateChanges(),
+          builder: (context, snapshot) {
           final user = snapshot.data ?? authRepo.currentUser;
 
           if (user == null) {
@@ -47,6 +49,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
           return _buildAuthorizedView(context, user, authRepo);
         },
+      ),
       ),
     );
   }

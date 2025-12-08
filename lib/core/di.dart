@@ -6,6 +6,7 @@ import '../features/collections/media_collections_cubit.dart';
 import '../features/collections/media_collections_repository.dart';
 import '../features/home/home_bloc.dart';
 import '../core/storage/media_collections_storage.dart';
+import '../core/loading_state.dart';
 
 final getIt = GetIt.instance;
 
@@ -22,6 +23,9 @@ Future<void> init() async {
       authRepository: getIt<AuthRepository>(),
     ),
   );
+
+  // Services
+  getIt.registerLazySingleton<LoadingStateService>(() => LoadingStateService());
 
   // BLoCs / Cubits
   getIt.registerFactory<HomeBloc>(

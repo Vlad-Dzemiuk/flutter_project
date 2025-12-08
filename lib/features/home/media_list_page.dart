@@ -5,7 +5,7 @@ import 'package:project/core/di.dart';
 import 'package:project/core/responsive.dart';
 import 'package:project/core/theme.dart';
 import 'package:project/features/collections/media_collections_cubit.dart';
-import 'package:project/shared/widgets/loading_widget.dart';
+import 'package:project/shared/widgets/animated_loading_widget.dart';
 
 import 'home_media_item.dart';
 import 'home_repository.dart';
@@ -157,7 +157,7 @@ class _MediaListPageState extends State<MediaListPage> {
                   ),
                   Expanded(
                     child: _loading
-                        ? const LoadingWidget(message: 'Завантаження...')
+                        ? const AnimatedLoadingWidget(message: 'Завантаження...')
                         : _error.isNotEmpty
                             ? Center(
                                 child: Padding(

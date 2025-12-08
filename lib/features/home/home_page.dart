@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:project/core/constants.dart';
 import 'package:project/core/di.dart';
 import 'package:project/core/responsive.dart';
+import 'package:project/core/loading_state.dart';
 import 'package:project/features/collections/media_collections_cubit.dart';
-import 'package:project/shared/widgets/loading_widget.dart';
+import 'package:project/shared/widgets/animated_loading_widget.dart';
 import 'package:project/shared/widgets/home_header_widget.dart';
 import 'package:project/core/theme.dart';
 
@@ -75,6 +77,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final loadingStateService = getIt<LoadingStateService>();
+    
     return MultiBlocProvider(
       providers: [
         BlocProvider(
@@ -87,8 +91,36 @@ class _HomePageState extends State<HomePage> {
           final theme = Theme.of(context);
           final colors = theme.colorScheme;
 
+          // Перевіряємо, чи всі медіа матеріали завантажені
+          // Завантаження вважається завершеним, коли:
+          // 1. Не завантажується (loading = false)
+          // 2. Не в режимі пошуку (searchResults.isEmpty)
+          final isLoadingComplete = !state.loading && state.searchResults.isEmpty;
+          
+          // Всі категорії мають дані
+          final allMediaLoaded = isLoadingComplete &&
+              state.popularMovies.isNotEmpty &&
+              state.popularTvShows.isNotEmpty &&
+              state.allMovies.isNotEmpty &&
+              state.allTvShows.isNotEmpty;
+
+          // Встановлюємо, що головна сторінка завантажена, коли всі дані завантажені
+          // Або коли завантаження завершено (навіть якщо є помилка - щоб не блокувати інші сторінки)
+          if (allMediaLoaded || (isLoadingComplete && state.error.isNotEmpty)) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              loadingStateService.setHomePageLoaded();
+            });
+          }
+
+          // Показуємо завантаження, поки не завантажаться всі медіа
+          // Але якщо є помилка і завантаження завершено, все одно показуємо помилку
           if (state.loading && state.searchResults.isEmpty) {
-            return LoadingWidget(message: 'Завантаження...');
+            return const AnimatedLoadingWidget(message: 'Завантаження...');
+          }
+          
+          // Якщо завантаження завершено, але не всі дані завантажені, показуємо завантаження
+          if (isLoadingComplete && !allMediaLoaded && state.error.isEmpty) {
+            return const AnimatedLoadingWidget(message: 'Завантаження...');
           }
 
           return Scaffold(
@@ -141,8 +173,7 @@ class _HomePageState extends State<HomePage> {
                               SizedBox(height: Responsive.getSpacing(context)),
                               MediaSliderSection(
                                 title: 'Популярні фільми',
-                                items:
-                                state.popularMovies.take(10).toList(),
+                                items: state.popularMovies.take(10).toList(),
                                 onSeeMore: () =>
                                     _openMediaList(
                                       context,
@@ -206,7 +237,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildSearchResults(BuildContext context, HomeState state) {
     if (state.searching && state.searchResults.isEmpty) {
-      return const LoadingWidget(message: 'Пошук...');
+      return const AnimatedLoadingWidget(message: 'Завантаження...');
     }
 
     if (state.searchResults.isEmpty && !state.searching) {
@@ -355,9 +386,45 @@ class _HomePageState extends State<HomePage> {
                       width: 90,
                       child: item.posterPath != null &&
                           item.posterPath!.isNotEmpty
-                          ? Image.network(
-                        'https://image.tmdb.org/t/p/w300${item.posterPath}',
+                          ? CachedNetworkImage(
+                        imageUrl: 'https://image.tmdb.org/t/p/w300${item.posterPath}',
                         fit: BoxFit.cover,
+                        placeholder: (context, url) => Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                Colors.blueGrey.shade900,
+                                Colors.blueGrey.shade700,
+                              ],
+                            ),
+                          ),
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white.withValues(alpha: 0.7),
+                            ),
+                          ),
+                        ),
+                        errorWidget: (context, url, error) => Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                Colors.blueGrey.shade900,
+                                Colors.blueGrey.shade700,
+                              ],
+                            ),
+                          ),
+                          child: Icon(
+                            Icons.movie,
+                            color: colors.onSurfaceVariant
+                                .withValues(alpha: 0.7),
+                            size: 32,
+                          ),
+                        ),
                       )
                           : Container(
                         decoration: BoxDecoration(
@@ -697,8 +764,13 @@ class MediaSliderSection extends StatelessWidget {
       MediaCollectionsCubit collectionsCubit,
       dynamic collectionsState,
       bool canModifyCollections,) {
+    // Розраховуємо ширину картки для горизонтального списку
+    // Використовуємо aspect ratio 2/3 для постерів
+    final cardHeight = 280.0;
+    final cardWidth = cardHeight * (2 / 3);
+    
     return SizedBox(
-      height: 280,
+      height: cardHeight,
       child: ListView.separated(
         padding: const EdgeInsets.symmetric(horizontal: 4),
         scrollDirection: Axis.horizontal,
@@ -706,6 +778,7 @@ class MediaSliderSection extends StatelessWidget {
           final item = items[index];
           return MediaPosterCard(
             item: item,
+            width: cardWidth,
             isFavorite: canModifyCollections
                 ? collectionsState.isFavorite(item)
                 : false,
@@ -796,6 +869,7 @@ class MediaPosterCard extends StatelessWidget {
       child: cardWidth != null
           ? SizedBox(
         width: cardWidth,
+        height: cardWidth * 1.5, // aspectRatio 2/3 означає висота = ширина * 1.5
         child: _buildCardContent(context),
       )
           : _buildCardContent(context),
@@ -819,9 +893,50 @@ class MediaPosterCard extends StatelessWidget {
                     Positioned.fill(
                       child: item.posterPath != null &&
                           item.posterPath!.isNotEmpty
-                          ? Image.network(
-                        'https://image.tmdb.org/t/p/w500${item.posterPath}',
-                        fit: BoxFit.cover,
+                          ? Container(
+                        width: double.infinity,
+                        height: double.infinity,
+                        child: CachedNetworkImage(
+                          imageUrl: 'https://image.tmdb.org/t/p/w500${item.posterPath}',
+                          fit: BoxFit.cover,
+                          memCacheWidth: 500,
+                          memCacheHeight: 750,
+                          fadeInDuration: const Duration(milliseconds: 300),
+                          placeholder: (context, url) => Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  Colors.blueGrey.shade900,
+                                  Colors.blueGrey.shade700,
+                                ],
+                              ),
+                            ),
+                            child: const Center(
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white70,
+                              ),
+                            ),
+                          ),
+                          errorWidget: (context, url, error) {
+                            debugPrint('Error loading image: $url, error: $error');
+                            return Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [
+                                    Colors.blueGrey.shade900,
+                                    Colors.blueGrey.shade700,
+                                  ],
+                                ),
+                              ),
+                              child: const Icon(Icons.movie, size: 48),
+                            );
+                          },
+                        ),
                       )
                           : Container(
                         decoration: BoxDecoration(

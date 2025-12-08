@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/constants.dart';
 import '../../core/responsive.dart';
 import '../../core/theme.dart';
+import '../../shared/widgets/loading_wrapper.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -109,7 +110,8 @@ class _SettingsPageState extends State<SettingsPage> {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
 
-    return Scaffold(
+    return LoadingWrapper(
+      child: Scaffold(
       backgroundColor: colors.background,
       body: Container(
         decoration: AppGradients.background(context),
@@ -240,6 +242,7 @@ class _SettingsPageState extends State<SettingsPage> {
             },
           ),
         ),
+      ),
       ),
     );
   }
