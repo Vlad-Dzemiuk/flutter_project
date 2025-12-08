@@ -12,6 +12,7 @@ import 'home_repository.dart';
 import 'home_page.dart'; // для MediaPosterCard
 import 'package:project/core/responsive.dart';
 import 'package:project/core/theme.dart';
+import 'package:project/core/page_transitions.dart';
 import 'package:project/shared/widgets/animated_loading_widget.dart';
 
 class MediaDetailPage extends StatefulWidget {
@@ -364,32 +365,35 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(isDesktop ? 20 : 16),
-              child: posterPath != null && posterPath.isNotEmpty
-                  ? Image.network(
-                      'https://image.tmdb.org/t/p/w300$posterPath',
-                      width: posterWidth,
-                      height: posterHeight,
-                      fit: BoxFit.cover,
-                    )
-                  : Container(
-                      width: posterWidth,
-                      height: posterHeight,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            Colors.blueGrey.shade900,
-                            Colors.blueGrey.shade700,
-                          ],
+            Hero(
+              tag: 'poster_${widget.item.id}_${widget.item.isMovie ? 'movie' : 'tv'}',
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(isDesktop ? 20 : 16),
+                child: posterPath != null && posterPath.isNotEmpty
+                    ? Image.network(
+                        'https://image.tmdb.org/t/p/w300$posterPath',
+                        width: posterWidth,
+                        height: posterHeight,
+                        fit: BoxFit.cover,
+                      )
+                    : Container(
+                        width: posterWidth,
+                        height: posterHeight,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.blueGrey.shade900,
+                              Colors.blueGrey.shade700,
+                            ],
+                          ),
+                        ),
+                        child: Icon(
+                          Icons.movie,
+                          size: isDesktop ? 64 : isTablet ? 56 : 48,
+                          color: colors.onSurfaceVariant,
                         ),
                       ),
-                      child: Icon(
-                        Icons.movie,
-                        size: isDesktop ? 64 : isTablet ? 56 : 48,
-                        color: colors.onSurfaceVariant,
-                      ),
-                    ),
+              ),
             ),
             SizedBox(width: spacing),
             Expanded(
@@ -814,9 +818,7 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
                           : _showAuthDialog,
                       onTap: () {
                         Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => MediaDetailPage(item: item),
-                          ),
+                          DetailPageRoute(child: MediaDetailPage(item: item)),
                         );
                       },
                     );
@@ -841,9 +843,7 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
                             : _showAuthDialog,
                         onTap: () {
                           Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => MediaDetailPage(item: item),
-                            ),
+                            DetailPageRoute(child: MediaDetailPage(item: item)),
                           );
                         },
                       );

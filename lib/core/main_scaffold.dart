@@ -208,6 +208,12 @@ class _MainScaffoldState extends State<MainScaffold> {
           }
 
           // На мобільних пристроях використовуємо bottom navigation
+          // Робимо рівні верхній і нижній padding всередині BottomNavigationBar
+          // і зменшуємо верхній padding Container, щоб іконки були нижче
+          final bottomNavPaddingTop = 4.0; // Верхній padding всередині BottomNavigationBar
+          final bottomNavPaddingBottom = 4.0; // Мінімальний нижній padding під іконками
+          final containerTopPadding = 2.0; // Мінімальний верхній padding Container для опускання іконок
+          
           return Scaffold(
             appBar: AppBar(
               toolbarHeight: 0,
@@ -220,9 +226,9 @@ class _MainScaffoldState extends State<MainScaffold> {
             bottomNavigationBar: Container(
               padding: EdgeInsets.fromLTRB(
                 horizontalPadding.left * 0.5,
-                8,
+                containerTopPadding,
                 horizontalPadding.right * 0.5,
-                8 + MediaQuery.of(context).padding.bottom,
+                bottomNavPaddingBottom,
               ),
               decoration: BoxDecoration(
                 gradient: isDark
@@ -245,70 +251,81 @@ class _MainScaffoldState extends State<MainScaffold> {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(24),
-                child: BottomNavigationBar(
-                  backgroundColor: isDark
-                      ? Colors.white.withValues(alpha: 0.06)
-                      : colors.surface.withValues(alpha: 0.9),
-                  elevation: 0,
-                  currentIndex: _getCurrentIndex(),
-                  onTap: _onTabTapped,
-                  type: BottomNavigationBarType.fixed,
-                  selectedItemColor: colors.primary,
-                  unselectedItemColor: isDark
-                      ? Colors.white.withValues(alpha: 0.55)
-                      : colors.onSurface.withValues(alpha: 0.6),
-                  selectedLabelStyle: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 12,
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    top: bottomNavPaddingTop,
+                    bottom: bottomNavPaddingBottom,
                   ),
-                  unselectedLabelStyle: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 11,
-                  ),
-                  selectedFontSize: 12,
-                  unselectedFontSize: 11,
-                  items: [
+                  child: BottomNavigationBar(
+                      backgroundColor: isDark
+                          ? Colors.white.withValues(alpha: 0.06)
+                          : colors.surface.withValues(alpha: 0.9),
+                      elevation: 0,
+                      currentIndex: _getCurrentIndex(),
+                      onTap: _onTabTapped,
+                      type: BottomNavigationBarType.fixed,
+                    selectedItemColor: colors.primary,
+                    unselectedItemColor: isDark
+                        ? Colors.white.withValues(alpha: 0.55)
+                        : colors.onSurface.withValues(alpha: 0.6),
+                    selectedLabelStyle: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 14,
+                    ),
+                    unselectedLabelStyle: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                    ),
+                    selectedFontSize: 14,
+                    unselectedFontSize: 13,
+                    items: [
                     BottomNavigationBarItem(
-                      icon: _NavIcon(icon: Icons.home_outlined, isActive: false),
+                      icon: _NavIcon(icon: Icons.home_outlined, isActive: false, size: 24),
                       activeIcon: const _NavIcon(
                         icon: Icons.home,
                         isActive: true,
+                        size: 24,
                       ),
                       label: 'Головна',
                     ),
                     BottomNavigationBarItem(
-                      icon: _NavIcon(icon: Icons.search_outlined, isActive: false),
+                      icon: _NavIcon(icon: Icons.search_outlined, isActive: false, size: 24),
                       activeIcon: const _NavIcon(
                         icon: Icons.search,
                         isActive: true,
+                        size: 24,
                       ),
                       label: 'Пошук',
                     ),
                     BottomNavigationBarItem(
-                      icon: _NavIcon(icon: Icons.visibility_outlined, isActive: false),
+                      icon: _NavIcon(icon: Icons.visibility_outlined, isActive: false, size: 24),
                       activeIcon: const _NavIcon(
                         icon: Icons.visibility,
                         isActive: true,
+                        size: 24,
                       ),
                       label: 'Переглянуті',
                     ),
                     BottomNavigationBarItem(
-                      icon: _NavIcon(icon: Icons.favorite_border, isActive: false),
+                      icon: _NavIcon(icon: Icons.favorite_border, isActive: false, size: 24),
                       activeIcon: const _NavIcon(
                         icon: Icons.favorite,
                         isActive: true,
+                        size: 24,
                       ),
                       label: 'Вподобані',
                     ),
                     BottomNavigationBarItem(
-                      icon: _NavIcon(icon: Icons.person_outline, isActive: false),
+                      icon: _NavIcon(icon: Icons.person_outline, isActive: false, size: 24),
                       activeIcon: const _NavIcon(
                         icon: Icons.person,
                         isActive: true,
+                        size: 24,
                       ),
                       label: 'Профіль',
                     ),
                   ],
+                  ),
                 ),
               ),
             ),

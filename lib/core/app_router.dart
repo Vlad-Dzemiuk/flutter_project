@@ -12,6 +12,7 @@ import '../features/profile/about_app_page.dart';
 import 'constants.dart';
 import 'di.dart';
 import 'main_scaffold.dart';
+import 'page_transitions.dart';
 
 class AppRouter {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -21,48 +22,57 @@ class AppRouter {
     switch (settings.name) {
       case '/':
       case AppConstants.homeRoute:
-        return MaterialPageRoute(
-          builder: (_) => MainScaffold(body: const HomePage()),
+        return FadePageRoute(
+          child: MainScaffold(body: const HomePage()),
         );
       case AppConstants.favoritesRoute:
-        return MaterialPageRoute(
-          builder: (_) =>
-              MainScaffold(body: const FavoritesPage(), title: 'Вподобані'),
+        return SlidePageRoute(
+          beginOffset: const Offset(0.0, 1.0),
+          child: MainScaffold(body: const FavoritesPage(), title: 'Вподобані'),
         );
       case AppConstants.profileRoute:
-        return MaterialPageRoute(
-          builder: (_) =>
-              MainScaffold(body: const ProfilePage(), title: 'Профіль'),
+        return SlidePageRoute(
+          beginOffset: const Offset(0.0, 1.0),
+          child: MainScaffold(body: const ProfilePage(), title: 'Профіль'),
         );
       case AppConstants.editProfileRoute:
         if (!isLoggedIn) {
-          return MaterialPageRoute(
-            builder: (_) =>
-                const LoginPage(redirectRoute: AppConstants.editProfileRoute),
+          return SlidePageRoute(
+            beginOffset: const Offset(0.0, 1.0),
+            child: const LoginPage(redirectRoute: AppConstants.editProfileRoute),
           );
         }
-        return MaterialPageRoute(builder: (_) => const EditProfilePage());
+        return SlidePageRoute(
+          beginOffset: const Offset(0.0, 1.0),
+          child: const EditProfilePage(),
+        );
       case AppConstants.watchlistRoute:
-        return MaterialPageRoute(
-          builder: (_) =>
-              MainScaffold(body: const WatchlistPage(), title: 'Переглянуті'),
+        return SlidePageRoute(
+          beginOffset: const Offset(0.0, 1.0),
+          child: MainScaffold(body: const WatchlistPage(), title: 'Переглянуті'),
         );
       case AppConstants.settingsRoute:
-        return MaterialPageRoute(builder: (_) => const SettingsPage());
+        return SlidePageRoute(
+          beginOffset: const Offset(1.0, 0.0),
+          child: const SettingsPage(),
+        );
       case AppConstants.aboutRoute:
-        return MaterialPageRoute(builder: (_) => const AboutAppPage());
+        return FadePageRoute(
+          child: const AboutAppPage(),
+        );
       case AppConstants.searchRoute:
       case '/search':
-        return MaterialPageRoute(
-          builder: (_) =>
-              MainScaffold(body: const SearchPage(), title: 'Пошук'),
+        return SlidePageRoute(
+          beginOffset: const Offset(0.0, 1.0),
+          child: MainScaffold(body: const SearchPage(), title: 'Пошук'),
         );
       case AppConstants.loginRoute:
-        return MaterialPageRoute(builder: (_) => const LoginPage());
+        return ScalePageRoute(
+          child: const LoginPage(),
+        );
       default:
-        return MaterialPageRoute(
-          builder: (_) =>
-              const Scaffold(body: Center(child: Text('Route not found'))),
+        return FadePageRoute(
+          child: const Scaffold(body: Center(child: Text('Route not found'))),
         );
     }
   }

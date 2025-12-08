@@ -7,6 +7,7 @@ import 'package:project/features/collections/media_collections_cubit.dart';
 import 'package:project/features/home/media_detail_page.dart';
 import 'package:project/features/home/home_page.dart';
 import 'package:project/core/theme.dart';
+import 'package:project/core/page_transitions.dart';
 import 'package:project/shared/widgets/animated_loading_widget.dart';
 import 'package:project/shared/widgets/loading_wrapper.dart';
 
@@ -135,46 +136,47 @@ class FavoritesPage extends StatelessWidget {
             borderRadius: BorderRadius.circular(18),
             onTap: () {
               Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => MediaDetailPage(item: item),
-                ),
+                DetailPageRoute(child: MediaDetailPage(item: item)),
               );
             },
             child: Padding(
               padding: EdgeInsets.all(Responsive.isMobile(context) ? 12 : 16),
               child: Row(
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(14),
-                    child: SizedBox(
-                      height: Responsive.isMobile(context) ? 120 : 140,
-                      width: Responsive.isMobile(context) ? 90 : 105,
-                                    child: item.posterPath != null &&
-                                            item.posterPath!.isNotEmpty
-                                        ? Image.network(
-                                            'https://image.tmdb.org/t/p/w300${item.posterPath}',
-                                            fit: BoxFit.cover,
-                                          )
-                                        : Container(
-                                            decoration: BoxDecoration(
-                                              gradient: LinearGradient(
-                                                begin: Alignment.topLeft,
-                                                end: Alignment.bottomRight,
-                                                colors: [
-                                                  Colors.blueGrey.shade900,
-                                                  Colors.blueGrey.shade700,
-                                                ],
+                  Hero(
+                    tag: 'poster_${item.id}_${item.isMovie ? 'movie' : 'tv'}',
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(14),
+                      child: SizedBox(
+                        height: Responsive.isMobile(context) ? 120 : 140,
+                        width: Responsive.isMobile(context) ? 90 : 105,
+                                      child: item.posterPath != null &&
+                                              item.posterPath!.isNotEmpty
+                                          ? Image.network(
+                                              'https://image.tmdb.org/t/p/w300${item.posterPath}',
+                                              fit: BoxFit.cover,
+                                            )
+                                          : Container(
+                                              decoration: BoxDecoration(
+                                                gradient: LinearGradient(
+                                                  begin: Alignment.topLeft,
+                                                  end: Alignment.bottomRight,
+                                                  colors: [
+                                                    Colors.blueGrey.shade900,
+                                                    Colors.blueGrey.shade700,
+                                                  ],
+                                                ),
+                                              ),
+                                              child: Icon(
+                                                Icons.movie,
+                                                color: colors.onSurfaceVariant
+                                                    .withOpacity(0.7),
+                                                size: 32,
                                               ),
                                             ),
-                                            child: Icon(
-                                              Icons.movie,
-                                              color: colors.onSurfaceVariant
-                                                  .withOpacity(0.7),
-                                              size: 32,
-                                            ),
-                                          ),
+                                    ),
                                   ),
-                                ),
+                  ),
                   SizedBox(width: Responsive.isMobile(context) ? 14 : 16),
                   Expanded(
                     child: Column(
@@ -304,9 +306,7 @@ class FavoritesPage extends StatelessWidget {
           onFavoriteToggle: () => collectionsCubit.toggleFavorite(item),
           onTap: () {
             Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => MediaDetailPage(item: item),
-              ),
+              DetailPageRoute(child: MediaDetailPage(item: item)),
             );
           },
         );
