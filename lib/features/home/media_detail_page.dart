@@ -10,6 +10,7 @@ import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 import 'home_media_item.dart';
 import 'home_repository.dart';
 import 'home_page.dart'; // для MediaPosterCard
+import 'package:project/core/responsive.dart';
 import 'package:project/core/theme.dart';
 
 class MediaDetailPage extends StatefulWidget {
@@ -181,63 +182,102 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
                         style: TextStyle(color: colors.onBackground),
                       ),
                     )
-                  : RefreshIndicator(
-                      edgeOffset: 80,
-                      onRefresh: _loadData,
-                      child: SingleChildScrollView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(16, 12, 16, 10),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    widget.item.isMovie ? Icons.movie : Icons.tv,
-                                    color: colors.primary,
+                  : LayoutBuilder(
+                      builder: (context, constraints) {
+                        final isDesktop = Responsive.isDesktop(context);
+                        final isTablet = Responsive.isTablet(context);
+                        final isLandscape = Responsive.isLandscape(context);
+                        final horizontalPadding = Responsive.getHorizontalPadding(context);
+                        final verticalPadding = Responsive.getVerticalPadding(context);
+                        final spacing = Responsive.getSpacing(context);
+
+                        return RefreshIndicator(
+                          edgeOffset: 80,
+                          onRefresh: _loadData,
+                          child: SingleChildScrollView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(
+                                maxWidth: isLandscape
+                                    ? (isDesktop ? 1600 : isTablet ? 1400 : double.infinity)
+                                    : (isDesktop ? 1200 : double.infinity),
+                              ),
+                              child: Center(
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: isDesktop ? horizontalPadding.left : 0,
                                   ),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: Text(
-                                      title,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        color: colors.onBackground,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w700,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.fromLTRB(
+                                          horizontalPadding.left,
+                                          verticalPadding.top,
+                                          horizontalPadding.right,
+                                          verticalPadding.bottom,
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              widget.item.isMovie ? Icons.movie : Icons.tv,
+                                              color: colors.primary,
+                                              size: isLandscape
+                                                  ? (isDesktop ? 32 : isTablet ? 28 : 24)
+                                                  : (isDesktop ? 28 : 24),
+                                            ),
+                                            SizedBox(width: spacing * 0.6),
+                                            Expanded(
+                                              child: Text(
+                                                title,
+                                                maxLines: isLandscape
+                                                    ? (isDesktop ? 4 : isTablet ? 3 : 2)
+                                                    : (isDesktop ? 3 : 2),
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(
+                                                  color: colors.onBackground,
+                                                  fontSize: isLandscape
+                                                      ? (isDesktop ? 30 : isTablet ? 26 : 22)
+                                                      : (isDesktop ? 26 : isTablet ? 22 : 20),
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                              ),
+                                            ),
+                                            SizedBox(width: spacing * 0.5),
+                                            _buildFavoriteAction(),
+                                          ],
+                                        ),
                                       ),
-                                    ),
+                                      _buildHeroSection(),
+                                      SizedBox(height: spacing * 1.5),
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: horizontalPadding.left,
+                                        ),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            _buildTrailerSection(),
+                                            SizedBox(height: spacing * 1.5),
+                                            _buildOverviewSection(),
+                                            SizedBox(height: spacing * 1.5),
+                                            _buildCharacteristics(),
+                                            SizedBox(height: spacing * 1.5),
+                                            _buildReviewsSection(),
+                                            SizedBox(height: spacing * 1.5),
+                                            _buildRecommendationsSection(),
+                                            SizedBox(height: verticalPadding.bottom * 2),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  const SizedBox(width: 8),
-                                  _buildFavoriteAction(),
-                                ],
+                                ),
                               ),
                             ),
-                            _buildHeroSection(),
-                            const SizedBox(height: 18),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  _buildTrailerSection(),
-                                  const SizedBox(height: 18),
-                                  _buildOverviewSection(),
-                                  const SizedBox(height: 18),
-                                  _buildCharacteristics(),
-                                  const SizedBox(height: 18),
-                                  _buildReviewsSection(),
-                                  const SizedBox(height: 18),
-                                  _buildRecommendationsSection(),
-                                  const SizedBox(height: 30),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                          ),
+                        );
+                      },
                     ),
         ),
       ),
@@ -247,6 +287,12 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
   Widget _buildHeroSection() {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    final isDesktop = Responsive.isDesktop(context);
+    final isTablet = Responsive.isTablet(context);
+    final isLandscape = Responsive.isLandscape(context);
+    final horizontalPadding = Responsive.getHorizontalPadding(context);
+    final spacing = Responsive.getSpacing(context);
+    
     final posterPathFromApi = _details != null
         ? _details!['poster_path'] as String?
         : null;
@@ -263,25 +309,37 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
               : (_details!['name'] as String? ?? widget.item.title))
         : widget.item.title;
 
+    // Адаптивні розміри постеру з урахуванням орієнтації
+    final posterWidth = isLandscape
+        ? (isDesktop ? 240.0 : isTablet ? 200.0 : 160.0)
+        : (isDesktop ? 200.0 : isTablet ? 160.0 : 128.0);
+    final posterHeight = isLandscape
+        ? (isDesktop ? 360.0 : isTablet ? 300.0 : 240.0)
+        : (isDesktop ? 300.0 : isTablet ? 240.0 : 188.0);
+
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: EdgeInsets.symmetric(horizontal: horizontalPadding.left),
       child: _GlassCard(
-        padding: const EdgeInsets.all(14),
+        padding: EdgeInsets.all(
+          isLandscape
+              ? (isDesktop ? 28 : isTablet ? 24 : 18)
+              : (isDesktop ? 24 : isTablet ? 18 : 14),
+        ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(isDesktop ? 20 : 16),
               child: posterPath != null && posterPath.isNotEmpty
                   ? Image.network(
                       'https://image.tmdb.org/t/p/w300$posterPath',
-                      width: 128,
-                      height: 188,
+                      width: posterWidth,
+                      height: posterHeight,
                       fit: BoxFit.cover,
                     )
                   : Container(
-                      width: 128,
-                      height: 188,
+                      width: posterWidth,
+                      height: posterHeight,
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
@@ -292,31 +350,38 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
                       ),
                       child: Icon(
                         Icons.movie,
-                        size: 48,
+                        size: isDesktop ? 64 : isTablet ? 56 : 48,
                         color: colors.onSurfaceVariant,
                       ),
                     ),
             ),
-            const SizedBox(width: 14),
+            SizedBox(width: spacing),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     title,
-                    maxLines: 3,
+                    maxLines: isLandscape ? (isDesktop ? 5 : 4) : (isDesktop ? 4 : 3),
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       color: colors.onBackground,
-                      fontSize: 18,
+                      fontSize: isLandscape
+                          ? (isDesktop ? 28 : isTablet ? 24 : 20)
+                          : (isDesktop ? 24 : isTablet ? 20 : 18),
                       fontWeight: FontWeight.w800,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Row(
+                  SizedBox(height: spacing * 0.7),
+                  Wrap(
+                    spacing: spacing * 0.7,
+                    runSpacing: spacing * 0.7,
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: isDesktop ? 14 : 10,
+                          vertical: isDesktop ? 8 : 6,
+                        ),
                         decoration: BoxDecoration(
                           color: colors.surfaceVariant.withOpacity(
                             theme.brightness == Brightness.light ? 0.7 : 0.25,
@@ -327,20 +392,25 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
                           ),
                         ),
                         child: Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.star, size: 16, color: Colors.amber),
-                            const SizedBox(width: 6),
+                            Icon(
+                              Icons.star,
+                              size: isDesktop ? 20 : 16,
+                              color: Colors.amber,
+                            ),
+                            SizedBox(width: 6),
                             Text(
                               rating.toStringAsFixed(1),
                               style: TextStyle(
                                 color: colors.onSurface,
                                 fontWeight: FontWeight.w700,
+                                fontSize: isDesktop ? 16 : 14,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(width: 10),
                       if (_details != null &&
                           (_details!['vote_count'] as int?) != null)
                         _ChipBadge(
@@ -349,11 +419,11 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
                         ),
                     ],
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: spacing),
                   if (_details != null)
                     Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
+                      spacing: spacing * 0.7,
+                      runSpacing: spacing * 0.7,
                       children: [
                         if ((_details!['original_language'] as String?) != null)
                           _ChipBadge(
@@ -425,6 +495,7 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
 
   Widget _buildOverviewSection() {
     final colors = Theme.of(context).colorScheme;
+    final isDesktop = Responsive.isDesktop(context);
     final overview =
         _details != null &&
             (_details!['overview'] as String?)?.isNotEmpty == true
@@ -435,7 +506,11 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
       title: 'Опис',
       child: Text(
         overview.isNotEmpty ? overview : 'Опис відсутній',
-        style: TextStyle(color: colors.onSurfaceVariant, height: 1.4),
+        style: TextStyle(
+          color: colors.onSurfaceVariant,
+          height: 1.4,
+          fontSize: isDesktop ? 16 : 14,
+        ),
       ),
     );
   }
@@ -479,8 +554,9 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
 
   Widget _buildCharacteristicRow(String label, String value) {
     final colors = Theme.of(context).colorScheme;
+    final isDesktop = Responsive.isDesktop(context);
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: EdgeInsets.symmetric(vertical: isDesktop ? 6 : 4),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -489,12 +565,16 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
             style: TextStyle(
               fontWeight: FontWeight.bold,
               color: colors.onBackground,
+              fontSize: isDesktop ? 16 : 14,
             ),
           ),
           Expanded(
             child: Text(
               value,
-              style: TextStyle(color: colors.onSurfaceVariant),
+              style: TextStyle(
+                color: colors.onSurfaceVariant,
+                fontSize: isDesktop ? 16 : 14,
+              ),
             ),
           ),
         ],
@@ -503,6 +583,11 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
   }
 
   Widget _buildReviewsSection() {
+    final isDesktop = Responsive.isDesktop(context);
+    final isTablet = Responsive.isTablet(context);
+    final isLandscape = Responsive.isLandscape(context);
+    final spacing = Responsive.getSpacing(context);
+    
     if (_reviews.isEmpty) {
       return _Section(
         title: 'Відгуки',
@@ -510,59 +595,128 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
           'Ще немає відгуків',
           style: TextStyle(
             color: Theme.of(context).colorScheme.onSurfaceVariant,
+            fontSize: isLandscape
+                ? (isDesktop ? 18 : isTablet ? 16 : 14)
+                : (isDesktop ? 16 : 14),
           ),
         ),
       );
     }
 
+    // Використовуємо GridView для desktop та tablet в landscape
+    final useGridView = isDesktop || (isTablet && isLandscape);
+    final reviewColumns = isLandscape
+        ? (isDesktop ? 3 : isTablet ? 2 : 2)
+        : (isDesktop ? 2 : 2);
+
     return _Section(
       title: 'Відгуки',
-      child: ListView.separated(
-        physics: const NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        itemBuilder: (context, index) {
-          final review = _reviews[index] as Map<String, dynamic>;
-          final author = review['author'] as String? ?? 'Анонім';
-          final content = review['content'] as String? ?? '';
+      child: useGridView
+          ? GridView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: reviewColumns,
+                crossAxisSpacing: spacing,
+                mainAxisSpacing: spacing,
+                childAspectRatio: isLandscape ? 1.3 : 1.2,
+              ),
+              itemBuilder: (context, index) {
+                final review = _reviews[index] as Map<String, dynamic>;
+                final author = review['author'] as String? ?? 'Анонім';
+                final content = review['content'] as String? ?? '';
 
-          return _GlassCard(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(Icons.person,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        size: 18),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        author,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          color: Theme.of(context).colorScheme.onBackground,
+                return _GlassCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.person,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              author,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                color: Theme.of(context).colorScheme.onBackground,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: spacing * 0.5),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: Text(
+                            content,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              height: 1.35,
+                              fontSize: 14,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  content,
-                  maxLines: 6,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    height: 1.35,
+                    ],
                   ),
-                ),
-              ],
+                );
+              },
+              itemCount: _reviews.length,
+            )
+          : ListView.separated(
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                final review = _reviews[index] as Map<String, dynamic>;
+                final author = review['author'] as String? ?? 'Анонім';
+                final content = review['content'] as String? ?? '';
+
+                return _GlassCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.person,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            size: 18,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              author,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                color: Theme.of(context).colorScheme.onBackground,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        content,
+                        maxLines: 6,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          height: 1.35,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+              separatorBuilder: (_, __) => SizedBox(height: spacing),
+              itemCount: _reviews.length,
             ),
-          );
-        },
-        separatorBuilder: (_, __) => const SizedBox(height: 10),
-        itemCount: _reviews.length,
-      ),
     );
   }
 
@@ -571,36 +725,75 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
       return const SizedBox.shrink();
     }
 
+    final isDesktop = Responsive.isDesktop(context);
+    final isTablet = Responsive.isTablet(context);
+    final isLandscape = Responsive.isLandscape(context);
+    final spacing = Responsive.getSpacing(context);
+    final columns = Responsive.getGridColumnCount(context);
+
     return BlocBuilder<MediaCollectionsCubit, MediaCollectionsState>(
       bloc: _collectionsCubit,
       builder: (context, collectionsState) {
         final canModify = collectionsState.authorized;
+        // На desktop та tablet в landscape використовуємо GridView
+        final useGridView = isDesktop || (isTablet && isLandscape);
+        
         return _Section(
           title: 'Рекомендовані',
-          child: SizedBox(
-            height: 260,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) {
-                final item = _recommendations[index];
-                return MediaPosterCard(
-                  item: item,
-                  isFavorite: canModify ? collectionsState.isFavorite(item) : false,
-                  onFavoriteToggle:
-                      canModify ? () => _collectionsCubit.toggleFavorite(item) : _showAuthDialog,
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => MediaDetailPage(item: item),
-                      ),
+          child: useGridView
+              ? GridView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: columns,
+                    crossAxisSpacing: spacing,
+                    mainAxisSpacing: spacing,
+                    childAspectRatio: Responsive.getMediaCardAspectRatio(context),
+                  ),
+                  itemBuilder: (context, index) {
+                    final item = _recommendations[index];
+                    return MediaPosterCard(
+                      item: item,
+                      isFavorite: canModify ? collectionsState.isFavorite(item) : false,
+                      onFavoriteToggle: canModify
+                          ? () => _collectionsCubit.toggleFavorite(item)
+                          : _showAuthDialog,
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => MediaDetailPage(item: item),
+                          ),
+                        );
+                      },
                     );
                   },
-                );
-              },
-              separatorBuilder: (_, __) => const SizedBox(width: 12),
-              itemCount: _recommendations.length,
-            ),
-          ),
+                  itemCount: _recommendations.length,
+                )
+              : SizedBox(
+                  height: isTablet ? 280 : 260,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: (context, index) {
+                      final item = _recommendations[index];
+                      return MediaPosterCard(
+                        item: item,
+                        isFavorite: canModify ? collectionsState.isFavorite(item) : false,
+                        onFavoriteToggle: canModify
+                            ? () => _collectionsCubit.toggleFavorite(item)
+                            : _showAuthDialog,
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => MediaDetailPage(item: item),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    separatorBuilder: (_, __) => SizedBox(width: spacing),
+                    itemCount: _recommendations.length,
+                  ),
+                ),
         );
       },
     );
@@ -624,6 +817,9 @@ class _Section extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final isDesktop = Responsive.isDesktop(context);
+    final spacing = Responsive.getSpacing(context);
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -631,11 +827,11 @@ class _Section extends StatelessWidget {
           title,
           style: TextStyle(
             color: colors.onBackground,
-            fontSize: 16,
+            fontSize: isDesktop ? 20 : 16,
             fontWeight: FontWeight.w800,
           ),
         ),
-        const SizedBox(height: 10),
+        SizedBox(height: spacing),
         child,
       ],
     );
@@ -655,20 +851,25 @@ class _GlassCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    final isDesktop = Responsive.isDesktop(context);
+    final isTablet = Responsive.isTablet(context);
+    
     return Container(
       width: double.infinity,
       padding: padding,
       decoration: BoxDecoration(
         color: theme.cardColor,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(
+          isDesktop ? 22 : isTablet ? 20 : 18,
+        ),
         border: Border.all(color: colors.outlineVariant.withOpacity(0.8)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(
               theme.brightness == Brightness.light ? 0.08 : 0.25,
             ),
-            blurRadius: 14,
-            offset: const Offset(0, 10),
+            blurRadius: isDesktop ? 18 : 14,
+            offset: Offset(0, isDesktop ? 12 : 10),
           ),
         ],
       ),
@@ -687,8 +888,13 @@ class _ChipBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    final isDesktop = Responsive.isDesktop(context);
+    
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      padding: EdgeInsets.symmetric(
+        horizontal: isDesktop ? 12 : 10,
+        vertical: isDesktop ? 8 : 6,
+      ),
       decoration: BoxDecoration(
         color: colors.surfaceVariant.withOpacity(
           theme.brightness == Brightness.light ? 1 : 0.18,
@@ -699,13 +905,18 @@ class _ChipBadge extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 16, color: colors.onSurfaceVariant),
-          const SizedBox(width: 6),
+          Icon(
+            icon,
+            size: isDesktop ? 18 : 16,
+            color: colors.onSurfaceVariant,
+          ),
+          SizedBox(width: 6),
           Text(
             label,
             style: TextStyle(
               color: colors.onBackground,
               fontWeight: FontWeight.w700,
+              fontSize: isDesktop ? 14 : 12,
             ),
           ),
         ],

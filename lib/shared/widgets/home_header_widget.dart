@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/constants.dart';
+import '../../core/responsive.dart';
 import '../../core/theme.dart';
 
 class HomeHeaderWidget extends StatelessWidget {
@@ -10,14 +11,17 @@ class HomeHeaderWidget extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
+    final horizontalPadding = Responsive.getHorizontalPadding(context);
+    final isMobile = Responsive.isMobile(context);
+    final headerHeight = isMobile ? 200.0 : 240.0;
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
+      padding: EdgeInsets.only(bottom: Responsive.getSpacing(context) / 2),
       child: Stack(
         children: [
           Container(
             width: double.infinity,
-            height: 200,
+            height: headerHeight,
             decoration: BoxDecoration(
               image: DecorationImage(
                 image: const NetworkImage(
@@ -54,7 +58,7 @@ class HomeHeaderWidget extends StatelessWidget {
           ),
           Positioned.fill(
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(horizontalPadding.left),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -62,7 +66,7 @@ class HomeHeaderWidget extends StatelessWidget {
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(12),
+                        padding: EdgeInsets.all(isMobile ? 12 : 14),
                         decoration: BoxDecoration(
                           color: isDark
                               ? colors.primary.withOpacity(0.16)
@@ -72,29 +76,32 @@ class HomeHeaderWidget extends StatelessWidget {
                         child: Icon(
                           Icons.movie_filter_outlined,
                           color: isDark ? colors.onPrimary : colors.primary,
+                          size: isMobile ? 24 : 28,
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Movie discovery app',
-                            style: TextStyle(
-                              color: colors.onBackground,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w800,
+                      SizedBox(width: isMobile ? 12 : 16),
+                      Flexible(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Movie discovery app',
+                              style: TextStyle(
+                                color: colors.onBackground,
+                                fontSize: isMobile ? 20 : 24,
+                                fontWeight: FontWeight.w800,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Підібрали, що переглянути сьогодні',
-                            style: TextStyle(
-                              color: colors.onBackground.withOpacity(0.7),
-                              fontSize: 13,
+                            const SizedBox(height: 4),
+                            Text(
+                              'Підібрали, що переглянути сьогодні',
+                              style: TextStyle(
+                                color: colors.onBackground.withOpacity(0.7),
+                                fontSize: isMobile ? 13 : 15,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -106,18 +113,19 @@ class HomeHeaderWidget extends StatelessWidget {
                           style: TextStyle(
                             color: colors.onBackground.withOpacity(0.9),
                             height: 1.35,
+                            fontSize: isMobile ? 14 : 16,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: isMobile ? 12 : 16),
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: colors.primary,
                           foregroundColor: isDark ? colors.onPrimary : Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 14,
-                            vertical: 12,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: isMobile ? 14 : 18,
+                            vertical: isMobile ? 12 : 14,
                           ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),
@@ -126,9 +134,12 @@ class HomeHeaderWidget extends StatelessWidget {
                         onPressed: () =>
                             Navigator.of(context).pushNamed(AppConstants.searchRoute),
                         icon: const Icon(Icons.explore),
-                        label: const Text(
+                        label: Text(
                           'Дослідити',
-                          style: TextStyle(fontWeight: FontWeight.w800),
+                          style: TextStyle(
+                            fontWeight: FontWeight.w800,
+                            fontSize: isMobile ? 14 : 16,
+                          ),
                         ),
                       ),
                     ],

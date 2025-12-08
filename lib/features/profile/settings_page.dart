@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/constants.dart';
+import '../../core/responsive.dart';
 import '../../core/theme.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -113,61 +114,130 @@ class _SettingsPageState extends State<SettingsPage> {
       body: Container(
         decoration: AppGradients.background(context),
         child: SafeArea(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
-                child: Row(
-                  children: [
-                    Icon(Icons.settings, color: colors.primary),
-                    const SizedBox(width: 10),
-                    Text(
-                      'Налаштування',
-                      style: TextStyle(
-                        color: colors.onBackground,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final isDesktop = Responsive.isDesktop(context);
+              final isTablet = Responsive.isTablet(context);
+              final horizontalPadding = Responsive.getHorizontalPadding(context);
+              final verticalPadding = Responsive.getVerticalPadding(context);
+              final spacing = Responsive.getSpacing(context);
+              final maxFormWidth = Responsive.getMaxFormWidth(context);
+
+              return Column(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(
+                      horizontalPadding.left,
+                      verticalPadding.top,
+                      horizontalPadding.right,
+                      verticalPadding.bottom,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: isDesktop || isTablet
+                          ? MainAxisAlignment.center
+                          : MainAxisAlignment.start,
+                      children: [
+                        Icon(
+                          Icons.settings,
+                          color: colors.primary,
+                          size: isDesktop ? 28 : 24,
+                        ),
+                        SizedBox(width: spacing * 0.6),
+                        Text(
+                          'Налаштування',
+                          style: TextStyle(
+                            color: colors.onBackground,
+                            fontSize: isDesktop ? 24 : 20,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Center(
+                      child: SingleChildScrollView(
+                        padding: EdgeInsets.fromLTRB(
+                          horizontalPadding.left,
+                          0,
+                          horizontalPadding.right,
+                          verticalPadding.bottom * 2,
+                        ),
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: isDesktop || isTablet ? maxFormWidth : double.infinity,
+                          ),
+                          child: Column(
+                            children: [
+                              // Адаптивна сітка для налаштувань на десктопі
+                              if (isDesktop)
+                                GridView.count(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: spacing,
+                                  mainAxisSpacing: spacing,
+                                  childAspectRatio: 1.5,
+                                  children: [
+                                    _SettingsTile(
+                                      title: 'Мова застосунку',
+                                      subtitle: '$_selectedLanguage',
+                                      icon: Icons.language,
+                                      onTap: _chooseLanguage,
+                                    ),
+                                    _SettingsTile(
+                                      title: 'Тема застосунку',
+                                      subtitle: '$_themeLabel',
+                                      icon: Icons.dark_mode_outlined,
+                                      onTap: _chooseTheme,
+                                    ),
+                                  ],
+                                )
+                              else
+                                Column(
+                                  children: [
+                                    _SettingsTile(
+                                      title: 'Мова застосунку',
+                                      subtitle: '$_selectedLanguage',
+                                      icon: Icons.language,
+                                      onTap: _chooseLanguage,
+                                    ),
+                                    SizedBox(height: spacing),
+                                    _SettingsTile(
+                                      title: 'Тема застосунку',
+                                      subtitle: '$_themeLabel',
+                                      icon: Icons.dark_mode_outlined,
+                                      onTap: _chooseTheme,
+                                    ),
+                                  ],
+                                ),
+                              SizedBox(height: spacing),
+                              _SettingsTile(
+                                title: 'Про застосунок',
+                                icon: Icons.info_outline,
+                                onTap: () {
+                                  Navigator.of(context).pushNamed(AppConstants.aboutRoute);
+                                },
+                              ),
+                              SizedBox(height: spacing * 1.5),
+                              Text(
+                                'Версія застосунку: 1.0.0',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: colors.onBackground.withOpacity(0.6),
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: isDesktop ? 16 : 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: ListView(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
-                  children: [
-                    _SettingsTile(
-                      title: 'Мова застосунку',
-                      subtitle: '$_selectedLanguage',
-                      icon: Icons.language,
-                      onTap: _chooseLanguage,
-                    ),
-                    _SettingsTile(
-                      title: 'Тема застосунку',
-                      subtitle: '$_themeLabel',
-                      icon: Icons.dark_mode_outlined,
-                      onTap: _chooseTheme,
-                    ),
-                    _SettingsTile(
-                      title: 'Про застосунок',
-                      icon: Icons.info_outline,
-                      onTap: () {
-                        Navigator.of(context).pushNamed(AppConstants.aboutRoute);
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Версія застосунку: 1.0.0',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: colors.onBackground.withOpacity(0.6),
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ),
@@ -192,46 +262,66 @@ class _SettingsTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    final isDesktop = Responsive.isDesktop(context);
+    final isTablet = Responsive.isTablet(context);
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: EdgeInsets.only(bottom: Responsive.getSpacing(context)),
       decoration: BoxDecoration(
         color: theme.cardColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(
+          isDesktop ? 18 : isTablet ? 17 : 16,
+        ),
         border: Border.all(color: colors.outlineVariant.withOpacity(0.8)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(
               theme.brightness == Brightness.light ? 0.08 : 0.25,
             ),
-            blurRadius: 14,
-            offset: const Offset(0, 8),
+            blurRadius: isDesktop ? 16 : 14,
+            offset: Offset(0, isDesktop ? 10 : 8),
           ),
         ],
       ),
       child: ListTile(
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: isDesktop ? 20 : isTablet ? 18 : 16,
+          vertical: isDesktop ? 12 : 8,
+        ),
         leading: Container(
-          padding: const EdgeInsets.all(10),
+          padding: EdgeInsets.all(isDesktop ? 12 : 10),
           decoration: BoxDecoration(
             color: colors.primary.withOpacity(0.12),
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Icon(icon, color: colors.primary),
+          child: Icon(
+            icon,
+            color: colors.primary,
+            size: isDesktop ? 24 : 20,
+          ),
         ),
         title: Text(
           title,
           style: TextStyle(
             color: colors.onBackground,
             fontWeight: FontWeight.w700,
+            fontSize: isDesktop ? 18 : 16,
           ),
         ),
         subtitle: subtitle != null
             ? Text(
                 subtitle!,
-                style: TextStyle(color: colors.onBackground.withOpacity(0.6)),
+                style: TextStyle(
+                  color: colors.onBackground.withOpacity(0.6),
+                  fontSize: isDesktop ? 15 : 14,
+                ),
               )
             : null,
-        trailing: Icon(Icons.chevron_right, color: colors.onBackground.withOpacity(0.45)),
+        trailing: Icon(
+          Icons.chevron_right,
+          color: colors.onBackground.withOpacity(0.45),
+          size: isDesktop ? 28 : 24,
+        ),
         onTap: onTap,
       ),
     );

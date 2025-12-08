@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:project/core/constants.dart';
 import 'package:project/core/di.dart';
+import 'package:project/core/responsive.dart';
 import 'package:project/core/theme.dart';
 import 'package:project/features/collections/media_collections_cubit.dart';
 import 'package:project/shared/widgets/loading_widget.dart';
@@ -9,6 +10,7 @@ import 'package:project/shared/widgets/loading_widget.dart';
 import 'home_media_item.dart';
 import 'home_repository.dart';
 import 'media_detail_page.dart';
+import 'home_page.dart';
 
 enum MediaListCategory { popularMovies, popularTv, allMovies, allTv }
 
@@ -113,258 +115,321 @@ class _MediaListPageState extends State<MediaListPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    final horizontalPadding = Responsive.getHorizontalPadding(context);
+    final isMobile = Responsive.isMobile(context);
     
     return Scaffold(
       backgroundColor: colors.background,
       body: Container(
         decoration: AppGradients.background(context),
         child: SafeArea(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                child: Row(
-                  children: [
-                    Icon(_getCategoryIcon(), color: colors.primary),
-                    const SizedBox(width: 10),
-                    Text(
-                      widget.title,
-                      style: TextStyle(
-                        color: colors.onBackground,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
-                      ),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return Column(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(
+                      horizontalPadding.left,
+                      Responsive.isMobile(context) ? 16 : 20,
+                      horizontalPadding.right,
+                      Responsive.getSpacing(context) / 2,
                     ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: _loading
-            ? const LoadingWidget(message: 'Завантаження...')
-                  : _error.isNotEmpty
-                      ? Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(24),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.error_outline,
-                                  size: 64,
-                                  color: colors.onSurfaceVariant.withOpacity(0.6),
-                                ),
-                                const SizedBox(height: 16),
-                                Text(
-                                  _error,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: colors.onBackground,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                const SizedBox(height: 24),
-                                FilledButton.icon(
-                                  onPressed: _loadItems,
-                                  icon: const Icon(Icons.refresh),
-                                  label: const Text('Спробувати знову'),
-                                  style: FilledButton.styleFrom(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 24,
-                                      vertical: 12,
-                                    ),
-                                  ),
-                                ),
-                              ],
+                    child: Row(
+                      children: [
+                        Icon(
+                          _getCategoryIcon(),
+                          color: colors.primary,
+                          size: Responsive.isMobile(context) ? 24 : 28,
+                        ),
+                        SizedBox(width: Responsive.isMobile(context) ? 10 : 12),
+                        Expanded(
+                          child: Text(
+                            widget.title,
+                            style: TextStyle(
+                              color: colors.onBackground,
+                              fontSize: Responsive.isMobile(context) ? 20 : 24,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
-                        )
-                      : BlocBuilder<MediaCollectionsCubit, MediaCollectionsState>(
-                          bloc: _collectionsCubit,
-                          builder: (context, collectionsState) {
-                            final canModify = collectionsState.authorized;
-                            return RefreshIndicator(
-                              onRefresh: _loadItems,
-                              edgeOffset: 70,
-                              child: ListView.builder(
-                                padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-                                itemCount: _items.length,
-                                itemBuilder: (context, index) {
-                            final item = _items[index];
-                            final isFavorite =
-                                canModify && collectionsState.isFavorite(item);
-                            return Container(
-                              margin: const EdgeInsets.only(bottom: 14),
-                              decoration: BoxDecoration(
-                                color: theme.cardColor,
-                                borderRadius: BorderRadius.circular(18),
-                                border: Border.all(
-                                  color: colors.outlineVariant.withOpacity(0.8),
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(
-                                      theme.brightness == Brightness.light
-                                          ? 0.08
-                                          : 0.25,
-                                    ),
-                                    blurRadius: 12,
-                                    offset: const Offset(0, 8),
-                                  ),
-                                ],
-                              ),
-                              child: InkWell(
-                                borderRadius: BorderRadius.circular(18),
-                                onTap: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (_) =>
-                                          MediaDetailPage(item: item),
-                                    ),
-                                  );
-                                },
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: _loading
+                        ? const LoadingWidget(message: 'Завантаження...')
+                        : _error.isNotEmpty
+                            ? Center(
                                 child: Padding(
-                                  padding: const EdgeInsets.all(12),
-                                  child: Row(
+                                  padding: Responsive.getHorizontalPadding(context),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(14),
-                                        child: SizedBox(
-                                          height: 120,
-                                          width: 90,
-                                          child: item.posterPath != null &&
-                                                  item.posterPath!.isNotEmpty
-                                              ? Image.network(
-                                                  'https://image.tmdb.org/t/p/w300${item.posterPath}',
-                                                  fit: BoxFit.cover,
-                                                )
-                                              : Container(
-                                                  decoration: BoxDecoration(
-                                                    gradient: LinearGradient(
-                                                      begin: Alignment.topLeft,
-                                                      end: Alignment.bottomRight,
-                                                      colors: [
-                                                        Colors.blueGrey.shade900,
-                                                        Colors.blueGrey.shade700,
-                                                      ],
-                                                    ),
-                                                  ),
-                                                  child: Icon(
-                                                    Icons.movie,
-                                                    color: colors.onSurfaceVariant
-                                                        .withOpacity(0.7),
-                                                    size: 32,
-                                                  ),
-                                                ),
+                                      Icon(
+                                        Icons.error_outline,
+                                        size: Responsive.isMobile(context) ? 64 : 80,
+                                        color: colors.onSurfaceVariant.withOpacity(0.6),
+                                      ),
+                                      SizedBox(height: Responsive.getSpacing(context)),
+                                      Text(
+                                        _error,
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontSize: Responsive.isMobile(context) ? 16 : 18,
+                                          color: colors.onBackground,
+                                          fontWeight: FontWeight.w600,
                                         ),
                                       ),
-                                      const SizedBox(width: 14),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              item.title,
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w700,
-                                                color: colors.onBackground,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 6),
-                                            Text(
-                                              item.overview,
-                                              maxLines: 3,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
-                                                color: colors.onSurfaceVariant
-                                                    .withOpacity(0.7),
-                                                height: 1.4,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 12),
-                                            Row(
-                                              children: [
-                                                Container(
-                                                  padding:
-                                                      const EdgeInsets.symmetric(
-                                                    horizontal: 10,
-                                                    vertical: 6,
-                                                  ),
-                                                  decoration: BoxDecoration(
-                                                    color: colors.surfaceVariant
-                                                        .withOpacity(
-                                                      theme.brightness ==
-                                                              Brightness.light
-                                                          ? 0.7
-                                                          : 0.25,
-                                                    ),
-                                                    borderRadius:
-                                                        BorderRadius.circular(12),
-                                                    border: Border.all(
-                                                      color: colors.outlineVariant
-                                                          .withOpacity(0.8),
-                                                    ),
-                                                  ),
-                                                  child: Row(
-                                                    children: [
-                                                      const Icon(
-                                                        Icons.star,
-                                                        size: 16,
-                                                        color: Colors.amber,
-                                                      ),
-                                                      const SizedBox(width: 6),
-                                                      Text(
-                                                        item.rating
-                                                            .toStringAsFixed(1),
-                                                        style: TextStyle(
-                                                          color: colors.onSurface,
-                                                          fontWeight:
-                                                              FontWeight.w700,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                                const Spacer(),
-                                                IconButton(
-                                                  onPressed: canModify
-                                                      ? () => _collectionsCubit
-                                                          .toggleFavorite(item)
-                                                      : () => _showAuthDialog(
-                                                          context),
-                                                  icon: Icon(
-                                                    isFavorite
-                                                        ? Icons.favorite
-                                                        : Icons
-                                                            .favorite_border_rounded,
-                                                    color: isFavorite
-                                                        ? const Color(0xFFFF6B6B)
-                                                        : colors.onSurfaceVariant
-                                                            .withOpacity(0.7),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
+                                      SizedBox(height: Responsive.getSpacing(context) * 1.5),
+                                      FilledButton.icon(
+                                        onPressed: _loadItems,
+                                        icon: const Icon(Icons.refresh),
+                                        label: const Text('Спробувати знову'),
+                                        style: FilledButton.styleFrom(
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: Responsive.isMobile(context) ? 24 : 32,
+                                            vertical: Responsive.isMobile(context) ? 12 : 14,
+                                          ),
                                         ),
                                       ),
                                     ],
                                   ),
                                 ),
+                              )
+                            : BlocBuilder<MediaCollectionsCubit, MediaCollectionsState>(
+                                bloc: _collectionsCubit,
+                                builder: (context, collectionsState) {
+                                  final canModify = collectionsState.authorized;
+                                  return RefreshIndicator(
+                                    onRefresh: _loadItems,
+                                    edgeOffset: 70,
+                                    child: isMobile
+                                        ? _buildList(context, theme, colors, canModify, collectionsState, horizontalPadding)
+                                        : _buildGrid(context, theme, colors, canModify, collectionsState, horizontalPadding),
+                                  );
+                                },
                               ),
-                            );
-                          },
-                        ),
-                      );
-                    },
                   ),
-              ),
-            ],
+                ],
+              );
+            },
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildList(
+    BuildContext context,
+    ThemeData theme,
+    ColorScheme colors,
+    bool canModify,
+    dynamic collectionsState,
+    EdgeInsets horizontalPadding,
+  ) {
+    return ListView.builder(
+      padding: EdgeInsets.fromLTRB(
+        horizontalPadding.left,
+        8,
+        horizontalPadding.right,
+        24,
+      ),
+      itemCount: _items.length,
+      itemBuilder: (context, index) {
+        final item = _items[index];
+        final isFavorite = canModify && collectionsState.isFavorite(item);
+        return Container(
+          margin: EdgeInsets.only(bottom: Responsive.getSpacing(context)),
+          decoration: BoxDecoration(
+            color: theme.cardColor,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: colors.outlineVariant.withOpacity(0.8),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(
+                  theme.brightness == Brightness.light ? 0.08 : 0.25,
+                ),
+                blurRadius: 12,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(18),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => MediaDetailPage(item: item),
+                ),
+              );
+            },
+            child: Padding(
+              padding: EdgeInsets.all(Responsive.isMobile(context) ? 12 : 16),
+              child: Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(14),
+                    child: SizedBox(
+                      height: Responsive.isMobile(context) ? 120 : 140,
+                      width: Responsive.isMobile(context) ? 90 : 105,
+                      child: item.posterPath != null &&
+                              item.posterPath!.isNotEmpty
+                          ? Image.network(
+                              'https://image.tmdb.org/t/p/w300${item.posterPath}',
+                              fit: BoxFit.cover,
+                            )
+                          : Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [
+                                    Colors.blueGrey.shade900,
+                                    Colors.blueGrey.shade700,
+                                  ],
+                                ),
+                              ),
+                              child: Icon(
+                                Icons.movie,
+                                color: colors.onSurfaceVariant.withOpacity(0.7),
+                                size: 32,
+                              ),
+                            ),
+                    ),
+                  ),
+                  SizedBox(width: Responsive.isMobile(context) ? 14 : 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          item.title,
+                          style: TextStyle(
+                            fontSize: Responsive.isMobile(context) ? 16 : 18,
+                            fontWeight: FontWeight.w700,
+                            color: colors.onBackground,
+                          ),
+                        ),
+                        SizedBox(height: Responsive.isMobile(context) ? 6 : 8),
+                        Text(
+                          item.overview,
+                          maxLines: Responsive.isMobile(context) ? 3 : 4,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: colors.onSurfaceVariant.withOpacity(0.7),
+                            fontSize: Responsive.isMobile(context) ? 14 : 15,
+                            height: 1.4,
+                          ),
+                        ),
+                        SizedBox(height: Responsive.isMobile(context) ? 12 : 14),
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: colors.surfaceVariant.withOpacity(
+                                  theme.brightness == Brightness.light ? 0.7 : 0.25,
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: colors.outlineVariant.withOpacity(0.8),
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.star,
+                                    size: 16,
+                                    color: Colors.amber,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    item.rating.toStringAsFixed(1),
+                                    style: TextStyle(
+                                      color: colors.onSurface,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const Spacer(),
+                            IconButton(
+                              onPressed: canModify
+                                  ? () => _collectionsCubit.toggleFavorite(item)
+                                  : () => _showAuthDialog(context),
+                              icon: Icon(
+                                isFavorite
+                                    ? Icons.favorite
+                                    : Icons.favorite_border_rounded,
+                                color: isFavorite
+                                    ? const Color(0xFFFF6B6B)
+                                    : colors.onSurfaceVariant.withOpacity(0.7),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildGrid(
+    BuildContext context,
+    ThemeData theme,
+    ColorScheme colors,
+    bool canModify,
+    dynamic collectionsState,
+    EdgeInsets horizontalPadding,
+  ) {
+    final columns = Responsive.getGridColumnCount(context);
+    final spacing = Responsive.getSpacing(context);
+    // Адаптивний aspect ratio залежно від розміру екрана та орієнтації
+    final aspectRatio = Responsive.getMediaCardAspectRatio(context);
+    
+    return GridView.builder(
+      padding: EdgeInsets.symmetric(
+        horizontal: horizontalPadding.left,
+        vertical: Responsive.getSpacing(context) / 2,
+      ),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: columns,
+        crossAxisSpacing: spacing,
+        mainAxisSpacing: spacing,
+        childAspectRatio: aspectRatio,
+      ),
+      itemCount: _items.length,
+      itemBuilder: (context, index) {
+        final item = _items[index];
+        final isFavorite = canModify && collectionsState.isFavorite(item);
+        
+        return MediaPosterCard(
+          item: item,
+          isFavorite: isFavorite,
+          onFavoriteToggle: canModify
+              ? () => _collectionsCubit.toggleFavorite(item)
+              : () => _showAuthDialog(context),
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => MediaDetailPage(item: item),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }

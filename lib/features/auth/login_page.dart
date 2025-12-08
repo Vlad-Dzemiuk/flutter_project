@@ -5,6 +5,7 @@ import 'auth_cubit.dart';
 import 'auth_state.dart';
 import '../../core/constants.dart';
 import '../../core/di.dart';
+import '../../core/responsive.dart';
 import '../../core/theme.dart';
 
 class LoginPage extends StatefulWidget {
@@ -63,200 +64,239 @@ class _LoginPageState extends State<LoginPage> {
           final colors = theme.colorScheme;
 
           return Scaffold(
-            backgroundColor: colors.background,
+            backgroundColor: colors.surface,
             body: Container(
               decoration: AppGradients.background(context),
               child: SafeArea(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: colors.primary.withOpacity(0.14),
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            child: Icon(
-                              Icons.movie,
-                              color: colors.primary,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                AppConstants.appName,
-                                style: TextStyle(
-                                  color: colors.onBackground,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w800,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                _isLogin
-                                    ? 'Повернись до своїх історій'
-                                    : 'Створи акаунт та відкривай нове',
-                                style: TextStyle(
-                                  color: colors.onBackground.withOpacity(0.65),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 18),
-                      Container(
-                        padding: const EdgeInsets.all(18),
-                        decoration: BoxDecoration(
-                          color: theme.cardColor,
-                          borderRadius: BorderRadius.circular(18),
-                          border: Border.all(
-                            color: colors.outlineVariant.withOpacity(0.8),
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(
-                                theme.brightness == Brightness.light ? 0.08 : 0.25,
-                              ),
-                              blurRadius: 16,
-                              offset: const Offset(0, 10),
-                            ),
-                          ],
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final isDesktop = Responsive.isDesktop(context);
+                    final isTablet = Responsive.isTablet(context);
+                    final horizontalPadding = Responsive.getHorizontalPadding(context);
+                    final verticalPadding = Responsive.getVerticalPadding(context);
+                    final spacing = Responsive.getSpacing(context);
+                    final maxFormWidth = Responsive.getMaxFormWidth(context);
+
+                    return Center(
+                      child: SingleChildScrollView(
+                        padding: EdgeInsets.fromLTRB(
+                          horizontalPadding.left,
+                          verticalPadding.top,
+                          horizontalPadding.right,
+                          verticalPadding.bottom * 2,
                         ),
-                        child: Form(
-                          key: _formKey,
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: maxFormWidth,
+                            minHeight: constraints.maxHeight - 
+                                (verticalPadding.top + verticalPadding.bottom * 2),
+                          ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const SizedBox(height: 12),
-                              _AuthInput(
-                                controller: _emailController,
-                                label: 'Email',
-                                icon: Icons.alternate_email,
-                                keyboardType: TextInputType.emailAddress,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Введіть email';
-                                  }
-                                  if (!value.contains('@')) {
-                                    return 'Некоректний email';
-                                  }
-                                  return null;
-                                },
-                              ),
-                              const SizedBox(height: 14),
-                              _AuthInput(
-                                controller: _passwordController,
-                                label: 'Пароль',
-                                icon: Icons.lock_outline,
-                                obscureText: true,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Введіть пароль';
-                                  }
-                                  if (value.length < 6) {
-                                    return 'Мінімум 6 символів';
-                                  }
-                                  return null;
-                                },
-                              ),
-                              const SizedBox(height: 20),
-                              SizedBox(
-                                height: 52,
-                                child: ElevatedButton.icon(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: colors.primary,
-                                    foregroundColor: colors.onPrimary,
-                                    shape: RoundedRectangleBorder(
+                              Row(
+                                mainAxisAlignment: isDesktop || isTablet
+                                    ? MainAxisAlignment.center
+                                    : MainAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.all(
+                                      isDesktop ? 14 : 12,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: colors.primary.withValues(alpha: 0.14),
                                       borderRadius: BorderRadius.circular(14),
                                     ),
+                                    child: Icon(
+                                      Icons.movie,
+                                      color: colors.primary,
+                                      size: isDesktop ? 28 : 24,
+                                    ),
                                   ),
-                                  onPressed: isLoading
-                                      ? null
-                                      : () {
-                                          if (!_formKey.currentState!.validate()) {
-                                            return;
+                                  SizedBox(width: spacing),
+                                  Flexible(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          AppConstants.appName,
+                                          style: TextStyle(
+                                            color: colors.onSurface,
+                                            fontSize: isDesktop ? 24 : 20,
+                                            fontWeight: FontWeight.w800,
+                                          ),
+                                        ),
+                                        SizedBox(height: 4),
+                                        Text(
+                                          _isLogin
+                                              ? 'Повернись до своїх історій'
+                                              : 'Створи акаунт та відкривай нове',
+                                          style: TextStyle(
+                                            color: colors.onSurface.withValues(alpha: 0.65),
+                                            fontSize: isDesktop ? 16 : 14,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: spacing * 1.5),
+                              Container(
+                                padding: EdgeInsets.all(
+                                  isDesktop ? 24 : isTablet ? 20 : 18,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: theme.cardColor,
+                                  borderRadius: BorderRadius.circular(
+                                    isDesktop ? 20 : 18,
+                                  ),
+                                  border: Border.all(
+                                    color: colors.outlineVariant.withValues(alpha: 0.8),
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withValues(alpha:
+                                        theme.brightness == Brightness.light ? 0.08 : 0.25,
+                                      ),
+                                      blurRadius: isDesktop ? 20 : 16,
+                                      offset: Offset(0, isDesktop ? 12 : 10),
+                                    ),
+                                  ],
+                                ),
+                                child: Form(
+                                  key: _formKey,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                                    children: [
+                                      SizedBox(height: isDesktop ? 16 : 12),
+                                      _AuthInput(
+                                        controller: _emailController,
+                                        label: 'Email',
+                                        icon: Icons.alternate_email,
+                                        keyboardType: TextInputType.emailAddress,
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Введіть email';
                                           }
-                                          final email = _emailController.text;
-                                          final password =
-                                              _passwordController.text;
-                                          final cubit = context.read<AuthCubit>();
-                                          if (_isLogin) {
-                                            cubit.signIn(email, password);
-                                          } else {
-                                            cubit.register(email, password);
+                                          if (!value.contains('@')) {
+                                            return 'Некоректний email';
                                           }
+                                          return null;
                                         },
-                                  icon: isLoading
-                                      ? const SizedBox(
-                                          width: 20,
-                                          height: 20,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                            valueColor:
-                                                AlwaysStoppedAnimation<Color>(
-                                              Colors.white,
+                                      ),
+                                      SizedBox(height: spacing),
+                                      _AuthInput(
+                                        controller: _passwordController,
+                                        label: 'Пароль',
+                                        icon: Icons.lock_outline,
+                                        obscureText: true,
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Введіть пароль';
+                                          }
+                                          if (value.length < 6) {
+                                            return 'Мінімум 6 символів';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                      SizedBox(height: spacing * 1.5),
+                                      SizedBox(
+                                        height: isDesktop ? 56 : 52,
+                                        child: ElevatedButton.icon(
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: colors.primary,
+                                            foregroundColor: colors.onPrimary,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(14),
                                             ),
                                           ),
-                                        )
-                                      : const Icon(Icons.login),
-                                  label: Text(
-                                    _isLogin ? 'Увійти' : 'Зареєструватись',
-                                    style:
-                                        const TextStyle(fontWeight: FontWeight.w800),
+                                          onPressed: isLoading
+                                              ? null
+                                              : () {
+                                                  if (!_formKey.currentState!.validate()) {
+                                                    return;
+                                                  }
+                                                  final email = _emailController.text;
+                                                  final password =
+                                                      _passwordController.text;
+                                                  final cubit = context.read<AuthCubit>();
+                                                  if (_isLogin) {
+                                                    cubit.signIn(email, password);
+                                                  } else {
+                                                    cubit.register(email, password);
+                                                  }
+                                                },
+                                          icon: isLoading
+                                              ? const SizedBox(
+                                                  width: 20,
+                                                  height: 20,
+                                                  child: CircularProgressIndicator(
+                                                    strokeWidth: 2,
+                                                    valueColor:
+                                                        AlwaysStoppedAnimation<Color>(
+                                                      Colors.white,
+                                                    ),
+                                                  ),
+                                                )
+                                              : const Icon(Icons.login),
+                                          label: Text(
+                                            _isLogin ? 'Увійти' : 'Зареєструватись',
+                                            style:
+                                                const TextStyle(fontWeight: FontWeight.w800),
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(height: spacing),
+                                      TextButton(
+                                        onPressed: isLoading
+                                            ? null
+                                            : () {
+                                                setState(() {
+                                                  _isLogin = !_isLogin;
+                                                });
+                                              },
+                                        style: TextButton.styleFrom(
+                                          foregroundColor: colors.primary,
+                                        ),
+                                        child: Text(
+                                          _isLogin
+                                              ? 'Немає акаунта? Зареєструватись'
+                                              : 'Вже є акаунт? Увійти',
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
-                              const SizedBox(height: 12),
+                              SizedBox(height: spacing),
                               TextButton(
                                 onPressed: isLoading
                                     ? null
                                     : () {
-                                        setState(() {
-                                          _isLogin = !_isLogin;
-                                        });
+                                        if (widget.redirectRoute != null) {
+                                          Navigator.of(
+                                            context,
+                                          ).pushReplacementNamed(widget.redirectRoute!);
+                                        } else {
+                                          Navigator.of(
+                                            context,
+                                          ).pushReplacementNamed(AppConstants.homeRoute);
+                                        }
                                       },
                                 style: TextButton.styleFrom(
-                                  foregroundColor: colors.primary,
+                                  foregroundColor: colors.onSurface.withValues(alpha: 0.6),
                                 ),
-                                child: Text(
-                                  _isLogin
-                                      ? 'Немає акаунта? Зареєструватись'
-                                      : 'Вже є акаунт? Увійти',
-                                ),
+                                child: const Text('Пропустити'),
                               ),
                             ],
                           ),
                         ),
                       ),
-                      const SizedBox(height: 14),
-                      TextButton(
-                        onPressed: isLoading
-                            ? null
-                            : () {
-                                if (widget.redirectRoute != null) {
-                                  Navigator.of(
-                                    context,
-                                  ).pushReplacementNamed(widget.redirectRoute!);
-                                } else {
-                                  Navigator.of(
-                                    context,
-                                  ).pushReplacementNamed(AppConstants.homeRoute);
-                                }
-                              },
-                        style: TextButton.styleFrom(
-                          foregroundColor: colors.onBackground.withOpacity(0.6),
-                        ),
-                        child: const Text('Пропустити'),
-                      ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
               ),
             ),
@@ -291,12 +331,12 @@ class _AuthInput extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
       decoration: BoxDecoration(
-        color: colors.surfaceVariant.withOpacity(
+        color: colors.surfaceContainerHighest.withValues(alpha:
           theme.brightness == Brightness.light ? 1 : 0.2,
         ),
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: colors.outlineVariant.withOpacity(
+          color: colors.outlineVariant.withValues(alpha:
             theme.brightness == Brightness.light ? 1 : 0.4,
           ),
         ),

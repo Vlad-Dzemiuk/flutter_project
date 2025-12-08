@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../core/constants.dart';
 import '../../core/di.dart';
+import '../../core/responsive.dart';
 import '../../core/theme.dart';
 import '../auth/auth_repository.dart';
 
@@ -250,19 +251,40 @@ class _EditProfilePageState extends State<EditProfilePage> {
       body: Container(
         decoration: AppGradients.background(context),
         child: SafeArea(
-          child: Column(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final isDesktop = Responsive.isDesktop(context);
+              final isTablet = Responsive.isTablet(context);
+              final horizontalPadding = Responsive.getHorizontalPadding(context);
+              final verticalPadding = Responsive.getVerticalPadding(context);
+              final spacing = Responsive.getSpacing(context);
+              final maxFormWidth = Responsive.getMaxFormWidth(context);
+
+              return Column(
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                    padding: EdgeInsets.fromLTRB(
+                      horizontalPadding.left,
+                      verticalPadding.top,
+                      horizontalPadding.right,
+                      verticalPadding.bottom,
+                    ),
                 child: Row(
+                      mainAxisAlignment: isDesktop || isTablet
+                          ? MainAxisAlignment.center
+                          : MainAxisAlignment.start,
                   children: [
-                    Icon(Icons.edit_outlined, color: colors.primary),
-                    const SizedBox(width: 10),
+                        Icon(
+                          Icons.edit_outlined,
+                          color: colors.primary,
+                          size: isDesktop ? 28 : 24,
+                        ),
+                        SizedBox(width: spacing * 0.6),
                     Text(
                       'Редагування профілю',
                       style: TextStyle(
                         color: colors.onBackground,
-                        fontSize: 20,
+                            fontSize: isDesktop ? 24 : 20,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -270,8 +292,22 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 ),
               ),
               Expanded(
+                    child: Center(
+                      child: SingleChildScrollView(
+                        padding: EdgeInsets.fromLTRB(
+                          horizontalPadding.left,
+                          0,
+                          horizontalPadding.right,
+                          verticalPadding.bottom * 2,
+                        ),
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: isDesktop || isTablet ? maxFormWidth : double.infinity,
+                          ),
                 child: Padding(
-                  padding: const EdgeInsets.all(20),
+                            padding: EdgeInsets.all(
+                              isDesktop ? 32 : isTablet ? 24 : 20,
+                            ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -282,32 +318,41 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 children: [
                                   Icon(
                                     Icons.person_off_outlined,
-                                    size: 64,
+                                              size: isDesktop ? 80 : isTablet ? 72 : 64,
                                     color: colors.onSurfaceVariant.withOpacity(0.75),
                                   ),
-                                  const SizedBox(height: 12),
+                                            SizedBox(height: spacing),
                                   Text(
                                     'Спочатку авторизуйтеся',
                                     style: TextStyle(
                                       color: colors.onBackground,
-                                      fontSize: 18,
+                                                fontSize: isDesktop ? 22 : 18,
                                       fontWeight: FontWeight.w700,
                                     ),
                                   ),
-                                  const SizedBox(height: 12),
+                                            SizedBox(height: spacing),
                                   FilledButton(
+                                              style: FilledButton.styleFrom(
+                                                padding: EdgeInsets.symmetric(
+                                                  horizontal: isDesktop ? 32 : 24,
+                                                  vertical: isDesktop ? 18 : 16,
+                                                ),
+                                              ),
                                     onPressed: () {
-                                      Navigator.of(
-                                        context,
-                                      ).pushReplacementNamed(AppConstants.loginRoute);
-                                    },
-                                    child: const Text('Увійти'),
+                                                Navigator.of(context)
+                                                    .pushReplacementNamed(AppConstants.loginRoute);
+                                              },
+                                              child: Text(
+                                                'Увійти',
+                                                style: TextStyle(
+                                                  fontSize: isDesktop ? 16 : 14,
+                                                ),
+                                              ),
                                   ),
                                 ],
                               ),
                             )
-                          : SingleChildScrollView(
-                              child: Column(
+                                    : Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
                                   Center(
@@ -315,13 +360,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                       alignment: Alignment.bottomRight,
                                       children: [
                                         CircleAvatar(
-                                          radius: 64,
+                                                  radius: isDesktop ? 80 : isTablet ? 72 : 64,
                                           backgroundColor: colors.surfaceVariant,
                                           backgroundImage: _avatarImageProvider(),
                                           child: _avatarPath == null || _avatarPath!.isEmpty
                                               ? Icon(
                                                   Icons.person,
-                                                  size: 48,
+                                                          size: isDesktop ? 60 : isTablet ? 54 : 48,
                                                   color: colors.onSurfaceVariant,
                                                 )
                                               : null,
@@ -331,69 +376,144 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                             backgroundColor: colors.surfaceVariant.withOpacity(
                                               theme.brightness == Brightness.light ? 0.8 : 0.3,
                                             ),
+                                                    padding: EdgeInsets.all(
+                                                      isDesktop ? 8 : 6,
+                                                    ),
                                           ),
                                           onPressed: _showAvatarSheet,
                                           icon: Icon(
                                             Icons.edit_outlined,
                                             color: colors.onSurfaceVariant,
+                                                    size: isDesktop ? 20 : 18,
                                           ),
                                         ),
                                       ],
                                     ),
                                   ),
-                                  const SizedBox(height: 28),
+                                          SizedBox(height: spacing * 2),
                                   Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 14,
-                                      vertical: 4,
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: isDesktop ? 18 : 14,
+                                              vertical: isDesktop ? 8 : 4,
                                     ),
                                     decoration: BoxDecoration(
                                       color: colors.surfaceVariant.withOpacity(
                                         theme.brightness == Brightness.light ? 0.5 : 0.2,
                                       ),
-                                      borderRadius: BorderRadius.circular(14),
+                                              borderRadius: BorderRadius.circular(
+                                                isDesktop ? 16 : 14,
+                                              ),
                                       border: Border.all(
                                         color: colors.outlineVariant.withOpacity(0.5),
                                       ),
                                     ),
                                     child: TextField(
                                       controller: _nameController,
-                                      style: TextStyle(color: colors.onSurface),
+                                              style: TextStyle(
+                                                color: colors.onSurface,
+                                                fontSize: isDesktop ? 16 : 14,
+                                              ),
                                       decoration: InputDecoration(
                                         labelText: 'Ім\'я користувача',
                                         helperText: 'Можна залишити порожнім',
                                         labelStyle: TextStyle(
                                           color: colors.onSurfaceVariant,
+                                                  fontSize: isDesktop ? 16 : 14,
                                         ),
                                         helperStyle: TextStyle(
                                           color: colors.onSurfaceVariant.withOpacity(0.7),
+                                                  fontSize: isDesktop ? 14 : 12,
                                         ),
                                         border: InputBorder.none,
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(height: 24),
+                                          SizedBox(height: spacing * 1.5),
                                   FilledButton.icon(
                                     style: FilledButton.styleFrom(
                                       backgroundColor: colors.primary,
                                       foregroundColor: colors.onPrimary,
                                       shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(14),
-                                      ),
-                                      padding: const EdgeInsets.symmetric(vertical: 14),
+                                                borderRadius: BorderRadius.circular(
+                                                  isDesktop ? 16 : 14,
+                                                ),
+                                              ),
+                                              padding: EdgeInsets.symmetric(
+                                                vertical: isDesktop ? 18 : 14,
+                                              ),
                                     ),
                                     onPressed: _saveProfile,
-                                    icon: const Icon(Icons.save_outlined),
-                                    label: const Text(
+                                            icon: Icon(
+                                              Icons.save_outlined,
+                                              size: isDesktop ? 22 : 20,
+                                            ),
+                                            label: Text(
                                       'Зберегти зміни',
-                                      style: TextStyle(fontWeight: FontWeight.w800),
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w800,
+                                                fontSize: isDesktop ? 16 : 14,
+                                              ),
                                     ),
                                   ),
-                                  const SizedBox(height: 24),
+                                          SizedBox(height: spacing * 1.5),
                                   Divider(
                                     color: colors.outlineVariant.withOpacity(0.3),
-                                  ),
-                                  const SizedBox(height: 12),
+                                            thickness: 1,
+                                          ),
+                                          SizedBox(height: spacing),
+                                          // Адаптивна сітка для кнопок на десктопі
+                                          LayoutBuilder(
+                                            builder: (context, buttonConstraints) {
+                                              if (isDesktop) {
+                                                // На десктопі: 2 колонки
+                                                return GridView.count(
+                                                  shrinkWrap: true,
+                                                  physics: const NeverScrollableScrollPhysics(),
+                                                  crossAxisCount: 2,
+                                                  crossAxisSpacing: spacing,
+                                                  mainAxisSpacing: spacing,
+                                                  childAspectRatio: 2.5,
+                                                  children: [
+                                                    FilledButton.tonalIcon(
+                                                      style: FilledButton.styleFrom(
+                                                        backgroundColor: colors.surfaceVariant.withOpacity(
+                                                          theme.brightness == Brightness.light ? 0.5 : 0.2,
+                                                        ),
+                                                        foregroundColor: colors.onSurfaceVariant,
+                                                        padding: EdgeInsets.symmetric(
+                                                          vertical: isDesktop ? 16 : 14,
+                                                        ),
+                                                      ),
+                                                      onPressed: _openPasswordSheet,
+                                                      icon: const Icon(Icons.lock_outline),
+                                                      label: const Text('Змінити пароль'),
+                                                    ),
+                                                    FilledButton.tonal(
+                                                      style: FilledButton.styleFrom(
+                                                        backgroundColor: colors.surfaceVariant.withOpacity(
+                                                          theme.brightness == Brightness.light ? 0.5 : 0.2,
+                                                        ),
+                                                        foregroundColor: colors.onSurfaceVariant,
+                                                        padding: EdgeInsets.symmetric(
+                                                          vertical: isDesktop ? 16 : 14,
+                                                        ),
+                                                      ),
+                                                      onPressed: () async {
+                                                        await _authRepository.signOut();
+                                                        if (context.mounted) {
+                                                          Navigator.of(context).pushReplacementNamed(
+                                                            AppConstants.loginRoute,
+                                                          );
+                                                        }
+                                                      },
+                                                      child: const Text('Вийти з акаунта'),
+                                                    ),
+                                                  ],
+                                                );
+                                              } else {
+                                                // На мобільних/планшетах: вертикальний список
+                                                return Column(
+                                                  children: [
                                   FilledButton.tonalIcon(
                                     style: FilledButton.styleFrom(
                                       backgroundColor: colors.surfaceVariant.withOpacity(
@@ -405,7 +525,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                     icon: const Icon(Icons.lock_outline),
                                     label: const Text('Змінити пароль'),
                                   ),
-                                  const SizedBox(height: 12),
+                                                    SizedBox(height: spacing),
                                   FilledButton.tonal(
                                     style: FilledButton.styleFrom(
                                       backgroundColor: colors.surfaceVariant.withOpacity(
@@ -423,8 +543,18 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                     },
                                     child: const Text('Вийти з акаунта'),
                                   ),
-                                  const SizedBox(height: 12),
+                                                  ],
+                                                );
+                                              }
+                                            },
+                                          ),
+                                          SizedBox(height: spacing),
                                   TextButton(
+                                            style: TextButton.styleFrom(
+                                              padding: EdgeInsets.symmetric(
+                                                vertical: isDesktop ? 16 : 12,
+                                              ),
+                                            ),
                                     onPressed: () async {
                                       await _authRepository.deleteAccount();
                                       if (context.mounted) {
@@ -435,17 +565,24 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                     },
                                     child: Text(
                                       'Видалити акаунт',
-                                      style: TextStyle(color: colors.error),
+                                              style: TextStyle(
+                                                color: colors.error,
+                                                fontSize: isDesktop ? 16 : 14,
+                                              ),
                                     ),
                                   ),
                                 ],
                               ),
+                              ],
                             ),
-                    ],
+                          ),
+                        ),
                   ),
                 ),
               ),
             ],
+              );
+            },
           ),
         ),
       ),
