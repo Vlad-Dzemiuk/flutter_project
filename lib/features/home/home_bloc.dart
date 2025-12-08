@@ -68,6 +68,7 @@ class HomeBloc extends Cubit<HomeState> {
   }
 
   Future<void> loadContent() async {
+    if (isClosed) return;
     emit(state.copyWith(loading: true));
     try {
       final popularMovies = await repository.fetchPopularMovies(page: 1);
@@ -80,18 +81,23 @@ class HomeBloc extends Cubit<HomeState> {
       final List<HomeMediaItem> allMoviesItems = catalogMovies.map((m) => HomeMediaItem.fromMovie(m)).toList();
       final List<HomeMediaItem> allTvItems = catalogTv.map((t) => HomeMediaItem.fromTvShow(t)).toList();
       
-      emit(
-        state.copyWith(
-          popularMovies: popularMoviesItems,
-          popularTvShows: popularTvItems,
-          allMovies: allMoviesItems,
-          allTvShows: allTvItems,
-          loading: false,
-          error: '',
-        ),
-      );
+      if (!isClosed) {
+        emit(
+          state.copyWith(
+            popularMovies: popularMoviesItems,
+            popularTvShows: popularTvItems,
+            allMovies: allMoviesItems,
+            allTvShows: allTvItems,
+            loading: false,
+            error: '',
+          ),
+        );
+      }
     } catch (e) {
-      emit(state.copyWith(error: e.toString(), loading: false));
+      if (!isClosed) {
+        final errorMessage = _getUserFriendlyError(e);
+        emit(state.copyWith(error: errorMessage, loading: false));
+      }
     }
   }
 
@@ -102,6 +108,7 @@ class HomeBloc extends Cubit<HomeState> {
     double? rating,
     bool loadMore = false,
   }) async {
+    if (isClosed) return;
     if (loadMore) {
       emit(state.copyWith(loadingMore: true));
     } else {
@@ -146,22 +153,48 @@ class HomeBloc extends Cubit<HomeState> {
       
       final allResults = loadMore ? [...state.searchResults, ...newResults] : newResults;
       
-      emit(
-        state.copyWith(
-          searchResults: allResults,
-          searching: false,
-          loadingMore: false,
-          searchQuery: query,
-          hasMoreResults: hasMore,
-          error: '',
-        ),
-      );
+      if (!isClosed) {
+        emit(
+          state.copyWith(
+            searchResults: allResults,
+            searching: false,
+            loadingMore: false,
+            searchQuery: query,
+            hasMoreResults: hasMore,
+            error: '',
+          ),
+        );
+      }
     } catch (e) {
-      emit(state.copyWith(error: e.toString(), searching: false, loadingMore: false));
+      if (!isClosed) {
+        final errorMessage = _getUserFriendlyError(e);
+        emit(state.copyWith(error: errorMessage, searching: false, loadingMore: false));
+      }
     }
   }
 
   void clearSearch() {
     emit(state.copyWith(searchResults: [], searchQuery: null, hasMoreResults: false));
+  }
+
+  String _getUserFriendlyError(dynamic error) {
+    final errorString = error.toString().toLowerCase();
+    
+    if (errorString.contains('socketexception') || 
+        errorString.contains('failed host lookup') ||
+        errorString.contains('no address associated with hostname')) {
+      return 'Немає інтернет-з\'єднання. Перевірте підключення до мережі.';
+    }
+    
+    if (errorString.contains('timeout') || errorString.contains('timed out')) {
+      return 'Час очікування вичерпано. Перевірте інтернет-з\'єднання.';
+    }
+    
+    if (errorString.contains('connection') || errorString.contains('network')) {
+      return 'Помилка підключення до сервера. Спробуйте пізніше.';
+    }
+    
+    // Для інших помилок повертаємо загальне повідомлення
+    return 'Не вдалося завантажити дані. Спробуйте пізніше.';
   }
 }

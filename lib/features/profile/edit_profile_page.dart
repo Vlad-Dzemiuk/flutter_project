@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../core/constants.dart';
 import '../../core/di.dart';
+import '../../core/theme.dart';
 import '../auth/auth_repository.dart';
 
 class EditProfilePage extends StatefulWidget {
@@ -241,105 +242,213 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   Widget build(BuildContext context) {
     final user = _user;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Редагування профілю')),
-      body: user == null
-          ? Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text('Спочатку авторизуйтеся'),
-                  const SizedBox(height: 12),
-                  FilledButton(
-                    onPressed: () {
-                      Navigator.of(
-                        context,
-                      ).pushReplacementNamed(AppConstants.loginRoute);
-                    },
-                    child: const Text('Увійти'),
-                  ),
-                ],
-              ),
-            )
-          : Padding(
-              padding: const EdgeInsets.all(20),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+      backgroundColor: colors.background,
+      body: Container(
+        decoration: AppGradients.background(context),
+        child: SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                child: Row(
                   children: [
-                    Center(
-                      child: Stack(
-                        alignment: Alignment.bottomRight,
-                        children: [
-                          CircleAvatar(
-                            radius: 64,
-                            backgroundImage: _avatarImageProvider(),
-                            child: _avatarPath == null || _avatarPath!.isEmpty
-                                ? const Icon(Icons.person, size: 48)
-                                : null,
-                          ),
-                          IconButton.filledTonal(
-                            onPressed: _showAvatarSheet,
-                            icon: const Icon(Icons.edit_outlined),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 28),
-                    TextField(
-                      controller: _nameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Ім\'я користувача',
-                        helperText: 'Можна залишити порожнім',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    FilledButton.icon(
-                      onPressed: _saveProfile,
-                      icon: const Icon(Icons.save_outlined),
-                      label: const Text('Зберегти зміни'),
-                    ),
-                    const SizedBox(height: 24),
-                    Divider(color: Colors.grey.shade300),
-                    const SizedBox(height: 12),
-                    FilledButton.tonalIcon(
-                      onPressed: _openPasswordSheet,
-                      icon: const Icon(Icons.lock_outline),
-                      label: const Text('Змінити пароль'),
-                    ),
-                    const SizedBox(height: 12),
-                    FilledButton.tonal(
-                      onPressed: () async {
-                        await _authRepository.signOut();
-                        if (context.mounted) {
-                          Navigator.of(context).pushReplacementNamed(
-                            AppConstants.loginRoute,
-                          );
-                        }
-                      },
-                      child: const Text('Вийти з акаунта'),
-                    ),
-                    const SizedBox(height: 12),
-                    TextButton(
-                      onPressed: () async {
-                        await _authRepository.deleteAccount();
-                        if (context.mounted) {
-                          Navigator.of(context).pushReplacementNamed(
-                            AppConstants.loginRoute,
-                          );
-                        }
-                      },
-                      child: const Text(
-                        'Видалити акаунт',
-                        style: TextStyle(color: Colors.redAccent),
+                    Icon(Icons.edit_outlined, color: colors.primary),
+                    const SizedBox(width: 10),
+                    Text(
+                      'Редагування профілю',
+                      style: TextStyle(
+                        color: colors.onBackground,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      user == null
+                          ? Center(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.person_off_outlined,
+                                    size: 64,
+                                    color: colors.onSurfaceVariant.withOpacity(0.75),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    'Спочатку авторизуйтеся',
+                                    style: TextStyle(
+                                      color: colors.onBackground,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  FilledButton(
+                                    onPressed: () {
+                                      Navigator.of(
+                                        context,
+                                      ).pushReplacementNamed(AppConstants.loginRoute);
+                                    },
+                                    child: const Text('Увійти'),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : SingleChildScrollView(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  Center(
+                                    child: Stack(
+                                      alignment: Alignment.bottomRight,
+                                      children: [
+                                        CircleAvatar(
+                                          radius: 64,
+                                          backgroundColor: colors.surfaceVariant,
+                                          backgroundImage: _avatarImageProvider(),
+                                          child: _avatarPath == null || _avatarPath!.isEmpty
+                                              ? Icon(
+                                                  Icons.person,
+                                                  size: 48,
+                                                  color: colors.onSurfaceVariant,
+                                                )
+                                              : null,
+                                        ),
+                                        IconButton.filled(
+                                          style: IconButton.styleFrom(
+                                            backgroundColor: colors.surfaceVariant.withOpacity(
+                                              theme.brightness == Brightness.light ? 0.8 : 0.3,
+                                            ),
+                                          ),
+                                          onPressed: _showAvatarSheet,
+                                          icon: Icon(
+                                            Icons.edit_outlined,
+                                            color: colors.onSurfaceVariant,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 28),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 14,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: colors.surfaceVariant.withOpacity(
+                                        theme.brightness == Brightness.light ? 0.5 : 0.2,
+                                      ),
+                                      borderRadius: BorderRadius.circular(14),
+                                      border: Border.all(
+                                        color: colors.outlineVariant.withOpacity(0.5),
+                                      ),
+                                    ),
+                                    child: TextField(
+                                      controller: _nameController,
+                                      style: TextStyle(color: colors.onSurface),
+                                      decoration: InputDecoration(
+                                        labelText: 'Ім\'я користувача',
+                                        helperText: 'Можна залишити порожнім',
+                                        labelStyle: TextStyle(
+                                          color: colors.onSurfaceVariant,
+                                        ),
+                                        helperStyle: TextStyle(
+                                          color: colors.onSurfaceVariant.withOpacity(0.7),
+                                        ),
+                                        border: InputBorder.none,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 24),
+                                  FilledButton.icon(
+                                    style: FilledButton.styleFrom(
+                                      backgroundColor: colors.primary,
+                                      foregroundColor: colors.onPrimary,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(14),
+                                      ),
+                                      padding: const EdgeInsets.symmetric(vertical: 14),
+                                    ),
+                                    onPressed: _saveProfile,
+                                    icon: const Icon(Icons.save_outlined),
+                                    label: const Text(
+                                      'Зберегти зміни',
+                                      style: TextStyle(fontWeight: FontWeight.w800),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 24),
+                                  Divider(
+                                    color: colors.outlineVariant.withOpacity(0.3),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  FilledButton.tonalIcon(
+                                    style: FilledButton.styleFrom(
+                                      backgroundColor: colors.surfaceVariant.withOpacity(
+                                        theme.brightness == Brightness.light ? 0.5 : 0.2,
+                                      ),
+                                      foregroundColor: colors.onSurfaceVariant,
+                                    ),
+                                    onPressed: _openPasswordSheet,
+                                    icon: const Icon(Icons.lock_outline),
+                                    label: const Text('Змінити пароль'),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  FilledButton.tonal(
+                                    style: FilledButton.styleFrom(
+                                      backgroundColor: colors.surfaceVariant.withOpacity(
+                                        theme.brightness == Brightness.light ? 0.5 : 0.2,
+                                      ),
+                                      foregroundColor: colors.onSurfaceVariant,
+                                    ),
+                                    onPressed: () async {
+                                      await _authRepository.signOut();
+                                      if (context.mounted) {
+                                        Navigator.of(context).pushReplacementNamed(
+                                          AppConstants.loginRoute,
+                                        );
+                                      }
+                                    },
+                                    child: const Text('Вийти з акаунта'),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  TextButton(
+                                    onPressed: () async {
+                                      await _authRepository.deleteAccount();
+                                      if (context.mounted) {
+                                        Navigator.of(context).pushReplacementNamed(
+                                          AppConstants.loginRoute,
+                                        );
+                                      }
+                                    },
+                                    child: Text(
+                                      'Видалити акаунт',
+                                      style: TextStyle(color: colors.error),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

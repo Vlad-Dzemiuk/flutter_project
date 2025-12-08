@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:project/core/constants.dart';
 import 'package:project/core/di.dart';
 import 'package:project/features/auth/auth_repository.dart';
+import 'package:project/core/theme.dart';
 
 class MainScaffold extends StatefulWidget {
   final Widget body;
@@ -65,6 +66,9 @@ class _MainScaffoldState extends State<MainScaffold> {
   @override
   Widget build(BuildContext context) {
     final isHome = _isHomePage();
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
 
     return PopScope(
       canPop: !isHome,
@@ -76,45 +80,128 @@ class _MainScaffoldState extends State<MainScaffold> {
       },
       child: Scaffold(
         appBar: AppBar(
-          automaticallyImplyLeading: !isHome,
-          centerTitle: true,
-          title: isHome
-              ? Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.movie, color: Colors.white),
-                    const SizedBox(width: 8),
-                    Text(
-                      AppConstants.appName,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                )
-              : Text(widget.title ?? ''),
-          actions: widget.actions,
+          toolbarHeight: 0,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          automaticallyImplyLeading: false,
         ),
         body: widget.body,
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: _getCurrentIndex(),
-          onTap: _onTabTapped,
-          type: BottomNavigationBarType.fixed,
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Головна'),
-            BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Пошук'),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.visibility),
-              label: 'Переглянуті',
+        bottomNavigationBar: Container(
+          padding: const EdgeInsets.fromLTRB(14, 8, 14, 8),
+          decoration: BoxDecoration(
+            gradient: isDark
+                ? const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFF111827),
+                      Color(0xFF0B1020),
+                    ],
+                  )
+                : LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      colors.surfaceVariant,
+                      colors.surface,
+                    ],
+                  ),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(24),
+            child: BottomNavigationBar(
+              backgroundColor: isDark
+                  ? Colors.white.withOpacity(0.06)
+                  : colors.surface.withOpacity(0.9),
+              elevation: 0,
+              currentIndex: _getCurrentIndex(),
+              onTap: _onTabTapped,
+              type: BottomNavigationBarType.fixed,
+              selectedItemColor: colors.primary,
+              unselectedItemColor: isDark
+                  ? Colors.white.withOpacity(0.55)
+                  : colors.onSurface.withOpacity(0.6),
+              selectedLabelStyle: const TextStyle(
+                fontWeight: FontWeight.w700,
+              ),
+              unselectedLabelStyle: const TextStyle(
+                fontWeight: FontWeight.w600,
+              ),
+              items: [
+                BottomNavigationBarItem(
+                  icon: _NavIcon(icon: Icons.home_outlined, isActive: false),
+                  activeIcon: const _NavIcon(
+                    icon: Icons.home,
+                    isActive: true,
+                  ),
+                  label: 'Головна',
+                ),
+                BottomNavigationBarItem(
+                  icon: _NavIcon(icon: Icons.search_outlined, isActive: false),
+                  activeIcon: const _NavIcon(
+                    icon: Icons.search,
+                    isActive: true,
+                  ),
+                  label: 'Пошук',
+                ),
+                BottomNavigationBarItem(
+                  icon: _NavIcon(icon: Icons.visibility_outlined, isActive: false),
+                  activeIcon: const _NavIcon(
+                    icon: Icons.visibility,
+                    isActive: true,
+                  ),
+                  label: 'Переглянуті',
+                ),
+                BottomNavigationBarItem(
+                  icon: _NavIcon(icon: Icons.favorite_border, isActive: false),
+                  activeIcon: const _NavIcon(
+                    icon: Icons.favorite,
+                    isActive: true,
+                  ),
+                  label: 'Вподобані',
+                ),
+                BottomNavigationBarItem(
+                  icon: _NavIcon(icon: Icons.person_outline, isActive: false),
+                  activeIcon: const _NavIcon(
+                    icon: Icons.person,
+                    isActive: true,
+                  ),
+                  label: 'Профіль',
+                ),
+              ],
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.favorite),
-              label: 'Вподобані',
-            ),
-            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Профіль'),
-          ],
+          ),
         ),
+      ),
+    );
+  }
+}
+
+class _NavIcon extends StatelessWidget {
+  final IconData icon;
+  final bool isActive;
+
+  const _NavIcon({required this.icon, this.isActive = false});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
+    return Container(
+      padding: const EdgeInsets.all(9),
+      decoration: BoxDecoration(
+        color: isActive
+            ? colors.primary.withOpacity(
+                theme.brightness == Brightness.light ? 0.16 : 0.2,
+              )
+            : null,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Icon(
+        icon,
+        size: 22,
       ),
     );
   }
