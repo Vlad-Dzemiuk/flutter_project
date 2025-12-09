@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'core/constants.dart';
 import 'core/di.dart' as di;
 import 'core/app_router.dart';
@@ -12,6 +13,14 @@ import 'features/settings/settings_state.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
+  
+  // Ініціалізація Firebase
+  try {
+    await Firebase.initializeApp();
+  } catch (e) {
+    // Якщо Firebase не налаштовано, продовжуємо без нього
+    debugPrint('Firebase initialization failed: $e');
+  }
   
   // Ініціалізація Hive Flutter
   await Hive.initFlutter();

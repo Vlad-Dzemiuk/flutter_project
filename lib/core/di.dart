@@ -39,6 +39,10 @@ import '../core/storage/auth_db.dart';
 import '../core/storage/local_cache_db.dart';
 import '../core/storage/user_prefs.dart';
 import '../core/network/dio_client.dart';
+import '../core/auth/firebase_auth_service.dart';
+import '../core/auth/jwt_token_service.dart';
+import '../core/auth/auth_method.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 final getIt = GetIt.instance;
 
@@ -53,8 +57,38 @@ Future<void> init() async {
   // Initialize Drift database for media collections
   await MediaCollectionsStorage.instance.database.then((db) => db.ensureInitialized());
   
+  // Auth Services
+  getIt.registerLazySingleton<FirebaseAuthService>(() => FirebaseAuthService());
+  getIt.registerLazySingleton<JwtTokenService>(() => JwtTokenService.instance);
+  
+  // Determine auth method from environment or use default (local)
+  // Можна встановити AUTH_METHOD в .env файлі: local, firebase, jwt
+  final authMethodString = dotenv.env['AUTH_METHOD']?.toLowerCase() ?? 'local';
+  AuthMethod authMethod;
+  switch (authMethodString) {
+    case 'firebase':
+      authMethod = AuthMethod.firebase;
+      break;
+    case 'jwt':
+      authMethod = AuthMethod.jwt;
+      break;
+    case 'local':
+    default:
+      authMethod = AuthMethod.local;
+      break;
+  }
+  
   // Repositories (must be registered before DioClient to pass AuthRepository)
-  getIt.registerLazySingleton<AuthRepository>(() => AuthRepository());
+  final authRepository = AuthRepository(
+    authMethod: authMethod,
+    firebaseAuthService: getIt<FirebaseAuthService>(),
+    jwtTokenService: getIt<JwtTokenService>(),
+  );
+  
+  // Ініціалізуємо AuthRepository (перевіряє збережений стан)
+  await authRepository.initialize();
+  
+  getIt.registerLazySingleton<AuthRepository>(() => authRepository);
   
   // HTTP Client (with AuthRepository for auth headers)
   getIt.registerLazySingleton<DioClient>(

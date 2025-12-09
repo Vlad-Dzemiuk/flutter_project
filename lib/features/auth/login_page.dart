@@ -289,15 +289,12 @@ class _LoginPageState extends State<LoginPage> {
                                 onPressed: isLoading
                                     ? null
                                     : () {
-                                        if (widget.redirectRoute != null) {
-                                          Navigator.of(
-                                            context,
-                                          ).pushReplacementNamed(widget.redirectRoute!);
-                                        } else {
-                                          Navigator.of(
-                                            context,
-                                          ).pushReplacementNamed(AppConstants.homeRoute);
-                                        }
+                                        // Завжди переходимо на головну сторінку, щоб уникнути циклу перенаправлень
+                                        // Якщо користувач хоче використати захищені функції, він може авторизуватися пізніше
+                                        Navigator.of(context).pushNamedAndRemoveUntil(
+                                          AppConstants.homeRoute,
+                                          (route) => false,
+                                        );
                                       },
                                 style: TextButton.styleFrom(
                                   foregroundColor: colors.onSurface.withValues(alpha: 0.6),

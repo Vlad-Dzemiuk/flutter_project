@@ -26,11 +26,23 @@ class AppRouter {
           child: MainScaffold(body: const HomePage()),
         );
       case AppConstants.favoritesRoute:
+        if (!isLoggedIn) {
+          return SlidePageRoute(
+            beginOffset: const Offset(0.0, 1.0),
+            child: const LoginPage(redirectRoute: AppConstants.favoritesRoute),
+          );
+        }
         return SlidePageRoute(
           beginOffset: const Offset(0.0, 1.0),
           child: MainScaffold(body: const FavoritesPage(), title: 'Вподобані'),
         );
       case AppConstants.profileRoute:
+        if (!isLoggedIn) {
+          return SlidePageRoute(
+            beginOffset: const Offset(0.0, 1.0),
+            child: const LoginPage(redirectRoute: AppConstants.profileRoute),
+          );
+        }
         return SlidePageRoute(
           beginOffset: const Offset(0.0, 1.0),
           child: MainScaffold(body: const ProfilePage(), title: 'Профіль'),

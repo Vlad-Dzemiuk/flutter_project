@@ -17,15 +17,12 @@ class AuthHeaderInterceptor extends Interceptor {
       if (_authRepository != null) {
         final currentUser = _authRepository.currentUser;
         if (currentUser != null) {
-          // TMDB API використовує session_id для авторизованих запитів
-          // Якщо в майбутньому буде потрібно додати токен, це можна зробити тут
-          // options.headers['Authorization'] = 'Bearer $token';
-          
-          // Для TMDB можна додати session_id якщо він є
-          // final sessionId = await SecureStorageService.instance.getSessionId();
-          // if (sessionId != null) {
-          //   options.queryParameters['session_id'] = sessionId;
-          // }
+          // Отримуємо токен (JWT або Firebase ID token)
+          final token = await _authRepository.getJwtToken();
+          if (token != null) {
+            // Додаємо токен в Authorization header
+            options.headers['Authorization'] = 'Bearer $token';
+          }
         }
       }
     } catch (e) {

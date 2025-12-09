@@ -6,6 +6,7 @@ import '../constants.dart';
 /// Безпечне зберігання чутливих даних (API key, токени).
 class SecureStorageService {
   static const _tmdbApiKeyKey = 'tmdb_api_key';
+  static const _jwtTokenKey = 'jwt_token';
 
   SecureStorageService._internal();
   static final SecureStorageService instance = SecureStorageService._internal();
@@ -31,6 +32,21 @@ class SecureStorageService {
 
   Future<void> clearTmdbApiKey() async {
     await _storage.delete(key: _tmdbApiKeyKey);
+  }
+
+  /// Зберігає JWT токен
+  Future<void> saveJwtToken(String token) async {
+    await _storage.write(key: _jwtTokenKey, value: token);
+  }
+
+  /// Отримує JWT токен
+  Future<String?> getJwtToken() async {
+    return await _storage.read(key: _jwtTokenKey);
+  }
+
+  /// Видаляє JWT токен
+  Future<void> deleteJwtToken() async {
+    await _storage.delete(key: _jwtTokenKey);
   }
 }
 
