@@ -5,3 +5,4 @@ abstract class FavoritesRepository {
   Future<List<Movie>> getFavoriteMovies(int accountId);
 }
 
+

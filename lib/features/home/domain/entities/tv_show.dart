@@ -30,3 +30,4 @@ class TvShowEntity {
   bool get hasPoster => posterPath != null && posterPath!.isNotEmpty;
 }
 
+

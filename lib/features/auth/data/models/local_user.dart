@@ -20,3 +20,4 @@ class LocalUser extends Equatable {
   List<Object?> get props => [id, email, displayName, avatarUrl];
 }
 
+

@@ -28,3 +28,4 @@ class MediaItemEntity {
   bool get hasPoster => posterPath != null && posterPath!.isNotEmpty;
 }
 
+

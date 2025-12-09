@@ -30,3 +30,4 @@ class MovieEntity {
   bool get hasPoster => posterPath != null && posterPath!.isNotEmpty;
 }
 
+
