@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:project/core/constants.dart';
 import 'package:project/core/di.dart';
 import 'package:project/core/responsive.dart';
@@ -22,6 +23,10 @@ class WatchlistPage extends StatelessWidget {
     return LoadingWrapper(
       child: BlocBuilder<MediaCollectionsBloc, MediaCollectionsState>(
         bloc: collectionsBloc,
+        buildWhen: (previous, current) =>
+            previous.watchlist != current.watchlist ||
+            previous.loading != current.loading ||
+            previous.authorized != current.authorized,
         builder: (context, state) {
         final theme = Theme.of(context);
         final colors = theme.colorScheme;
@@ -114,9 +119,10 @@ class WatchlistPage extends StatelessWidget {
                       final item = entry.toHomeMediaItem();
                       final isFavorite = state.isFavorite(item);
                       
-        return Container(
-          margin: EdgeInsets.only(bottom: Responsive.getSpacing(context)),
-          decoration: BoxDecoration(
+        return RepaintBoundary(
+          child: Container(
+            margin: EdgeInsets.only(bottom: Responsive.getSpacing(context)),
+            decoration: BoxDecoration(
             color: theme.cardColor,
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
@@ -154,9 +160,47 @@ class WatchlistPage extends StatelessWidget {
                         width: Responsive.isMobile(context) ? 90 : 105,
                                       child: item.posterPath != null &&
                                               item.posterPath!.isNotEmpty
-                                          ? Image.network(
-                                              'https://image.tmdb.org/t/p/w300${item.posterPath}',
+                                          ? CachedNetworkImage(
+                                              imageUrl: 'https://image.tmdb.org/t/p/w300${item.posterPath}',
                                               fit: BoxFit.cover,
+                                              memCacheWidth: 300,
+                                              memCacheHeight: 450,
+                                              placeholder: (context, url) => Container(
+                                                decoration: BoxDecoration(
+                                                  gradient: LinearGradient(
+                                                    begin: Alignment.topLeft,
+                                                    end: Alignment.bottomRight,
+                                                    colors: [
+                                                      Colors.blueGrey.shade900,
+                                                      Colors.blueGrey.shade700,
+                                                    ],
+                                                  ),
+                                                ),
+                                                child: Center(
+                                                  child: CircularProgressIndicator(
+                                                    strokeWidth: 2,
+                                                    color: Colors.white.withOpacity(0.7),
+                                                  ),
+                                                ),
+                                              ),
+                                              errorWidget: (context, url, error) => Container(
+                                                decoration: BoxDecoration(
+                                                  gradient: LinearGradient(
+                                                    begin: Alignment.topLeft,
+                                                    end: Alignment.bottomRight,
+                                                    colors: [
+                                                      Colors.blueGrey.shade900,
+                                                      Colors.blueGrey.shade700,
+                                                    ],
+                                                  ),
+                                                ),
+                                                child: Icon(
+                                                  Icons.movie,
+                                                  color: colors.onSurfaceVariant
+                                                      .withOpacity(0.7),
+                                                  size: 32,
+                                                ),
+                                              ),
                                             )
                                           : Container(
                                               decoration: BoxDecoration(
@@ -269,7 +313,8 @@ class WatchlistPage extends StatelessWidget {
                             ),
                           ),
                         ),
-                      );
+                      ),
+        );
       },
     );
   }
@@ -303,15 +348,17 @@ class WatchlistPage extends StatelessWidget {
         final item = entry.toHomeMediaItem();
         final isFavorite = state.isFavorite(item);
         
-        return MediaPosterCard(
-          item: item,
-          isFavorite: isFavorite,
-          onFavoriteToggle: () => collectionsBloc.add(ToggleFavoriteEvent(item)),
-          onTap: () {
-            Navigator.of(context).push(
-              DetailPageRoute(child: MediaDetailPage(item: item)),
-            );
-          },
+        return RepaintBoundary(
+          child: MediaPosterCard(
+            item: item,
+            isFavorite: isFavorite,
+            onFavoriteToggle: () => collectionsBloc.add(ToggleFavoriteEvent(item)),
+            onTap: () {
+              Navigator.of(context).push(
+                DetailPageRoute(child: MediaDetailPage(item: item)),
+              );
+            },
+          ),
         );
       },
     );

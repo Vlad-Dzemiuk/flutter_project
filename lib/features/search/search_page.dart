@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:project/core/constants.dart';
 import 'package:project/core/di.dart';
 import 'package:project/core/responsive.dart';
@@ -761,9 +762,46 @@ class _SearchPageState extends State<SearchPage> {
                       width: Responsive.isMobile(context) ? 90 : 105,
                       child: item.posterPath != null &&
                           item.posterPath!.isNotEmpty
-                          ? Image.network(
-                        'https://image.tmdb.org/t/p/w300${item.posterPath}',
+                          ? CachedNetworkImage(
+                        imageUrl: 'https://image.tmdb.org/t/p/w300${item.posterPath}',
                         fit: BoxFit.cover,
+                        memCacheWidth: 300,
+                        memCacheHeight: 450,
+                        placeholder: (context, url) => Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                Colors.blueGrey.shade900,
+                                Colors.blueGrey.shade700,
+                              ],
+                            ),
+                          ),
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white.withOpacity(0.7),
+                            ),
+                          ),
+                        ),
+                        errorWidget: (context, url, error) => Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                Colors.blueGrey.shade900,
+                                Colors.blueGrey.shade700,
+                              ],
+                            ),
+                          ),
+                          child: Icon(
+                            Icons.movie,
+                            color: colors.onSurfaceVariant.withValues(alpha: 0.7),
+                            size: 32,
+                          ),
+                        ),
                       )
                           : Container(
                         decoration: BoxDecoration(
@@ -1083,9 +1121,47 @@ class _SearchPageState extends State<SearchPage> {
                       width: Responsive.isMobile(context) ? 90 : 105,
                       child: item.posterPath != null &&
                           item.posterPath!.isNotEmpty
-                          ? Image.network(
-                        'https://image.tmdb.org/t/p/w300${item.posterPath}',
+                          ? CachedNetworkImage(
+                        imageUrl: 'https://image.tmdb.org/t/p/w300${item.posterPath}',
                         fit: BoxFit.cover,
+                        memCacheWidth: 300,
+                        memCacheHeight: 450,
+                        placeholder: (context, url) => Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                Colors.blueGrey.shade900,
+                                Colors.blueGrey.shade700,
+                              ],
+                            ),
+                          ),
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white.withOpacity(0.7),
+                            ),
+                          ),
+                        ),
+                        errorWidget: (context, url, error) => Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                Colors.blueGrey.shade900,
+                                Colors.blueGrey.shade700,
+                              ],
+                            ),
+                          ),
+                          child: Icon(
+                            Icons.movie,
+                            color: colors.onSurfaceVariant
+                                .withValues(alpha: 0.7),
+                            size: 32,
+                          ),
+                        ),
                       )
                           : Container(
                         decoration: BoxDecoration(

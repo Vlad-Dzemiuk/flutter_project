@@ -73,6 +73,14 @@ class _HomePageState extends State<HomePage> {
         BlocProvider.value(value: getIt<MediaCollectionsBloc>()),
       ],
       child: BlocBuilder<HomeBloc, HomeState>(
+        buildWhen: (previous, current) =>
+            previous.loading != current.loading ||
+            previous.error != current.error ||
+            previous.searchResults != current.searchResults ||
+            previous.popularMovies != current.popularMovies ||
+            previous.popularTvShows != current.popularTvShows ||
+            previous.allMovies != current.allMovies ||
+            previous.allTvShows != current.allTvShows,
         builder: (context, state) {
           final theme = Theme.of(context);
           final colors = theme.colorScheme;
@@ -376,6 +384,8 @@ class _HomePageState extends State<HomePage> {
                           ? CachedNetworkImage(
                         imageUrl: 'https://image.tmdb.org/t/p/w300${item.posterPath}',
                         fit: BoxFit.cover,
+                        memCacheWidth: 300,
+                        memCacheHeight: 450,
                         placeholder: (context, url) => Container(
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
@@ -588,19 +598,21 @@ class _HomePageState extends State<HomePage> {
         final isFavorite = canModifyCollections &&
             collectionsState.isFavorite(item);
 
-        return MediaPosterCard(
-          item: item,
-          isFavorite: isFavorite,
-          onFavoriteToggle: canModifyCollections
-              ? () => collectionsBloc.add(ToggleFavoriteEvent(item))
-              : () => _showAuthRequiredDialog(context),
-          onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => MediaDetailPage(item: item),
-              ),
-            );
-          },
+        return RepaintBoundary(
+          child: MediaPosterCard(
+            item: item,
+            isFavorite: isFavorite,
+            onFavoriteToggle: canModifyCollections
+                ? () => collectionsBloc.add(ToggleFavoriteEvent(item))
+                : () => _showAuthRequiredDialog(context),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => MediaDetailPage(item: item),
+                ),
+              );
+            },
+          ),
         );
       },
       itemCount: state.searchResults.length + (state.hasMoreResults ? 1 : 0),
@@ -763,23 +775,25 @@ class MediaSliderSection extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         itemBuilder: (context, index) {
           final item = items[index];
-          return MediaPosterCard(
-            item: item,
-            width: cardWidth,
-            height: cardHeight,
-            isFavorite: canModifyCollections
-                ? collectionsState.isFavorite(item)
-                : false,
-            onFavoriteToggle: canModifyCollections
-                ? () => collectionsBloc.add(ToggleFavoriteEvent(item))
-                : onAuthRequired,
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => MediaDetailPage(item: item),
-                ),
-              );
-            },
+          return RepaintBoundary(
+            child: MediaPosterCard(
+              item: item,
+              width: cardWidth,
+              height: cardHeight,
+              isFavorite: canModifyCollections
+                  ? collectionsState.isFavorite(item)
+                  : false,
+              onFavoriteToggle: canModifyCollections
+                  ? () => collectionsBloc.add(ToggleFavoriteEvent(item))
+                  : onAuthRequired,
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => MediaDetailPage(item: item),
+                  ),
+                );
+              },
+            ),
           );
         },
         separatorBuilder: (_, __) =>
@@ -808,21 +822,23 @@ class MediaSliderSection extends StatelessWidget {
       itemCount: items.length,
       itemBuilder: (context, index) {
         final item = items[index];
-        return MediaPosterCard(
-          item: item,
-          isFavorite: canModifyCollections
-              ? collectionsState.isFavorite(item)
-              : false,
-          onFavoriteToggle: canModifyCollections
-              ? () => collectionsBloc.add(ToggleFavoriteEvent(item))
-              : onAuthRequired,
-          onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => MediaDetailPage(item: item),
-              ),
-            );
-          },
+        return RepaintBoundary(
+          child: MediaPosterCard(
+            item: item,
+            isFavorite: canModifyCollections
+                ? collectionsState.isFavorite(item)
+                : false,
+            onFavoriteToggle: canModifyCollections
+                ? () => collectionsBloc.add(ToggleFavoriteEvent(item))
+                : onAuthRequired,
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => MediaDetailPage(item: item),
+                ),
+              );
+            },
+          ),
         );
       },
     );

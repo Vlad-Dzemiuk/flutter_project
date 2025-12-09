@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:project/core/constants.dart';
 import 'package:project/core/di.dart';
 import 'package:project/core/responsive.dart';
@@ -21,6 +22,10 @@ class FavoritesPage extends StatelessWidget {
     return LoadingWrapper(
       child: BlocBuilder<MediaCollectionsBloc, MediaCollectionsState>(
         bloc: collectionsBloc,
+        buildWhen: (previous, current) =>
+            previous.favorites != current.favorites ||
+            previous.loading != current.loading ||
+            previous.authorized != current.authorized,
         builder: (context, state) {
         final theme = Theme.of(context);
         final colors = theme.colorScheme;
@@ -29,7 +34,9 @@ class FavoritesPage extends StatelessWidget {
           return const AnimatedLoadingWidget(message: 'Завантаження...');
         }
         if (!state.authorized) {
-          return _UnauthorizedMessage(
+          return _EmptyState(
+            message: 'Список вподобань порожній',
+            showLoginPrompt: true,
             onLogin: () {
               Navigator.of(
                 context,
@@ -111,10 +118,10 @@ class FavoritesPage extends StatelessWidget {
       itemBuilder: (context, index) {
                       final entry = state.favorites[index];
                       final item = entry.toHomeMediaItem();
-                      final isFavorite = true;
                       
-        return Container(
-          margin: EdgeInsets.only(bottom: Responsive.getSpacing(context)),
+        return RepaintBoundary(
+          child: Container(
+            margin: EdgeInsets.only(bottom: Responsive.getSpacing(context)),
           decoration: BoxDecoration(
             color: theme.cardColor,
             borderRadius: BorderRadius.circular(18),
@@ -153,9 +160,47 @@ class FavoritesPage extends StatelessWidget {
                         width: Responsive.isMobile(context) ? 90 : 105,
                                       child: item.posterPath != null &&
                                               item.posterPath!.isNotEmpty
-                                          ? Image.network(
-                                              'https://image.tmdb.org/t/p/w300${item.posterPath}',
+                                          ? CachedNetworkImage(
+                                              imageUrl: 'https://image.tmdb.org/t/p/w300${item.posterPath}',
                                               fit: BoxFit.cover,
+                                              memCacheWidth: 300,
+                                              memCacheHeight: 450,
+                                              placeholder: (context, url) => Container(
+                                                decoration: BoxDecoration(
+                                                  gradient: LinearGradient(
+                                                    begin: Alignment.topLeft,
+                                                    end: Alignment.bottomRight,
+                                                    colors: [
+                                                      Colors.blueGrey.shade900,
+                                                      Colors.blueGrey.shade700,
+                                                    ],
+                                                  ),
+                                                ),
+                                                child: Center(
+                                                  child: CircularProgressIndicator(
+                                                    strokeWidth: 2,
+                                                    color: Colors.white.withOpacity(0.7),
+                                                  ),
+                                                ),
+                                              ),
+                                              errorWidget: (context, url, error) => Container(
+                                                decoration: BoxDecoration(
+                                                  gradient: LinearGradient(
+                                                    begin: Alignment.topLeft,
+                                                    end: Alignment.bottomRight,
+                                                    colors: [
+                                                      Colors.blueGrey.shade900,
+                                                      Colors.blueGrey.shade700,
+                                                    ],
+                                                  ),
+                                                ),
+                                                child: Icon(
+                                                  Icons.movie,
+                                                  color: colors.onSurfaceVariant
+                                                      .withOpacity(0.7),
+                                                  size: 32,
+                                                ),
+                                              ),
                                             )
                                           : Container(
                                               decoration: BoxDecoration(
@@ -249,14 +294,9 @@ class FavoritesPage extends StatelessWidget {
                                             onPressed: () =>
                                                 collectionsBloc
                                                     .add(ToggleFavoriteEvent(item)),
-                                            icon: Icon(
-                                              isFavorite
-                                                  ? Icons.favorite
-                                                  : Icons.favorite_border_rounded,
-                                              color: isFavorite
-                                                  ? const Color(0xFFFF6B6B)
-                                                  : colors.onSurfaceVariant
-                                                      .withOpacity(0.7),
+                                            icon: const Icon(
+                                              Icons.favorite,
+                                              color: Color(0xFFFF6B6B),
                                             ),
                                           ),
                                         ],
@@ -268,7 +308,8 @@ class FavoritesPage extends StatelessWidget {
                             ),
                           ),
                         ),
-                      );
+                      ),
+        );
       },
     );
   }
@@ -301,109 +342,39 @@ class FavoritesPage extends StatelessWidget {
         final entry = state.favorites[index];
         final item = entry.toHomeMediaItem();
         
-        return MediaPosterCard(
-          item: item,
-          isFavorite: true,
-          onFavoriteToggle: () => collectionsBloc.add(ToggleFavoriteEvent(item)),
-          onTap: () {
-            Navigator.of(context).push(
-              DetailPageRoute(child: MediaDetailPage(item: item)),
-            );
-          },
+        return RepaintBoundary(
+          child: MediaPosterCard(
+            item: item,
+            isFavorite: true,
+            onFavoriteToggle: () => collectionsBloc.add(ToggleFavoriteEvent(item)),
+            onTap: () {
+              Navigator.of(context).push(
+                DetailPageRoute(child: MediaDetailPage(item: item)),
+              );
+            },
+          ),
         );
       },
     );
   }
 }
 
-class _UnauthorizedMessage extends StatelessWidget {
-  const _UnauthorizedMessage({required this.onLogin});
-
-  final VoidCallback onLogin;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final isMobile = Responsive.isMobile(context);
-    final horizontalPadding = Responsive.getHorizontalPadding(context);
-    
-    return Container(
-      decoration: AppGradients.background(context),
-      child: SafeArea(
-        child: Padding(
-          padding: horizontalPadding,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: EdgeInsets.all(isMobile ? 14 : 18),
-                decoration: BoxDecoration(
-                  color: colors.primary.withOpacity(0.14),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Icon(
-                  Icons.favorite_border,
-                  color: colors.primary,
-                  size: isMobile ? 28 : 36,
-                ),
-              ),
-              SizedBox(height: Responsive.getSpacing(context)),
-              Text(
-                'Вподобані недоступні',
-                style: TextStyle(
-                  color: colors.onBackground,
-                  fontSize: isMobile ? 20 : 24,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              SizedBox(height: Responsive.getSpacing(context) / 2),
-              Text(
-                'Увійдіть, щоб переглядати та зберігати улюблені фільми й серіали.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: colors.onBackground.withOpacity(0.65),
-                  fontSize: isMobile ? 14 : 16,
-                  height: 1.4,
-                ),
-              ),
-              SizedBox(height: Responsive.getSpacing(context)),
-              FilledButton(
-                onPressed: onLogin,
-                style: FilledButton.styleFrom(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: isMobile ? 24 : 32,
-                    vertical: isMobile ? 12 : 14,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
-                child: Text(
-                  'Увійти',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w800,
-                    fontSize: isMobile ? 14 : 16,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class _EmptyState extends StatelessWidget {
   final String message;
+  final bool showLoginPrompt;
+  final VoidCallback? onLogin;
 
-  const _EmptyState({required this.message});
+  const _EmptyState({
+    required this.message,
+    this.showLoginPrompt = false,
+    this.onLogin,
+  });
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final horizontalPadding = Responsive.getHorizontalPadding(context);
+    final isMobile = Responsive.isMobile(context);
     
     return Container(
       decoration: AppGradients.background(context),
@@ -415,7 +386,7 @@ class _EmptyState extends StatelessWidget {
             children: [
               Icon(
                 Icons.favorite_border,
-                size: Responsive.isMobile(context) ? 64 : 80,
+                size: isMobile ? 64 : 80,
                 color: colors.onBackground.withOpacity(0.7),
               ),
               SizedBox(height: Responsive.getSpacing(context)),
@@ -423,10 +394,42 @@ class _EmptyState extends StatelessWidget {
                 message,
                 style: TextStyle(
                   color: colors.onBackground,
-                  fontSize: Responsive.isMobile(context) ? 18 : 22,
+                  fontSize: isMobile ? 18 : 22,
                   fontWeight: FontWeight.w700,
                 ),
               ),
+              if (showLoginPrompt && onLogin != null) ...[
+                SizedBox(height: Responsive.getSpacing(context) / 2),
+                Text(
+                  'Увійдіть, щоб зберігати улюблені фільми й серіали.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: colors.onBackground.withOpacity(0.65),
+                    fontSize: isMobile ? 14 : 16,
+                    height: 1.4,
+                  ),
+                ),
+                SizedBox(height: Responsive.getSpacing(context)),
+                FilledButton(
+                  onPressed: onLogin,
+                  style: FilledButton.styleFrom(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: isMobile ? 24 : 32,
+                      vertical: isMobile ? 12 : 14,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  child: Text(
+                    'Увійти',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w800,
+                      fontSize: isMobile ? 14 : 16,
+                    ),
+                  ),
+                ),
+              ],
             ],
           ),
         ),

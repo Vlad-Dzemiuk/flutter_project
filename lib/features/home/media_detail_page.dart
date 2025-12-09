@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:project/core/di.dart';
 import 'package:project/features/collections/media_collections_bloc.dart';
 import 'package:project/features/collections/media_collections_event.dart';
@@ -358,11 +359,48 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(isDesktop ? 20 : 16),
                 child: posterPath != null && posterPath.isNotEmpty
-                    ? Image.network(
-                        'https://image.tmdb.org/t/p/w300$posterPath',
+                    ? CachedNetworkImage(
+                        imageUrl: 'https://image.tmdb.org/t/p/w300$posterPath',
                         width: posterWidth,
                         height: posterHeight,
                         fit: BoxFit.cover,
+                        memCacheWidth: 300,
+                        memCacheHeight: 450,
+                        placeholder: (context, url) => Container(
+                          width: posterWidth,
+                          height: posterHeight,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Colors.blueGrey.shade900,
+                                Colors.blueGrey.shade700,
+                              ],
+                            ),
+                          ),
+                          child: const Center(
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white70,
+                            ),
+                          ),
+                        ),
+                        errorWidget: (context, url, error) => Container(
+                          width: posterWidth,
+                          height: posterHeight,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Colors.blueGrey.shade900,
+                                Colors.blueGrey.shade700,
+                              ],
+                            ),
+                          ),
+                          child: Icon(
+                            Icons.movie,
+                            size: isDesktop ? 64 : isTablet ? 56 : 48,
+                            color: colors.onSurfaceVariant,
+                          ),
+                        ),
                       )
                     : Container(
                         width: posterWidth,
@@ -779,6 +817,8 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
 
     return BlocBuilder<MediaCollectionsBloc, MediaCollectionsState>(
       bloc: _collectionsBloc,
+      buildWhen: (previous, current) =>
+          previous.authorized != current.authorized,
       builder: (context, collectionsState) {
         final canModify = collectionsState.authorized;
         // На desktop та tablet в landscape використовуємо GridView

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:project/core/di.dart';
 import 'package:project/core/responsive.dart';
 import 'package:project/core/theme.dart';
@@ -192,6 +193,8 @@ class _MediaListPageState extends State<MediaListPage> {
                               )
                             : BlocBuilder<MediaCollectionsBloc, MediaCollectionsState>(
                                 bloc: _collectionsBloc,
+                                buildWhen: (previous, current) =>
+                                    previous.authorized != current.authorized,
                                 builder: (context, collectionsState) {
                                   final canModify = collectionsState.authorized;
                                   return RefreshIndicator(
@@ -232,8 +235,9 @@ class _MediaListPageState extends State<MediaListPage> {
       itemBuilder: (context, index) {
         final item = _items[index];
         final isFavorite = canModify && collectionsState.isFavorite(item);
-        return Container(
-          margin: EdgeInsets.only(bottom: Responsive.getSpacing(context)),
+        return RepaintBoundary(
+          child: Container(
+            margin: EdgeInsets.only(bottom: Responsive.getSpacing(context)),
           decoration: BoxDecoration(
             color: theme.cardColor,
             borderRadius: BorderRadius.circular(18),
@@ -270,10 +274,47 @@ class _MediaListPageState extends State<MediaListPage> {
                         width: Responsive.isMobile(context) ? 90 : 105,
                         child: item.posterPath != null &&
                                 item.posterPath!.isNotEmpty
-                            ? Image.network(
-                                'https://image.tmdb.org/t/p/w300${item.posterPath}',
+                            ? CachedNetworkImage(
+                                imageUrl: 'https://image.tmdb.org/t/p/w300${item.posterPath}',
                                 fit: BoxFit.cover,
-                              )
+                                memCacheWidth: 300,
+                                memCacheHeight: 450,
+                                placeholder: (context, url) => Container(
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: [
+                                        Colors.blueGrey.shade900,
+                                        Colors.blueGrey.shade700,
+                                      ],
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white.withOpacity(0.7),
+                                    ),
+                                  ),
+                                ),
+                                errorWidget: (context, url, error) => Container(
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: [
+                                        Colors.blueGrey.shade900,
+                                        Colors.blueGrey.shade700,
+                                      ],
+                                    ),
+                                  ),
+                                  child: Icon(
+                                    Icons.movie,
+                                    color: colors.onSurfaceVariant.withOpacity(0.7),
+                                    size: 32,
+                                  ),
+                                ),
+                            )
                             : Container(
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
@@ -376,6 +417,7 @@ class _MediaListPageState extends State<MediaListPage> {
               ),
             ),
           ),
+        ),
         );
       },
     );
@@ -410,17 +452,19 @@ class _MediaListPageState extends State<MediaListPage> {
         final item = _items[index];
         final isFavorite = canModify && collectionsState.isFavorite(item);
         
-        return MediaPosterCard(
-          item: item,
-          isFavorite: isFavorite,
-          onFavoriteToggle: canModify
-              ? () => _collectionsBloc.add(ToggleFavoriteEvent(item))
-              : () => _showAuthDialog(context),
-          onTap: () {
-            Navigator.of(context).push(
-              DetailPageRoute(child: MediaDetailPage(item: item)),
-            );
-          },
+        return RepaintBoundary(
+          child: MediaPosterCard(
+            item: item,
+            isFavorite: isFavorite,
+            onFavoriteToggle: canModify
+                ? () => _collectionsBloc.add(ToggleFavoriteEvent(item))
+                : () => _showAuthDialog(context),
+            onTap: () {
+              Navigator.of(context).push(
+                DetailPageRoute(child: MediaDetailPage(item: item)),
+              );
+            },
+          ),
         );
       },
     );
