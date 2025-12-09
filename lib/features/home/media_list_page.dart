@@ -5,11 +5,12 @@ import 'package:project/core/di.dart';
 import 'package:project/core/responsive.dart';
 import 'package:project/core/theme.dart';
 import 'package:project/core/page_transitions.dart';
-import 'package:project/features/collections/media_collections_cubit.dart';
+import 'package:project/features/collections/media_collections_bloc.dart';
+import 'package:project/features/collections/media_collections_event.dart';
 import 'package:project/shared/widgets/animated_loading_widget.dart';
+import 'package:project/shared/widgets/auth_dialog.dart';
 
 import 'home_media_item.dart';
-import 'home_repository.dart';
 import 'domain/usecases/get_popular_content_usecase.dart';
 import 'media_detail_page.dart';
 import 'home_page.dart';
@@ -29,32 +30,18 @@ class MediaListPage extends StatefulWidget {
 class _MediaListPageState extends State<MediaListPage> {
   late final GetPopularContentUseCase _getPopularContentUseCase =
       getIt<GetPopularContentUseCase>();
-  late final MediaCollectionsCubit _collectionsCubit =
-      getIt<MediaCollectionsCubit>();
+  late final MediaCollectionsBloc _collectionsBloc =
+      getIt<MediaCollectionsBloc>();
   List<HomeMediaItem> _items = [];
   bool _loading = true;
   String _error = '';
 
   Future<void> _showAuthDialog(BuildContext context) async {
-    await showDialog<void>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Потрібна авторизація'),
-        content: const Text('Увійдіть, щоб додавати у вподобання.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Скасувати'),
-          ),
-          FilledButton(
-            onPressed: () {
-              Navigator.of(ctx).pop();
-              Navigator.of(context).pushNamed(AppConstants.loginRoute);
-            },
-            child: const Text('Увійти'),
-          ),
-        ],
-      ),
+    await AuthDialog.show(
+      context,
+      title: 'Потрібна авторизація',
+      message: 'Увійдіть, щоб додавати у вподобання.',
+      icon: Icons.favorite_border,
     );
   }
 
@@ -201,8 +188,8 @@ class _MediaListPageState extends State<MediaListPage> {
                                   ),
                                 ),
                               )
-                            : BlocBuilder<MediaCollectionsCubit, MediaCollectionsState>(
-                                bloc: _collectionsCubit,
+                            : BlocBuilder<MediaCollectionsBloc, MediaCollectionsState>(
+                                bloc: _collectionsBloc,
                                 builder: (context, collectionsState) {
                                   final canModify = collectionsState.authorized;
                                   return RefreshIndicator(
@@ -367,7 +354,7 @@ class _MediaListPageState extends State<MediaListPage> {
                             const Spacer(),
                             IconButton(
                               onPressed: canModify
-                                  ? () => _collectionsCubit.toggleFavorite(item)
+                                  ? () => _collectionsBloc.add(ToggleFavoriteEvent(item))
                                   : () => _showAuthDialog(context),
                               icon: Icon(
                                 isFavorite
@@ -425,7 +412,7 @@ class _MediaListPageState extends State<MediaListPage> {
           item: item,
           isFavorite: isFavorite,
           onFavoriteToggle: canModify
-              ? () => _collectionsCubit.toggleFavorite(item)
+              ? () => _collectionsBloc.add(ToggleFavoriteEvent(item))
               : () => _showAuthDialog(context),
           onTap: () {
             Navigator.of(context).push(

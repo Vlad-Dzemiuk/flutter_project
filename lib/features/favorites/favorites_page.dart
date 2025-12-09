@@ -3,7 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:project/core/constants.dart';
 import 'package:project/core/di.dart';
 import 'package:project/core/responsive.dart';
-import 'package:project/features/collections/media_collections_cubit.dart';
+import 'package:project/features/collections/media_collections_bloc.dart';
+import 'package:project/features/collections/media_collections_event.dart';
 import 'package:project/features/home/media_detail_page.dart';
 import 'package:project/features/home/home_page.dart';
 import 'package:project/core/theme.dart';
@@ -16,10 +17,10 @@ class FavoritesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final collectionsCubit = getIt<MediaCollectionsCubit>();
+    final collectionsBloc = getIt<MediaCollectionsBloc>();
     return LoadingWrapper(
-      child: BlocBuilder<MediaCollectionsCubit, MediaCollectionsState>(
-        bloc: collectionsCubit,
+      child: BlocBuilder<MediaCollectionsBloc, MediaCollectionsState>(
+        bloc: collectionsBloc,
         builder: (context, state) {
         final theme = Theme.of(context);
         final colors = theme.colorScheme;
@@ -77,8 +78,8 @@ class FavoritesPage extends StatelessWidget {
                     ),
                     Expanded(
                       child: isMobile
-                          ? _buildList(context, state, collectionsCubit, theme, colors, horizontalPadding)
-                          : _buildGrid(context, state, collectionsCubit, theme, colors, horizontalPadding),
+                          ? _buildList(context, state, collectionsBloc, theme, colors, horizontalPadding)
+                          : _buildGrid(context, state, collectionsBloc, theme, colors, horizontalPadding),
                     ),
                   ],
                 );
@@ -94,7 +95,7 @@ class FavoritesPage extends StatelessWidget {
   Widget _buildList(
     BuildContext context,
     MediaCollectionsState state,
-    MediaCollectionsCubit collectionsCubit,
+    MediaCollectionsBloc collectionsBloc,
     ThemeData theme,
     ColorScheme colors,
     EdgeInsets horizontalPadding,
@@ -246,8 +247,8 @@ class FavoritesPage extends StatelessWidget {
                                           const Spacer(),
                                           IconButton(
                                             onPressed: () =>
-                                                collectionsCubit
-                                                    .toggleFavorite(item),
+                                                collectionsBloc
+                                                    .add(ToggleFavoriteEvent(item)),
                                             icon: Icon(
                                               isFavorite
                                                   ? Icons.favorite
@@ -275,7 +276,7 @@ class FavoritesPage extends StatelessWidget {
   Widget _buildGrid(
     BuildContext context,
     MediaCollectionsState state,
-    MediaCollectionsCubit collectionsCubit,
+    MediaCollectionsBloc collectionsBloc,
     ThemeData theme,
     ColorScheme colors,
     EdgeInsets horizontalPadding,
@@ -303,7 +304,7 @@ class FavoritesPage extends StatelessWidget {
         return MediaPosterCard(
           item: item,
           isFavorite: true,
-          onFavoriteToggle: () => collectionsCubit.toggleFavorite(item),
+          onFavoriteToggle: () => collectionsBloc.add(ToggleFavoriteEvent(item)),
           onTap: () {
             Navigator.of(context).push(
               DetailPageRoute(child: MediaDetailPage(item: item)),

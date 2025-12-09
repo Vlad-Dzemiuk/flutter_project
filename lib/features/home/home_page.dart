@@ -5,14 +5,16 @@ import 'package:project/core/constants.dart';
 import 'package:project/core/di.dart';
 import 'package:project/core/responsive.dart';
 import 'package:project/core/loading_state.dart';
-import 'package:project/features/collections/media_collections_cubit.dart';
+import 'package:project/features/collections/media_collections_bloc.dart';
+import 'package:project/features/collections/media_collections_event.dart';
 import 'package:project/shared/widgets/animated_loading_widget.dart';
 import 'package:project/shared/widgets/home_header_widget.dart';
+import 'package:project/shared/widgets/auth_dialog.dart';
 import 'package:project/core/theme.dart';
 
 import 'home_bloc.dart';
+import 'home_event.dart';
 import 'home_media_item.dart';
-import 'home_repository.dart';
 import 'media_list_page.dart';
 import 'media_detail_page.dart';
 
@@ -30,26 +32,11 @@ class _HomePageState extends State<HomePage> {
   final double _rating = 5.0;
 
   Future<void> _showAuthRequiredDialog(BuildContext context) async {
-    await showDialog<void>(
-      context: context,
-      builder: (ctx) =>
-          AlertDialog(
-            title: const Text('Потрібна авторизація'),
-            content: const Text('Увійдіть, щоб додавати медіа до вподобань.'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(ctx).pop(),
-                child: const Text('Скасувати'),
-              ),
-              FilledButton(
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                  Navigator.of(context).pushNamed(AppConstants.loginRoute);
-                },
-                child: const Text('Увійти'),
-              ),
-            ],
-          ),
+    await AuthDialog.show(
+      context,
+      title: 'Потрібна авторизація',
+      message: 'Увійдіть, щоб додавати медіа до вподобань.',
+      icon: Icons.favorite_border,
     );
   }
 
@@ -66,13 +53,13 @@ class _HomePageState extends State<HomePage> {
     final genreName = _genreController.text.trim();
     final year = int.tryParse(_yearController.text);
 
-    bloc.search(
+    bloc.add(SearchEvent(
       query: query.isEmpty ? null : query,
       genreName: genreName.isEmpty ? null : genreName,
       year: year,
       rating: _rating,
       loadMore: loadMore,
-    );
+    ));
   }
 
   @override
@@ -84,7 +71,7 @@ class _HomePageState extends State<HomePage> {
         BlocProvider(
           create: (_) => getIt<HomeBloc>(),
         ),
-        BlocProvider.value(value: getIt<MediaCollectionsCubit>()),
+        BlocProvider.value(value: getIt<MediaCollectionsBloc>()),
       ],
       child: BlocBuilder<HomeBloc, HomeState>(
         builder: (context, state) {
@@ -153,8 +140,9 @@ class _HomePageState extends State<HomePage> {
                         : state.error.isNotEmpty
                         ? _buildErrorWidget(context, state.error)
                         : RefreshIndicator(
-                      onRefresh: () =>
-                          context.read<HomeBloc>().loadContent(),
+                      onRefresh: () async {
+                        context.read<HomeBloc>().add(const LoadContentEvent());
+                      },
                       edgeOffset: 80,
                       child: LayoutBuilder(
                         builder: (context, constraints) {
@@ -244,8 +232,8 @@ class _HomePageState extends State<HomePage> {
       return const Center(child: Text('Нічого не знайдено'));
     }
 
-    final collectionsCubit = context.watch<MediaCollectionsCubit>();
-    final collectionsState = collectionsCubit.state;
+    final collectionsBloc = context.watch<MediaCollectionsBloc>();
+    final collectionsState = collectionsBloc.state;
     final canModifyCollections = collectionsState.authorized;
 
     return SafeArea(
@@ -280,7 +268,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     TextButton(
-                      onPressed: () => context.read<HomeBloc>().clearSearch(),
+                      onPressed: () => context.read<HomeBloc>().add(const ClearSearchEvent()),
                       child: const Text('Очистити'),
                     ),
                   ],
@@ -290,10 +278,10 @@ class _HomePageState extends State<HomePage> {
                 child: isMobile
                     ? _buildSearchResultsList(
                     context, state, horizontalPadding, canModifyCollections,
-                    collectionsCubit)
+                    collectionsBloc)
                     : _buildSearchResultsGrid(
                     context, state, horizontalPadding, canModifyCollections,
-                    collectionsCubit),
+                    collectionsBloc),
               ),
             ],
           );
@@ -306,8 +294,8 @@ class _HomePageState extends State<HomePage> {
       HomeState state,
       EdgeInsets horizontalPadding,
       bool canModifyCollections,
-      MediaCollectionsCubit collectionsCubit,) {
-    final collectionsState = collectionsCubit.state;
+      MediaCollectionsBloc collectionsBloc,) {
+    final collectionsState = collectionsBloc.state;
 
     return ListView.separated(
       padding: EdgeInsets.symmetric(horizontal: horizontalPadding.left),
@@ -513,9 +501,9 @@ class _HomePageState extends State<HomePage> {
                             IconButton(
                               onPressed: canModifyCollections
                                   ? () =>
-                                  collectionsCubit.toggleFavorite(
+                                  collectionsBloc.add(ToggleFavoriteEvent(
                                     item,
-                                  )
+                                  ))
                                   : () =>
                                   _showAuthRequiredDialog(context),
                               icon: Icon(
@@ -551,8 +539,8 @@ class _HomePageState extends State<HomePage> {
       HomeState state,
       EdgeInsets horizontalPadding,
       bool canModifyCollections,
-      MediaCollectionsCubit collectionsCubit,) {
-    final collectionsState = collectionsCubit.state;
+      MediaCollectionsBloc collectionsBloc,) {
+    final collectionsState = collectionsBloc.state;
     final columns = Responsive.getGridColumnCount(context);
     final spacing = Responsive.getSpacing(context);
 
@@ -605,7 +593,7 @@ class _HomePageState extends State<HomePage> {
           item: item,
           isFavorite: isFavorite,
           onFavoriteToggle: canModifyCollections
-              ? () => collectionsCubit.toggleFavorite(item)
+              ? () => collectionsBloc.add(ToggleFavoriteEvent(item))
               : () => _showAuthRequiredDialog(context),
           onTap: () {
             Navigator.of(context).push(
@@ -657,7 +645,7 @@ class _HomePageState extends State<HomePage> {
             ),
             const SizedBox(height: 24),
             FilledButton.icon(
-              onPressed: () => context.read<HomeBloc>().loadContent(),
+              onPressed: () => context.read<HomeBloc>().add(const LoadContentEvent()),
               icon: const Icon(Icons.refresh),
               label: const Text('Спробувати знову'),
               style: FilledButton.styleFrom(
@@ -692,8 +680,8 @@ class MediaSliderSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final collectionsCubit = context.watch<MediaCollectionsCubit>();
-    final collectionsState = collectionsCubit.state;
+    final collectionsBloc = context.watch<MediaCollectionsBloc>();
+    final collectionsState = collectionsBloc.state;
     final canModifyCollections = collectionsState.authorized;
     final isMobile = Responsive.isMobile(context);
     final spacing = Responsive.getSpacing(context);
@@ -752,8 +740,8 @@ class MediaSliderSection extends StatelessWidget {
               ? const Center(child: Text('Немає даних'))
               : isMobile
               ? _buildHorizontalList(
-              context, collectionsCubit, collectionsState, canModifyCollections)
-              : _buildGrid(context, collectionsCubit, collectionsState,
+              context, collectionsBloc, collectionsState, canModifyCollections)
+              : _buildGrid(context, collectionsBloc, collectionsState,
               canModifyCollections),
         ],
       ),
@@ -761,7 +749,7 @@ class MediaSliderSection extends StatelessWidget {
   }
 
   Widget _buildHorizontalList(BuildContext context,
-      MediaCollectionsCubit collectionsCubit,
+      MediaCollectionsBloc collectionsBloc,
       dynamic collectionsState,
       bool canModifyCollections,) {
     // Розраховуємо ширину картки для горизонтального списку
@@ -779,11 +767,12 @@ class MediaSliderSection extends StatelessWidget {
           return MediaPosterCard(
             item: item,
             width: cardWidth,
+            height: cardHeight,
             isFavorite: canModifyCollections
                 ? collectionsState.isFavorite(item)
                 : false,
             onFavoriteToggle: canModifyCollections
-                ? () => collectionsCubit.toggleFavorite(item)
+                ? () => collectionsBloc.add(ToggleFavoriteEvent(item))
                 : onAuthRequired,
             onTap: () {
               Navigator.of(context).push(
@@ -802,7 +791,7 @@ class MediaSliderSection extends StatelessWidget {
   }
 
   Widget _buildGrid(BuildContext context,
-      MediaCollectionsCubit collectionsCubit,
+      MediaCollectionsBloc collectionsBloc,
       dynamic collectionsState,
       bool canModifyCollections,) {
     final columns = Responsive.getGridColumnCount(context);
@@ -826,7 +815,7 @@ class MediaSliderSection extends StatelessWidget {
               ? collectionsState.isFavorite(item)
               : false,
           onFavoriteToggle: canModifyCollections
-              ? () => collectionsCubit.toggleFavorite(item)
+              ? () => collectionsBloc.add(ToggleFavoriteEvent(item))
               : onAuthRequired,
           onTap: () {
             Navigator.of(context).push(
@@ -847,6 +836,7 @@ class MediaPosterCard extends StatelessWidget {
   final VoidCallback? onFavoriteToggle;
   final bool? isFavorite;
   final double? width;
+  final double? height;
 
   const MediaPosterCard({
     super.key,
@@ -855,6 +845,7 @@ class MediaPosterCard extends StatelessWidget {
     this.onFavoriteToggle,
     this.isFavorite,
     this.width,
+    this.height,
   });
 
   @override
@@ -862,6 +853,7 @@ class MediaPosterCard extends StatelessWidget {
     // Якщо width вказано, використовуємо його (для горизонтальних списків)
     // Якщо не вказано, GridView сам визначить ширину
     final cardWidth = width;
+    final cardHeight = height;
 
     return InkWell(
       onTap: onTap,
@@ -869,7 +861,7 @@ class MediaPosterCard extends StatelessWidget {
       child: cardWidth != null
           ? SizedBox(
         width: cardWidth,
-        height: cardWidth * 1.5, // aspectRatio 2/3 означає висота = ширина * 1.5
+        height: cardHeight,
         child: _buildCardContent(context),
       )
           : _buildCardContent(context),
@@ -879,6 +871,15 @@ class MediaPosterCard extends StatelessWidget {
   Widget _buildCardContent(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
+        // Розраховуємо доступну висоту для тексту (загальна висота мінус постер і відступи)
+        final cardWidth = width;
+        final cardHeight = height;
+        final posterHeight = cardWidth != null ? cardWidth * 1.5 : constraints.maxWidth * 1.5;
+        final totalHeight = cardHeight ?? constraints.maxHeight;
+        final availableHeight = totalHeight > 0 
+            ? totalHeight - posterHeight - 8 - 4 // poster + spacing + title spacing
+            : null;
+        
         return Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1038,23 +1039,44 @@ class MediaPosterCard extends StatelessWidget {
             const SizedBox(height: 4),
 
             // ===== DESCRIPTION =====
-            Text(
-              item.overview,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: Theme
-                  .of(context)
-                  .textTheme
-                  .bodySmall
-                  ?.copyWith(
-                color: Theme
-                    .of(context)
-                    .colorScheme
-                    .onSurfaceVariant
-                    .withValues(alpha: 0.7),
-                height: 1.3,
-              ),
-            ),
+            availableHeight != null && availableHeight > 0
+                ? SizedBox(
+                    height: availableHeight.clamp(0.0, 40.0), // Обмежуємо максимальну висоту
+                    child: Text(
+                      item.overview,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme
+                          .of(context)
+                          .textTheme
+                          .bodySmall
+                          ?.copyWith(
+                        color: Theme
+                            .of(context)
+                            .colorScheme
+                            .onSurfaceVariant
+                            .withValues(alpha: 0.7),
+                        height: 1.3,
+                      ),
+                    ),
+                  )
+                : Text(
+                    item.overview,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme
+                        .of(context)
+                        .textTheme
+                        .bodySmall
+                        ?.copyWith(
+                      color: Theme
+                          .of(context)
+                          .colorScheme
+                          .onSurfaceVariant
+                          .withValues(alpha: 0.7),
+                      height: 1.3,
+                    ),
+                  ),
           ],
         );
       },

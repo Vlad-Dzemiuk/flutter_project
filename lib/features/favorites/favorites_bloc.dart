@@ -1,13 +1,15 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'favorites_event.dart';
 import '../home/data/models/movie_model.dart';
 import 'domain/usecases/get_favorites_usecase.dart';
 
-class FavoritesState {
+class FavoritesState extends Equatable {
   final bool loading;
   final String error;
   final List<Movie> movies;
 
-  FavoritesState({this.loading = false, this.error = '', this.movies = const []});
+  const FavoritesState({this.loading = false, this.error = '', this.movies = const []});
 
   FavoritesState copyWith({
     bool? loading,
@@ -20,25 +22,58 @@ class FavoritesState {
       movies: movies ?? this.movies,
     );
   }
+
+  @override
+  List<Object?> get props => [loading, error, movies];
 }
 
-class FavoritesBloc extends Cubit<FavoritesState> {
+class FavoritesBloc extends Bloc<FavoritesEvent, FavoritesState> {
   final GetFavoritesUseCase getFavoritesUseCase;
 
-  FavoritesBloc({required this.getFavoritesUseCase}) : super(FavoritesState()) {
-    loadFavorites();
+  FavoritesBloc({required this.getFavoritesUseCase}) : super(const FavoritesState()) {
+    on<LoadFavoritesEvent>(_onLoadFavorites);
+    add(const LoadFavoritesEvent());
   }
 
-  Future<void> loadFavorites() async {
-    emit(state.copyWith(loading: true));
+  Future<void> _onLoadFavorites(
+    LoadFavoritesEvent event,
+    Emitter<FavoritesState> emit,
+  ) async {
+    emit(state.copyWith(loading: true, error: ''));
     try {
       // Використання use case замість прямого виклику репозиторію
       final movies = await getFavoritesUseCase(
         const GetFavoritesParams(accountId: 1),
       );
-      emit(state.copyWith(loading: false, movies: movies));
+      emit(state.copyWith(loading: false, movies: movies, error: ''));
     } catch (e) {
-      emit(state.copyWith(loading: false, error: e.toString()));
+      final errorMessage = _getUserFriendlyError(e);
+      emit(state.copyWith(loading: false, error: errorMessage));
     }
+  }
+
+  String _getUserFriendlyError(dynamic error) {
+    final errorString = error.toString().toLowerCase();
+    
+    if (errorString.contains('socketexception') || 
+        errorString.contains('failed host lookup') ||
+        errorString.contains('no address associated with hostname')) {
+      return 'Немає інтернет-з\'єднання. Перевірте підключення до мережі.';
+    }
+    
+    if (errorString.contains('timeout') || errorString.contains('timed out')) {
+      return 'Час очікування вичерпано. Перевірте інтернет-з\'єднання.';
+    }
+    
+    if (errorString.contains('connection') || errorString.contains('network')) {
+      return 'Помилка підключення до сервера. Спробуйте пізніше.';
+    }
+    
+    if (errorString.contains('unauthorized') || errorString.contains('permission')) {
+      return 'Недостатньо прав доступу. Увійдіть в акаунт.';
+    }
+    
+    // Для інших помилок повертаємо загальне повідомлення
+    return 'Не вдалося завантажити вподобані. Спробуйте пізніше.';
   }
 }

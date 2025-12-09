@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:project/core/constants.dart';
 import 'package:project/core/di.dart';
-import 'package:project/features/collections/media_collections_cubit.dart';
+import 'package:project/features/collections/media_collections_bloc.dart';
+import 'package:project/features/collections/media_collections_event.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 import 'home_media_item.dart';
@@ -18,6 +19,7 @@ import 'package:project/core/responsive.dart';
 import 'package:project/core/theme.dart';
 import 'package:project/core/page_transitions.dart';
 import 'package:project/shared/widgets/animated_loading_widget.dart';
+import 'package:project/shared/widgets/auth_dialog.dart';
 
 class MediaDetailPage extends StatefulWidget {
   final HomeMediaItem item;
@@ -33,8 +35,8 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
       getIt<GetMovieDetailsUseCase>();
   late final GetTvDetailsUseCase _getTvDetailsUseCase =
       getIt<GetTvDetailsUseCase>();
-  late final MediaCollectionsCubit _collectionsCubit =
-      getIt<MediaCollectionsCubit>();
+  late final MediaCollectionsBloc _collectionsBloc =
+      getIt<MediaCollectionsBloc>();
 
   bool _loading = true;
   String _error = '';
@@ -49,25 +51,11 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
   StreamSubscription<YoutubePlayerValue>? _playerValueSubscription;
 
   Future<void> _showAuthDialog() async {
-    await showDialog<void>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Потрібна авторизація'),
-        content: const Text('Увійдіть, щоб додати до вподобань.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Скасувати'),
-          ),
-          FilledButton(
-            onPressed: () {
-              Navigator.of(ctx).pop();
-              Navigator.of(context).pushNamed(AppConstants.loginRoute);
-            },
-            child: const Text('Увійти'),
-          ),
-        ],
-      ),
+    await AuthDialog.show(
+      context,
+      title: 'Потрібна авторизація',
+      message: 'Увійдіть, щоб додати до вподобань.',
+      icon: Icons.favorite_border,
     );
   }
 
@@ -491,8 +479,8 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
 
   Widget _buildFavoriteAction() {
     final colors = Theme.of(context).colorScheme;
-    return BlocBuilder<MediaCollectionsCubit, MediaCollectionsState>(
-      bloc: _collectionsCubit,
+    return BlocBuilder<MediaCollectionsBloc, MediaCollectionsState>(
+      bloc: _collectionsBloc,
       builder: (context, state) {
         final isFavorite = state.authorized && state.isFavorite(widget.item);
         return IconButton.filled(
@@ -506,7 +494,7 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
             color: isFavorite ? colors.primary : colors.onSurface,
           ),
           onPressed:
-              state.authorized ? () => _collectionsCubit.toggleFavorite(widget.item) : _showAuthDialog,
+              state.authorized ? () => _collectionsBloc.add(ToggleFavoriteEvent(widget.item)) : _showAuthDialog,
         );
       },
     );
@@ -786,8 +774,8 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
     final spacing = Responsive.getSpacing(context);
     final columns = Responsive.getGridColumnCount(context);
 
-    return BlocBuilder<MediaCollectionsCubit, MediaCollectionsState>(
-      bloc: _collectionsCubit,
+    return BlocBuilder<MediaCollectionsBloc, MediaCollectionsState>(
+      bloc: _collectionsBloc,
       builder: (context, collectionsState) {
         final canModify = collectionsState.authorized;
         // На desktop та tablet в landscape використовуємо GridView
@@ -811,7 +799,7 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
                       item: item,
                       isFavorite: canModify ? collectionsState.isFavorite(item) : false,
                       onFavoriteToggle: canModify
-                          ? () => _collectionsCubit.toggleFavorite(item)
+                          ? () => _collectionsBloc.add(ToggleFavoriteEvent(item))
                           : _showAuthDialog,
                       onTap: () {
                         Navigator.of(context).push(
@@ -836,7 +824,7 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
                         width: cardWidth,
                         isFavorite: canModify ? collectionsState.isFavorite(item) : false,
                         onFavoriteToggle: canModify
-                            ? () => _collectionsCubit.toggleFavorite(item)
+                            ? () => _collectionsBloc.add(ToggleFavoriteEvent(item))
                             : _showAuthDialog,
                         onTap: () {
                           Navigator.of(context).push(
@@ -857,7 +845,7 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
   void _handlePlayerValueChanged(YoutubePlayerValue value) {
     if (_watchRecorded) return;
     if (value.playerState == PlayerState.playing) {
-      _collectionsCubit.recordWatch(widget.item);
+      _collectionsBloc.add(RecordWatchEvent(widget.item));
       _watchRecorded = true;
     }
   }

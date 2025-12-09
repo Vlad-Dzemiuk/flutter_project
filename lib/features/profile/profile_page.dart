@@ -6,7 +6,8 @@ import '../../core/constants.dart';
 import '../../core/di.dart';
 import '../../core/responsive.dart';
 import '../../core/theme.dart';
-import '../auth/auth_cubit.dart';
+import '../auth/auth_bloc.dart';
+import '../auth/auth_event.dart';
 import '../auth/auth_repository.dart';
 import '../auth/auth_state.dart';
 import '../auth/data/models/local_user.dart';
@@ -39,8 +40,8 @@ class _ProfilePageState extends State<ProfilePage> {
     final authRepo = getIt<AuthRepository>();
 
     return LoadingWrapper(
-      child: BlocProvider<AuthCubit>(
-        create: (_) => getIt<AuthCubit>(),
+      child: BlocProvider<AuthBloc>.value(
+        value: getIt<AuthBloc>(),
         child: StreamBuilder<LocalUser?>(
           stream: authRepo.authStateChanges(),
           builder: (context, snapshot) {
@@ -59,7 +60,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildUnauthorizedView(BuildContext context) {
-    return BlocConsumer<AuthCubit, AuthState>(
+    return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthError) {
           ScaffoldMessenger.of(context)
@@ -232,12 +233,16 @@ class _ProfilePageState extends State<ProfilePage> {
                                   final email = _emailController.text;
                                   final password =
                                       _passwordController.text;
-                                  final cubit =
-                                  context.read<AuthCubit>();
-                                  if (_isLogin) {
-                                    cubit.signIn(email, password);
+                                  final bloc = context.read<AuthBloc>();
+                                  // Перевіряємо, чи BLoC не закритий перед додаванням події
+                                  if (!bloc.isClosed) {
+                                    if (_isLogin) {
+                                      bloc.add(SignInEvent(email: email, password: password));
+                                    } else {
+                                      bloc.add(RegisterEvent(email: email, password: password));
+                                    }
                                   } else {
-                                    cubit.register(email, password);
+                                    debugPrint('⚠️ [AUTH] BLoC закритий, не можу додати подію');
                                   }
                                 },
                                 icon: isLoading

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'core/constants.dart';
 import 'core/di.dart' as di;
 import 'core/app_router.dart';
 import 'core/theme.dart';
-import 'core/storage/user_prefs.dart';
+import 'features/settings/settings_bloc.dart';
+import 'features/settings/settings_state.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,17 +15,11 @@ Future<void> main() async {
   await Hive.initFlutter();
   await di.init();
 
-  final storedTheme = await UserPrefs.instance.getThemeMode();
-  final themeController =
-      ThemeController(AppThemes.parseThemeMode(storedTheme));
-
-  runApp(MyApp(themeController: themeController));
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
-  final ThemeController themeController;
-
-  const MyApp({super.key, required this.themeController});
+  const MyApp({super.key});
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -45,30 +41,31 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   void didChangePlatformBrightness() {
     // Коли системна тема змінюється, оновлюємо UI якщо використовується ThemeMode.system
-    if (widget.themeController.mode == ThemeMode.system) {
+    final settingsBloc = di.getIt<SettingsBloc>();
+    if (settingsBloc.state.themeMode == ThemeMode.system) {
       setState(() {});
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: widget.themeController,
-      builder: (context, _) {
-        return ThemeControllerScope(
-          controller: widget.themeController,
-          child: MaterialApp(
+    return BlocProvider<SettingsBloc>.value(
+      value: di.getIt<SettingsBloc>(),
+      child: BlocBuilder<SettingsBloc, SettingsState>(
+        bloc: di.getIt<SettingsBloc>(),
+        builder: (context, settingsState) {
+          return MaterialApp(
             title: 'Movie Discovery App',
             theme: AppThemes.light,
             darkTheme: AppThemes.dark,
-            themeMode: widget.themeController.mode,
+            themeMode: settingsState.themeMode,
             // MaterialApp автоматично визначає системну тему через MediaQuery
             // коли themeMode == ThemeMode.system
             onGenerateRoute: AppRouter.generateRoute,
             initialRoute: AppConstants.homeRoute,
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }

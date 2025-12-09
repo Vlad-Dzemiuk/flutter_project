@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'auth_cubit.dart';
+import 'auth_bloc.dart';
+import 'auth_event.dart';
 import 'auth_state.dart';
 import '../../core/constants.dart';
 import '../../core/di.dart';
@@ -48,16 +49,91 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return LoadingWrapper(
-      child: BlocProvider<AuthCubit>(
-        create: (_) => getIt<AuthCubit>(),
-        child: BlocConsumer<AuthCubit, AuthState>(
+      child: BlocProvider<AuthBloc>.value(
+        value: getIt<AuthBloc>(),
+        child: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
+          final theme = Theme.of(context);
+          final colors = theme.colorScheme;
+          final isDark = theme.brightness == Brightness.dark;
+          
           if (state is AuthAuthenticated) {
+            // Показуємо нотифікацію про успішну авторизацію
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(
+                        Icons.check_circle,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        _isLogin ? 'Успішний вхід!' : 'Реєстрація успішна!',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                backgroundColor: colors.primary,
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                margin: const EdgeInsets.all(16),
+                duration: const Duration(seconds: 2),
+              ),
+            );
             _onSuccess(context, state);
           } else if (state is AuthError) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.message)));
+            // Показуємо помилку
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(
+                        Icons.error_outline,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        state.message,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                backgroundColor: colors.error,
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                margin: const EdgeInsets.all(16),
+                duration: const Duration(seconds: 4),
+              ),
+            );
           }
         },
         builder: (context, state) {
@@ -224,11 +300,16 @@ class _LoginPageState extends State<LoginPage> {
                                                   final email = _emailController.text;
                                                   final password =
                                                       _passwordController.text;
-                                                  final cubit = context.read<AuthCubit>();
-                                                  if (_isLogin) {
-                                                    cubit.signIn(email, password);
+                                                  final bloc = context.read<AuthBloc>();
+                                                  // Перевіряємо, чи BLoC не закритий перед додаванням події
+                                                  if (!bloc.isClosed) {
+                                                    if (_isLogin) {
+                                                      bloc.add(SignInEvent(email: email, password: password));
+                                                    } else {
+                                                      bloc.add(RegisterEvent(email: email, password: password));
+                                                    }
                                                   } else {
-                                                    cubit.register(email, password);
+                                                    debugPrint('⚠️ [AUTH] BLoC закритий, не можу додати подію');
                                                   }
                                                 },
                                           icon: isLoading

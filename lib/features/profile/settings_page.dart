@@ -1,26 +1,46 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/constants.dart';
+import '../../core/di.dart';
 import '../../core/responsive.dart';
 import '../../core/theme.dart';
 import '../../shared/widgets/loading_wrapper.dart';
+import '../settings/settings_bloc.dart';
+import '../settings/settings_event.dart';
+import '../settings/settings_state.dart';
 
-class SettingsPage extends StatefulWidget {
+class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
 
   @override
-  State<SettingsPage> createState() => _SettingsPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider<SettingsBloc>.value(
+      value: getIt<SettingsBloc>(),
+      child: const _SettingsPageContent(),
+    );
+  }
 }
 
-class _SettingsPageState extends State<SettingsPage> {
-  String _selectedLanguage = 'Українська';
+class _SettingsPageContent extends StatefulWidget {
+  const _SettingsPageContent();
 
-  ThemeMode _selectedTheme = ThemeMode.system;
+  @override
+  State<_SettingsPageContent> createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends State<_SettingsPageContent> {
+  String _selectedLanguage = 'Українська';
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final controller = ThemeControllerScope.of(context);
-    _selectedTheme = controller.mode;
+    final settingsState = context.watch<SettingsBloc>().state;
+    // Оновлюємо мову зі стану
+    if (settingsState.languageCode == 'uk') {
+      _selectedLanguage = 'Українська';
+    } else {
+      _selectedLanguage = 'English';
+    }
   }
 
   Future<void> _chooseLanguage() async {
@@ -126,13 +146,16 @@ class _SettingsPageState extends State<SettingsPage> {
         );
       },
     );
-    if (lang != null) {
+    if (lang != null && mounted) {
+      final languageCode = lang == 'Українська' ? 'uk' : 'en';
+      context.read<SettingsBloc>().add(SetLanguageEvent(languageCode));
       setState(() => _selectedLanguage = lang);
     }
   }
 
   Future<void> _chooseTheme() async {
-    final controller = ThemeControllerScope.of(context);
+    final settingsBloc = context.read<SettingsBloc>();
+    final currentTheme = settingsBloc.state.themeMode;
     final theme = await showModalBottomSheet<ThemeMode>(
       context: context,
       isScrollControlled: true,
@@ -219,7 +242,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     title: 'Системна',
                     icon: Icons.brightness_auto,
                     value: ThemeMode.system,
-                    groupValue: _selectedTheme,
+                    groupValue: currentTheme,
                     onChanged: (value) => Navigator.of(ctx).pop(value),
                   ),
                   SizedBox(height: spacing),
@@ -227,7 +250,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     title: 'Світла',
                     icon: Icons.light_mode,
                     value: ThemeMode.light,
-                    groupValue: _selectedTheme,
+                    groupValue: currentTheme,
                     onChanged: (value) => Navigator.of(ctx).pop(value),
                   ),
                   SizedBox(height: spacing),
@@ -235,7 +258,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     title: 'Темна',
                     icon: Icons.dark_mode,
                     value: ThemeMode.dark,
-                    groupValue: _selectedTheme,
+                    groupValue: currentTheme,
                     onChanged: (value) => Navigator.of(ctx).pop(value),
                   ),
                 ],
@@ -246,162 +269,166 @@ class _SettingsPageState extends State<SettingsPage> {
       },
     );
     if (theme != null) {
-      await controller.setMode(theme);
-      setState(() => _selectedTheme = theme);
+      settingsBloc.add(SetThemeModeEvent(theme));
     }
   }
 
-  String get _themeLabel {
-    switch (_selectedTheme) {
+  String _getThemeLabel(ThemeMode themeMode) {
+    switch (themeMode) {
       case ThemeMode.light:
         return 'Світла';
       case ThemeMode.dark:
         return 'Темна';
       case ThemeMode.system:
-      default:
         return 'Системна';
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    return BlocBuilder<SettingsBloc, SettingsState>(
+      bloc: context.read<SettingsBloc>(),
+      builder: (context, settingsState) {
+        final theme = Theme.of(context);
+        final colors = theme.colorScheme;
+        final currentTheme = settingsState.themeMode;
 
-    return LoadingWrapper(
-      child: Scaffold(
-      backgroundColor: colors.background,
-      body: Container(
-        decoration: AppGradients.background(context),
-        child: SafeArea(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final isDesktop = Responsive.isDesktop(context);
-              final isTablet = Responsive.isTablet(context);
-              final horizontalPadding = Responsive.getHorizontalPadding(context);
-              final verticalPadding = Responsive.getVerticalPadding(context);
-              final spacing = Responsive.getSpacing(context);
-              final maxFormWidth = Responsive.getMaxFormWidth(context);
+        return LoadingWrapper(
+          child: Scaffold(
+            backgroundColor: colors.surface,
+            body: Container(
+              decoration: AppGradients.background(context),
+              child: SafeArea(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final isDesktop = Responsive.isDesktop(context);
+                    final isTablet = Responsive.isTablet(context);
+                    final horizontalPadding = Responsive.getHorizontalPadding(context);
+                    final verticalPadding = Responsive.getVerticalPadding(context);
+                    final spacing = Responsive.getSpacing(context);
+                    final maxFormWidth = Responsive.getMaxFormWidth(context);
 
-              return Column(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(
-                      horizontalPadding.left,
-                      verticalPadding.top,
-                      horizontalPadding.right,
-                      verticalPadding.bottom,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: isDesktop || isTablet
-                          ? MainAxisAlignment.center
-                          : MainAxisAlignment.start,
+                    return Column(
                       children: [
-                        Icon(
-                          Icons.settings,
-                          color: colors.primary,
-                          size: isDesktop ? 28 : 24,
-                        ),
-                        SizedBox(width: spacing * 0.6),
-                        Text(
-                          'Налаштування',
-                          style: TextStyle(
-                            color: colors.onBackground,
-                            fontSize: isDesktop ? 24 : 20,
-                            fontWeight: FontWeight.w700,
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(
+                            horizontalPadding.left,
+                            verticalPadding.top,
+                            horizontalPadding.right,
+                            verticalPadding.bottom,
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: Center(
-                      child: SingleChildScrollView(
-                        padding: EdgeInsets.fromLTRB(
-                          horizontalPadding.left,
-                          0,
-                          horizontalPadding.right,
-                          verticalPadding.bottom * 2,
-                        ),
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(
-                            maxWidth: isDesktop || isTablet ? maxFormWidth : double.infinity,
-                          ),
-                          child: Column(
+                          child: Row(
+                            mainAxisAlignment: isDesktop || isTablet
+                                ? MainAxisAlignment.center
+                                : MainAxisAlignment.start,
                             children: [
-                              // Адаптивна сітка для налаштувань на десктопі
-                              if (isDesktop)
-                                GridView.count(
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  crossAxisCount: 2,
-                                  crossAxisSpacing: spacing,
-                                  mainAxisSpacing: spacing,
-                                  childAspectRatio: 1.5,
-                                  children: [
-                                    _SettingsTile(
-                                      title: 'Мова застосунку',
-                                      subtitle: '$_selectedLanguage',
-                                      icon: Icons.language,
-                                      onTap: _chooseLanguage,
-                                    ),
-                                    _SettingsTile(
-                                      title: 'Тема застосунку',
-                                      subtitle: '$_themeLabel',
-                                      icon: Icons.dark_mode_outlined,
-                                      onTap: _chooseTheme,
-                                    ),
-                                  ],
-                                )
-                              else
-                                Column(
-                                  children: [
-                                    _SettingsTile(
-                                      title: 'Мова застосунку',
-                                      subtitle: '$_selectedLanguage',
-                                      icon: Icons.language,
-                                      onTap: _chooseLanguage,
-                                    ),
-                                    SizedBox(height: spacing),
-                                    _SettingsTile(
-                                      title: 'Тема застосунку',
-                                      subtitle: '$_themeLabel',
-                                      icon: Icons.dark_mode_outlined,
-                                      onTap: _chooseTheme,
-                                    ),
-                                  ],
-                                ),
-                              SizedBox(height: spacing),
-                              _SettingsTile(
-                                title: 'Про застосунок',
-                                icon: Icons.info_outline,
-                                onTap: () {
-                                  Navigator.of(context).pushNamed(AppConstants.aboutRoute);
-                                },
+                              Icon(
+                                Icons.settings,
+                                color: colors.primary,
+                                size: isDesktop ? 28 : 24,
                               ),
-                              SizedBox(height: spacing * 1.5),
+                              SizedBox(width: spacing * 0.6),
                               Text(
-                                'Версія застосунку: 1.0.0',
-                                textAlign: TextAlign.center,
+                                'Налаштування',
                                 style: TextStyle(
-                                  color: colors.onBackground.withOpacity(0.6),
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: isDesktop ? 16 : 14,
+                                  color: colors.onSurface,
+                                  fontSize: isDesktop ? 24 : 20,
+                                  fontWeight: FontWeight.w700,
                                 ),
                               ),
                             ],
                           ),
                         ),
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            },
+                        Expanded(
+                          child: Center(
+                            child: SingleChildScrollView(
+                              padding: EdgeInsets.fromLTRB(
+                                horizontalPadding.left,
+                                0,
+                                horizontalPadding.right,
+                                verticalPadding.bottom * 2,
+                              ),
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  maxWidth: isDesktop || isTablet ? maxFormWidth : double.infinity,
+                                ),
+                                child: Column(
+                                  children: [
+                                    // Адаптивна сітка для налаштувань на десктопі
+                                    if (isDesktop)
+                                      GridView.count(
+                                        shrinkWrap: true,
+                                        physics: const NeverScrollableScrollPhysics(),
+                                        crossAxisCount: 2,
+                                        crossAxisSpacing: spacing,
+                                        mainAxisSpacing: spacing,
+                                        childAspectRatio: 1.5,
+                                        children: [
+                                          _SettingsTile(
+                                            title: 'Мова застосунку',
+                                            subtitle: _selectedLanguage,
+                                            icon: Icons.language,
+                                            onTap: _chooseLanguage,
+                                          ),
+                                          _SettingsTile(
+                                            title: 'Тема застосунку',
+                                            subtitle: _getThemeLabel(currentTheme),
+                                            icon: Icons.dark_mode_outlined,
+                                            onTap: _chooseTheme,
+                                          ),
+                                        ],
+                                      )
+                                    else
+                                      Column(
+                                        children: [
+                                          _SettingsTile(
+                                            title: 'Мова застосунку',
+                                            subtitle: _selectedLanguage,
+                                            icon: Icons.language,
+                                            onTap: _chooseLanguage,
+                                          ),
+                                          SizedBox(height: spacing),
+                                          _SettingsTile(
+                                            title: 'Тема застосунку',
+                                            subtitle: _getThemeLabel(currentTheme),
+                                            icon: Icons.dark_mode_outlined,
+                                            onTap: _chooseTheme,
+                                          ),
+                                        ],
+                                      ),
+                                    SizedBox(height: spacing),
+                                    _SettingsTile(
+                                      title: 'Про застосунок',
+                                      icon: Icons.info_outline,
+                                      onTap: () {
+                                        Navigator.of(context).pushNamed(AppConstants.aboutRoute);
+                                      },
+                                    ),
+                                    SizedBox(height: spacing * 1.5),
+                                    Text(
+                                      'Версія застосунку: 1.0.0',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: colors.onSurface.withValues(alpha: 0.6),
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: isDesktop ? 16 : 14,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ),
           ),
-        ),
-      ),
-      ),
+        );
+      },
     );
   }
 }

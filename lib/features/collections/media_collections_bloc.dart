@@ -1,18 +1,21 @@
 import 'dart:async';
 
-import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../auth/auth_repository.dart';
 import '../auth/data/models/local_user.dart';
 import '../home/home_media_item.dart';
+import 'media_collections_event.dart';
 import 'media_collection_entry.dart';
 import 'domain/usecases/get_media_collections_usecase.dart';
 import 'domain/usecases/toggle_favorite_usecase.dart';
 import 'domain/usecases/add_to_watchlist_usecase.dart';
 
-class MediaCollectionsState {
+class MediaCollectionsState extends Equatable {
   final bool loading;
   final bool authorized;
+  final String error;
   final List<MediaCollectionEntry> favorites;
   final List<MediaCollectionEntry> watchlist;
   final Set<String> favoriteKeys;
@@ -21,6 +24,7 @@ class MediaCollectionsState {
   const MediaCollectionsState({
     this.loading = false,
     this.authorized = false,
+    this.error = '',
     this.favorites = const [],
     this.watchlist = const [],
     this.favoriteKeys = const <String>{},
@@ -30,6 +34,7 @@ class MediaCollectionsState {
   MediaCollectionsState copyWith({
     bool? loading,
     bool? authorized,
+    String? error,
     List<MediaCollectionEntry>? favorites,
     List<MediaCollectionEntry>? watchlist,
     Set<String>? favoriteKeys,
@@ -38,6 +43,7 @@ class MediaCollectionsState {
     return MediaCollectionsState(
       loading: loading ?? this.loading,
       authorized: authorized ?? this.authorized,
+      error: error ?? this.error,
       favorites: favorites ?? this.favorites,
       watchlist: watchlist ?? this.watchlist,
       favoriteKeys: favoriteKeys ?? this.favoriteKeys,
@@ -50,10 +56,21 @@ class MediaCollectionsState {
       MediaCollectionEntry.buildKey(isMovie: item.isMovie, id: item.id),
     );
   }
+
+  @override
+  List<Object?> get props => [
+        loading,
+        authorized,
+        error,
+        favorites,
+        watchlist,
+        favoriteKeys,
+        watchlistKeys,
+      ];
 }
 
-class MediaCollectionsCubit extends Cubit<MediaCollectionsState> {
-  MediaCollectionsCubit({
+class MediaCollectionsBloc extends Bloc<MediaCollectionsEvent, MediaCollectionsState> {
+  MediaCollectionsBloc({
     required GetMediaCollectionsUseCase getMediaCollectionsUseCase,
     required ToggleFavoriteUseCase toggleFavoriteUseCase,
     required AddToWatchlistUseCase addToWatchlistUseCase,
@@ -63,10 +80,26 @@ class MediaCollectionsCubit extends Cubit<MediaCollectionsState> {
        _addToWatchlistUseCase = addToWatchlistUseCase,
        _authRepository = authRepository,
        super(const MediaCollectionsState(loading: true)) {
+    on<LoadCollectionsEvent>(_onLoadCollections);
+    on<ToggleFavoriteEvent>(_onToggleFavorite);
+    on<RecordWatchEvent>(_onRecordWatch);
+    
     _authSubscription = _authRepository.authStateChanges().listen(
-      _handleAuthChange,
+      (user) {
+        if (user == null) {
+          add(const LoadCollectionsEvent());
+        } else {
+          add(const LoadCollectionsEvent());
+        }
+      },
     );
-    _handleAuthChange(_authRepository.currentUser);
+    
+    // Завантажуємо колекції при ініціалізації
+    if (_authRepository.currentUser != null) {
+      add(const LoadCollectionsEvent());
+    } else {
+      emit(const MediaCollectionsState(loading: false, authorized: false));
+    }
   }
 
   final GetMediaCollectionsUseCase _getMediaCollectionsUseCase;
@@ -75,16 +108,17 @@ class MediaCollectionsCubit extends Cubit<MediaCollectionsState> {
   final AuthRepository _authRepository;
   StreamSubscription<LocalUser?>? _authSubscription;
 
-  Future<void> _handleAuthChange(LocalUser? user) async {
+  Future<void> _onLoadCollections(
+    LoadCollectionsEvent event,
+    Emitter<MediaCollectionsState> emit,
+  ) async {
+    final user = _authRepository.currentUser;
     if (user == null) {
       emit(const MediaCollectionsState(loading: false, authorized: false));
       return;
     }
-    await _loadAll();
-  }
-
-  Future<void> _loadAll() async {
-    emit(state.copyWith(loading: true, authorized: true));
+    
+    emit(state.copyWith(loading: true, authorized: true, error: ''));
     try {
       // Використання use case замість прямого виклику репозиторію
       final result = await _getMediaCollectionsUseCase(
@@ -98,47 +132,90 @@ class MediaCollectionsCubit extends Cubit<MediaCollectionsState> {
           watchlist: result.watchlist,
           favoriteKeys: result.favoriteKeys,
           watchlistKeys: result.watchlistKeys,
+          error: '',
         ),
       );
     } catch (e) {
-      emit(state.copyWith(loading: false, authorized: false));
+      final errorMessage = _getUserFriendlyError(e);
+      emit(state.copyWith(
+        loading: false, 
+        authorized: false,
+        error: errorMessage,
+      ));
     }
   }
 
-  Future<void> toggleFavorite(HomeMediaItem item) async {
+  Future<void> _onToggleFavorite(
+    ToggleFavoriteEvent event,
+    Emitter<MediaCollectionsState> emit,
+  ) async {
     if (!state.authorized) return;
+    emit(state.copyWith(error: ''));
     try {
       // Використання use case замість прямого виклику репозиторію
       final result = await _toggleFavoriteUseCase(
-        ToggleFavoriteParams(item: item),
+        ToggleFavoriteParams(item: event.item),
       );
       emit(
         state.copyWith(
           favorites: result.favorites,
           favoriteKeys: result.favoriteKeys,
+          error: '',
         ),
       );
     } catch (e) {
-      // Обробка помилки (можна додати error state)
+      final errorMessage = _getUserFriendlyError(e);
+      emit(state.copyWith(error: errorMessage));
     }
   }
 
-  Future<void> recordWatch(HomeMediaItem item) async {
+  Future<void> _onRecordWatch(
+    RecordWatchEvent event,
+    Emitter<MediaCollectionsState> emit,
+  ) async {
     if (!state.authorized) return;
+    emit(state.copyWith(error: ''));
     try {
       // Використання use case замість прямого виклику репозиторію
       final result = await _addToWatchlistUseCase(
-        AddToWatchlistParams(item: item),
+        AddToWatchlistParams(item: event.item),
       );
       emit(
         state.copyWith(
           watchlist: result.watchlist,
           watchlistKeys: result.watchlistKeys,
+          error: '',
         ),
       );
     } catch (e) {
-      // Обробка помилки (можна додати error state)
+      final errorMessage = _getUserFriendlyError(e);
+      emit(state.copyWith(error: errorMessage));
     }
+  }
+
+  String _getUserFriendlyError(dynamic error) {
+    final errorString = error.toString().toLowerCase();
+    
+    if (errorString.contains('socketexception') || 
+        errorString.contains('failed host lookup') ||
+        errorString.contains('no address associated with hostname')) {
+      return 'Немає інтернет-з\'єднання. Перевірте підключення до мережі.';
+    }
+    
+    if (errorString.contains('timeout') || errorString.contains('timed out')) {
+      return 'Час очікування вичерпано. Перевірте інтернет-з\'єднання.';
+    }
+    
+    if (errorString.contains('connection') || errorString.contains('network')) {
+      return 'Помилка підключення до сервера. Спробуйте пізніше.';
+    }
+    
+    if (errorString.contains('unauthorized') || errorString.contains('permission')) {
+      return 'Недостатньо прав доступу. Увійдіть в акаунт.';
+    }
+    
+    // Для інших помилок повертаємо загальне повідомлення
+    return 'Не вдалося виконати операцію. Спробуйте пізніше.';
   }
 
   @override
@@ -147,3 +224,4 @@ class MediaCollectionsCubit extends Cubit<MediaCollectionsState> {
     return super.close();
   }
 }
+

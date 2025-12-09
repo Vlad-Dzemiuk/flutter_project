@@ -27,7 +27,37 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       );
       emit(SearchLoaded(movies));
     } catch (e) {
-      emit(SearchError(e.toString()));
+      final errorMessage = _getUserFriendlyError(e);
+      emit(SearchError(errorMessage));
     }
+  }
+
+  String _getUserFriendlyError(dynamic error) {
+    final errorString = error.toString().toLowerCase();
+    
+    if (errorString.contains('socketexception') || 
+        errorString.contains('failed host lookup') ||
+        errorString.contains('no address associated with hostname')) {
+      return 'Немає інтернет-з\'єднання. Перевірте підключення до мережі.';
+    }
+    
+    if (errorString.contains('timeout') || errorString.contains('timed out')) {
+      return 'Час очікування вичерпано. Перевірте інтернет-з\'єднання.';
+    }
+    
+    if (errorString.contains('connection') || errorString.contains('network')) {
+      return 'Помилка підключення до сервера. Спробуйте пізніше.';
+    }
+    
+    if (errorString.contains('unauthorized') || errorString.contains('permission')) {
+      return 'Недостатньо прав доступу. Увійдіть в акаунт.';
+    }
+    
+    if (errorString.contains('not found') || errorString.contains('404')) {
+      return 'Нічого не знайдено за заданими фільтрами. Спробуйте інші параметри пошуку.';
+    }
+    
+    // Для інших помилок повертаємо загальне повідомлення
+    return 'Не вдалося виконати пошук. Спробуйте пізніше.';
   }
 }

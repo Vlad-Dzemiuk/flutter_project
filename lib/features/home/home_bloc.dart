@@ -1,9 +1,11 @@
-import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'home_event.dart';
 import 'home_media_item.dart';
 import 'domain/usecases/get_popular_content_usecase.dart';
 import 'domain/usecases/search_media_usecase.dart';
 
-class HomeState {
+class HomeState extends Equatable {
   final List<HomeMediaItem> popularMovies;
   final List<HomeMediaItem> popularTvShows;
   final List<HomeMediaItem> allMovies;
@@ -16,7 +18,7 @@ class HomeState {
   final String? searchQuery;
   final bool hasMoreResults;
 
-  HomeState({
+  const HomeState({
     this.popularMovies = const [],
     this.popularTvShows = const [],
     this.allMovies = const [],
@@ -57,21 +59,41 @@ class HomeState {
       hasMoreResults: hasMoreResults ?? this.hasMoreResults,
     );
   }
+
+  @override
+  List<Object?> get props => [
+        popularMovies,
+        popularTvShows,
+        allMovies,
+        allTvShows,
+        searchResults,
+        loading,
+        searching,
+        loadingMore,
+        error,
+        searchQuery,
+        hasMoreResults,
+      ];
 }
 
-class HomeBloc extends Cubit<HomeState> {
+class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final GetPopularContentUseCase getPopularContentUseCase;
   final SearchMediaUseCase searchMediaUseCase;
 
   HomeBloc({
     required this.getPopularContentUseCase,
     required this.searchMediaUseCase,
-  }) : super(HomeState()) {
-    loadContent();
+  }) : super(const HomeState()) {
+    on<LoadContentEvent>(_onLoadContent);
+    on<SearchEvent>(_onSearch);
+    on<ClearSearchEvent>(_onClearSearch);
+    add(const LoadContentEvent());
   }
 
-  Future<void> loadContent() async {
-    if (isClosed) return;
+  Future<void> _onLoadContent(
+    LoadContentEvent event,
+    Emitter<HomeState> emit,
+  ) async {
     emit(state.copyWith(loading: true));
     try {
       // Використання use case замість прямого виклику репозиторію
@@ -79,80 +101,71 @@ class HomeBloc extends Cubit<HomeState> {
         const GetPopularContentParams(page: 1),
       );
       
-      if (!isClosed) {
-        emit(
-          state.copyWith(
-            popularMovies: result.popularMovies,
-            popularTvShows: result.popularTvShows,
-            allMovies: result.allMovies,
-            allTvShows: result.allTvShows,
-            loading: false,
-            error: '',
-          ),
-        );
-      }
+      emit(
+        state.copyWith(
+          popularMovies: result.popularMovies,
+          popularTvShows: result.popularTvShows,
+          allMovies: result.allMovies,
+          allTvShows: result.allTvShows,
+          loading: false,
+          error: '',
+        ),
+      );
     } catch (e) {
-      if (!isClosed) {
-        final errorMessage = _getUserFriendlyError(e);
-        emit(state.copyWith(error: errorMessage, loading: false));
-      }
+      final errorMessage = _getUserFriendlyError(e);
+      emit(state.copyWith(error: errorMessage, loading: false));
     }
   }
 
-  Future<void> search({
-    String? query,
-    String? genreName,
-    int? year,
-    double? rating,
-    bool loadMore = false,
-  }) async {
-    if (isClosed) return;
-    if (loadMore) {
+  Future<void> _onSearch(
+    SearchEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    if (event.loadMore) {
       emit(state.copyWith(loadingMore: true));
     } else {
       emit(state.copyWith(searching: true, error: '', searchResults: []));
     }
     
     try {
-      int currentPage = loadMore ? (state.searchResults.length ~/ 20) + 1 : 1;
+      int currentPage = event.loadMore ? (state.searchResults.length ~/ 20) + 1 : 1;
       
       // Використання use case замість прямого виклику репозиторію
       final result = await searchMediaUseCase(
         SearchMediaParams(
-          query: query,
-          genreName: genreName,
-          year: year,
-          rating: rating,
+          query: event.query,
+          genreName: event.genreName,
+          year: event.year,
+          rating: event.rating,
           page: currentPage,
-          loadMore: loadMore,
+          loadMore: event.loadMore,
         ),
       );
       
-      final allResults = loadMore 
+      final allResults = event.loadMore 
           ? [...state.searchResults, ...result.results] 
           : result.results;
       
-      if (!isClosed) {
-        emit(
-          state.copyWith(
-            searchResults: allResults,
-            searching: false,
-            loadingMore: false,
-            searchQuery: query,
-            hasMoreResults: result.hasMore,
-            error: '',
-          ),
-        );
-      }
+      emit(
+        state.copyWith(
+          searchResults: allResults,
+          searching: false,
+          loadingMore: false,
+          searchQuery: event.query,
+          hasMoreResults: result.hasMore,
+          error: '',
+        ),
+      );
     } catch (e) {
-      if (!isClosed) {
-        final errorMessage = _getUserFriendlyError(e);
-        emit(state.copyWith(error: errorMessage, searching: false, loadingMore: false));
-      }
+      final errorMessage = _getUserFriendlyError(e);
+      emit(state.copyWith(error: errorMessage, searching: false, loadingMore: false));
     }
   }
 
-  void clearSearch() {
+  void _onClearSearch(
+    ClearSearchEvent event,
+    Emitter<HomeState> emit,
+  ) {
     emit(state.copyWith(searchResults: [], searchQuery: null, hasMoreResults: false));
   }
 

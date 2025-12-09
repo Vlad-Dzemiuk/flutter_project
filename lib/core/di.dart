@@ -2,11 +2,12 @@ import 'package:get_it/get_it.dart';
 import '../features/home/home_repository.dart';
 import '../features/home/home_api_service.dart';
 import '../features/auth/auth_repository.dart';
-import '../features/auth/auth_cubit.dart';
-import '../features/collections/media_collections_cubit.dart';
+import '../features/auth/auth_bloc.dart';
+import '../features/collections/media_collections_bloc.dart';
 import '../features/collections/media_collections_repository.dart';
 import '../features/home/home_bloc.dart';
 import '../features/search/search_bloc.dart';
+import '../features/favorites/favorites_bloc.dart';
 import '../core/storage/media_collections_storage.dart';
 import '../core/loading_state.dart';
 // Repositories (domain interfaces)
@@ -32,10 +33,16 @@ import '../features/collections/domain/usecases/get_media_collections_usecase.da
 import '../features/collections/domain/usecases/toggle_favorite_usecase.dart';
 import '../features/collections/domain/usecases/add_to_watchlist_usecase.dart';
 import '../features/search/domain/usecases/search_by_filters_usecase.dart';
+import '../features/settings/settings_bloc.dart';
+import '../features/profile/profile_bloc.dart';
+import '../core/storage/auth_db.dart';
 
 final getIt = GetIt.instance;
 
 Future<void> init() async {
+  // Initialize databases
+  await AuthDb.instance.database;
+  
   // API Services
   final homeApiService = HomeApiService();
   getIt.registerLazySingleton<HomeApiService>(() => homeApiService);
@@ -55,8 +62,8 @@ Future<void> init() async {
   getIt.registerLazySingleton<MediaCollectionsRepository>(
     () => MediaCollectionsRepository(MediaCollectionsStorage.instance),
   );
-  getIt.registerLazySingleton<MediaCollectionsCubit>(
-    () => MediaCollectionsCubit(
+  getIt.registerLazySingleton<MediaCollectionsBloc>(
+    () => MediaCollectionsBloc(
       getMediaCollectionsUseCase: getIt<GetMediaCollectionsUseCase>(),
       toggleFavoriteUseCase: getIt<ToggleFavoriteUseCase>(),
       addToWatchlistUseCase: getIt<AddToWatchlistUseCase>(),
@@ -118,16 +125,30 @@ Future<void> init() async {
       searchMediaUseCase: getIt<SearchMediaUseCase>(),
     ),
   );
-  getIt.registerFactory<AuthCubit>(
-    () => AuthCubit(
+  // Global state для auth, favorites, settings
+  getIt.registerLazySingleton<AuthBloc>(
+    () => AuthBloc(
       repository: getIt<AuthRepository>(),
       signInUseCase: getIt<SignInUseCase>(),
       registerUseCase: getIt<RegisterUseCase>(),
     ),
   );
+  getIt.registerLazySingleton<FavoritesBloc>(
+    () => FavoritesBloc(
+      getFavoritesUseCase: getIt<GetFavoritesUseCase>(),
+    ),
+  );
   getIt.registerFactory<SearchBloc>(
     () => SearchBloc(
       searchByFiltersUseCase: getIt<SearchByFiltersUseCase>(),
+    ),
+  );
+  getIt.registerLazySingleton<SettingsBloc>(
+    () => SettingsBloc(),
+  );
+  getIt.registerFactory<ProfileBloc>(
+    () => ProfileBloc(
+      getUserProfileUseCase: getIt<GetUserProfileUseCase>(),
     ),
   );
 }

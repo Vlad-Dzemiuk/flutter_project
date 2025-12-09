@@ -6,7 +6,8 @@ import 'package:project/core/di.dart';
 import 'package:project/core/responsive.dart';
 import 'package:project/core/storage/user_prefs.dart';
 import 'package:project/features/auth/auth_repository.dart';
-import 'package:project/features/collections/media_collections_cubit.dart';
+import 'package:project/features/collections/media_collections_bloc.dart';
+import 'package:project/features/collections/media_collections_event.dart';
 import 'package:project/features/home/home_media_item.dart';
 import 'package:project/features/home/home_page.dart';
 import 'package:project/features/home/domain/usecases/search_media_usecase.dart';
@@ -15,6 +16,7 @@ import 'package:project/core/theme.dart';
 import 'package:project/core/page_transitions.dart';
 import 'package:project/shared/widgets/loading_wrapper.dart';
 import 'package:project/shared/widgets/animated_loading_widget.dart';
+import 'package:project/shared/widgets/auth_dialog.dart';
 
 import '../auth/data/models/local_user.dart';
 
@@ -187,11 +189,11 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     return LoadingWrapper(
       child: BlocProvider.value(
-        value: getIt<MediaCollectionsCubit>(),
+        value: getIt<MediaCollectionsBloc>(),
         child: Builder(
           builder: (context) {
-            final collectionsCubit = context.watch<MediaCollectionsCubit>();
-            final collectionsState = collectionsCubit.state;
+            final collectionsBloc = context.watch<MediaCollectionsBloc>();
+            final collectionsState = collectionsBloc.state;
             final canModify = collectionsState.authorized;
 
             final theme = Theme.of(context);
@@ -626,12 +628,12 @@ class _SearchPageState extends State<SearchPage> {
                                     ? _buildSearchResults(
                                   collectionsState,
                                   canModify,
-                                  collectionsCubit,
+                                  collectionsBloc,
                                 )
                                     : _buildRecentSearches(
                                   collectionsState,
                                   canModify,
-                                  collectionsCubit,
+                                  collectionsBloc,
                                 ),
                               ),
                             ),
@@ -650,7 +652,7 @@ class _SearchPageState extends State<SearchPage> {
 
   Widget _buildSearchResults(MediaCollectionsState collectionsState,
       bool canModify,
-      MediaCollectionsCubit collectionsCubit,) {
+      MediaCollectionsBloc collectionsBloc,) {
   final theme = Theme.of(context);
   final colors = theme.colorScheme;
   final isMobile = Responsive.isMobile(context);
@@ -689,14 +691,14 @@ class _SearchPageState extends State<SearchPage> {
 
   return isMobile
       ? _buildSearchResultsList(
-      collectionsState, canModify, collectionsCubit, horizontalPadding)
+      collectionsState, canModify, collectionsBloc, horizontalPadding)
       : _buildSearchResultsGrid(
-      collectionsState, canModify, collectionsCubit, horizontalPadding);
+      collectionsState, canModify, collectionsBloc, horizontalPadding);
 }
 
   Widget _buildSearchResultsList(MediaCollectionsState collectionsState,
       bool canModify,
-      MediaCollectionsCubit collectionsCubit,
+      MediaCollectionsBloc collectionsBloc,
       EdgeInsets horizontalPadding,) {
   final theme = Theme.of(context);
   final colors = theme.colorScheme;
@@ -738,6 +740,7 @@ class _SearchPageState extends State<SearchPage> {
             if (canModify) {
               await _addToHistory(item);
             }
+            if (!mounted) return;
             Navigator.of(context).push(
               DetailPageRoute(child: MediaDetailPage(item: item)),
             );
@@ -844,32 +847,14 @@ class _SearchPageState extends State<SearchPage> {
                           IconButton(
                             onPressed: canModify
                                 ? () {
-                              collectionsCubit.toggleFavorite(item);
+                              collectionsBloc.add(ToggleFavoriteEvent(item));
                             }
                                 : () {
-                              showDialog(
-                                context: context,
-                                builder: (ctx) =>
-                                    AlertDialog(
-                                      title: const Text('Потрібна авторизація'),
-                                      content: const Text(
-                                          'Увійдіть, щоб додати до вподобань.'),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () =>
-                                              Navigator.of(ctx).pop(),
-                                          child: const Text('Скасувати'),
-                                        ),
-                                        FilledButton(
-                                          onPressed: () {
-                                            Navigator.of(ctx).pop();
-                                            Navigator.of(context).pushNamed(
-                                                AppConstants.loginRoute);
-                                          },
-                                          child: const Text('Увійти'),
-                                        ),
-                                      ],
-                                    ),
+                              AuthDialog.show(
+                                context,
+                                title: 'Потрібна авторизація',
+                                message: 'Увійдіть, щоб додати до вподобань.',
+                                icon: Icons.favorite_border,
                               );
                             },
                             icon: Icon(
@@ -897,7 +882,7 @@ class _SearchPageState extends State<SearchPage> {
 
   Widget _buildSearchResultsGrid(MediaCollectionsState collectionsState,
       bool canModify,
-      MediaCollectionsCubit collectionsCubit,
+      MediaCollectionsBloc collectionsBloc,
       EdgeInsets horizontalPadding,) {
   final columns = Responsive.getGridColumnCount(context);
   final spacing = Responsive.getSpacing(context);
@@ -923,35 +908,20 @@ class _SearchPageState extends State<SearchPage> {
         item: item,
         isFavorite: isFavorite,
         onFavoriteToggle: canModify
-            ? () => collectionsCubit.toggleFavorite(item)
+            ? () => collectionsBloc.add(ToggleFavoriteEvent(item))
             : () {
-          showDialog(
-            context: context,
-            builder: (ctx) =>
-                AlertDialog(
-                  title: const Text('Потрібна авторизація'),
-                  content: const Text('Увійдіть, щоб додати до вподобань.'),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.of(ctx).pop(),
-                      child: const Text('Скасувати'),
-                    ),
-                    FilledButton(
-                      onPressed: () {
-                        Navigator.of(ctx).pop();
-                        Navigator.of(context).pushNamed(
-                            AppConstants.loginRoute);
-                      },
-                      child: const Text('Увійти'),
-                    ),
-                  ],
-                ),
+          AuthDialog.show(
+            context,
+            title: 'Потрібна авторизація',
+            message: 'Увійдіть, щоб додати до вподобань.',
+            icon: Icons.favorite_border,
           );
         },
         onTap: () async {
           if (canModify) {
             await _addToHistory(item);
           }
+          if (!mounted) return;
           Navigator.of(context).push(
             DetailPageRoute(child: MediaDetailPage(item: item)),
           );
@@ -963,7 +933,7 @@ class _SearchPageState extends State<SearchPage> {
 
   Widget _buildRecentSearches(MediaCollectionsState collectionsState,
       bool canModify,
-      MediaCollectionsCubit collectionsCubit,) {
+      MediaCollectionsBloc collectionsBloc,) {
   final theme = Theme.of(context);
   final colors = theme.colorScheme;
 
@@ -1036,16 +1006,16 @@ class _SearchPageState extends State<SearchPage> {
         )
             : isMobile
             ? _buildRecentSearchesList(
-            collectionsState, collectionsCubit, horizontalPadding)
+            collectionsState, collectionsBloc, horizontalPadding)
             : _buildRecentSearchesGrid(
-            collectionsState, collectionsCubit, horizontalPadding),
+            collectionsState, collectionsBloc, horizontalPadding),
       ),
     ],
   );
 }
 
   Widget _buildRecentSearchesList(MediaCollectionsState collectionsState,
-      MediaCollectionsCubit collectionsCubit,
+      MediaCollectionsBloc collectionsBloc,
       EdgeInsets horizontalPadding,) {
   final theme = Theme.of(context);
   final colors = theme.colorScheme;
@@ -1204,7 +1174,7 @@ class _SearchPageState extends State<SearchPage> {
                           const Spacer(),
                           IconButton(
                             onPressed: () {
-                              collectionsCubit.toggleFavorite(item);
+                              collectionsBloc.add(ToggleFavoriteEvent(item));
                             },
                             icon: Icon(
                               isFavorite
@@ -1231,7 +1201,7 @@ class _SearchPageState extends State<SearchPage> {
 }
 
   Widget _buildRecentSearchesGrid(MediaCollectionsState collectionsState,
-      MediaCollectionsCubit collectionsCubit,
+      MediaCollectionsBloc collectionsBloc,
       EdgeInsets horizontalPadding,) {
     final columns = Responsive.getGridColumnCount(context);
     final spacing = Responsive.getSpacing(context);
@@ -1264,7 +1234,7 @@ class _SearchPageState extends State<SearchPage> {
         return MediaPosterCard(
           item: item,
           isFavorite: isFavorite,
-          onFavoriteToggle: () => collectionsCubit.toggleFavorite(item),
+          onFavoriteToggle: () => collectionsBloc.add(ToggleFavoriteEvent(item)),
           onTap: () {
             Navigator.of(context).push(
               DetailPageRoute(child: MediaDetailPage(item: item)),

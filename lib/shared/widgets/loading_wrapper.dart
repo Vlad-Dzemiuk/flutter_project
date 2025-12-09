@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:project/core/loading_state.dart';
 import 'package:project/core/di.dart';
+import 'package:project/core/constants.dart';
 import 'package:project/shared/widgets/animated_loading_widget.dart';
 
 /// Обгортка, яка показує завантаження до завантаження головної сторінки
@@ -40,8 +41,13 @@ class _LoadingWrapperState extends State<LoadingWrapper> {
 
   @override
   Widget build(BuildContext context) {
-    // Якщо головна сторінка ще не завантажена, показуємо завантаження
-    if (!_loadingStateService.isHomePageLoaded) {
+    // Перевіряємо, чи це сторінка входу/реєстрації - для неї не блокуємо UI
+    final route = ModalRoute.of(context);
+    final routeName = route?.settings.name;
+    final isAuthPage = routeName == AppConstants.loginRoute;
+    
+    // Якщо це не сторінка авторизації і головна сторінка ще не завантажена, показуємо завантаження
+    if (!isAuthPage && !_loadingStateService.isHomePageLoaded) {
       return const AnimatedLoadingWidget(message: 'Завантаження...');
     }
 
