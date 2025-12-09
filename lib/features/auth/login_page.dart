@@ -9,6 +9,7 @@ import '../../core/di.dart';
 import '../../core/responsive.dart';
 import '../../core/theme.dart';
 import '../../shared/widgets/loading_wrapper.dart';
+import '../../shared/widgets/app_notification.dart';
 
 class LoginPage extends StatefulWidget {
   final String? redirectRoute;
@@ -59,81 +60,14 @@ class _LoginPageState extends State<LoginPage> {
           
           if (state is AuthAuthenticated) {
             // Показуємо нотифікацію про успішну авторизацію
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Icon(
-                        Icons.check_circle,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        _isLogin ? 'Успішний вхід!' : 'Реєстрація успішна!',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                backgroundColor: colors.primary,
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                margin: const EdgeInsets.all(16),
-                duration: const Duration(seconds: 2),
-              ),
+            AppNotification.showSuccess(
+              context,
+              _isLogin ? 'Успішний вхід!' : 'Реєстрація успішна!',
             );
             _onSuccess(context, state);
           } else if (state is AuthError) {
             // Показуємо помилку
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Icon(
-                        Icons.error_outline,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        state.message,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                backgroundColor: colors.error,
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                margin: const EdgeInsets.all(16),
-                duration: const Duration(seconds: 4),
-              ),
-            );
+            AppNotification.showError(context, state.message);
           }
         },
         builder: (context, state) {

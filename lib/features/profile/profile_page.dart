@@ -14,6 +14,7 @@ import '../auth/data/models/local_user.dart';
 import '../auth/domain/entities/user.dart';
 import '../auth/data/mappers/user_mapper.dart';
 import '../../shared/widgets/loading_wrapper.dart';
+import '../../shared/widgets/app_notification.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -63,8 +64,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthError) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text(state.message)));
+          AppNotification.showError(context, state.message);
         }
       },
       builder: (context, state) {

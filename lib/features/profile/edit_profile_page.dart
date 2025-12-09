@@ -14,6 +14,7 @@ import '../auth/domain/entities/user.dart';
 import '../auth/data/mappers/user_mapper.dart';
 import '../profile/domain/usecases/update_profile_usecase.dart';
 import '../../shared/widgets/loading_wrapper.dart';
+import '../../shared/widgets/app_notification.dart';
 import '../../core/network/retry_helper.dart';
 
 class EditProfilePage extends StatefulWidget {
@@ -143,14 +144,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
         ),
       );
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Профіль оновлено (${updated.email})')),
+      AppNotification.showSuccess(
+        context,
+        'Профіль оновлено (${updated.email})',
       );
       Navigator.of(context).maybePop();
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Помилка: $error')));
+      AppNotification.showError(context, 'Помилка: $error');
     }
   }
 
@@ -177,14 +178,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
             Future<void> submit() async {
               if (newController.text.trim().isEmpty ||
                   currentController.text.trim().isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Заповніть всі поля')),
+                AppNotification.showWarning(
+                  context,
+                  'Заповніть всі поля',
                 );
                 return;
               }
               if (newController.text != confirmController.text) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Паролі не співпадають')),
+                AppNotification.showWarning(
+                  context,
+                  'Паролі не співпадають',
                 );
                 return;
               }
@@ -199,9 +202,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 }
               } catch (error) {
                 setModalState(() => isLoading = false);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Помилка: $error')),
-                );
+                AppNotification.showError(context, 'Помилка: $error');
               }
             }
 
@@ -448,9 +449,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       },
     );
     if (changed == true && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Пароль змінено')),
-      );
+      AppNotification.showSuccess(context, 'Пароль змінено');
     }
   }
 
