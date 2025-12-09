@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'favorites_event.dart';
 import '../home/data/models/movie_model.dart';
 import 'domain/usecases/get_favorites_usecase.dart';
+import '../../../core/network/retry_helper.dart';
 
 class FavoritesState extends Equatable {
   final bool loading;
@@ -41,9 +42,11 @@ class FavoritesBloc extends Bloc<FavoritesEvent, FavoritesState> {
   ) async {
     emit(state.copyWith(loading: true, error: ''));
     try {
-      // Використання use case замість прямого виклику репозиторію
-      final movies = await getFavoritesUseCase(
-        const GetFavoritesParams(accountId: 1),
+      // Використання use case з retry механізмом для мережевих помилок
+      final movies = await RetryHelper.retry(
+        operation: () => getFavoritesUseCase(
+          const GetFavoritesParams(accountId: 1),
+        ),
       );
       emit(state.copyWith(loading: false, movies: movies, error: ''));
     } catch (e) {

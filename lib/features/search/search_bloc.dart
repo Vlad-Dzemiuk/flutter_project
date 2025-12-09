@@ -3,6 +3,7 @@ import '../home/data/models/movie_model.dart';
 import 'search_event.dart';
 import 'search_state.dart';
 import 'domain/usecases/search_by_filters_usecase.dart';
+import '../../../core/network/retry_helper.dart';
 
 class SearchBloc extends Bloc<SearchEvent, SearchState> {
   final SearchByFiltersUseCase searchByFiltersUseCase;
@@ -17,12 +18,14 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       ) async {
     emit(SearchLoading());
     try {
-      // Використання use case замість прямого виклику репозиторію
-      final movies = await searchByFiltersUseCase(
-        SearchByFiltersParams(
-          genreName: event.genre,
-          year: event.year,
-          rating: event.rating,
+      // Використання use case з retry механізмом для мережевих помилок
+      final movies = await RetryHelper.retry(
+        operation: () => searchByFiltersUseCase(
+          SearchByFiltersParams(
+            genreName: event.genre,
+            year: event.year,
+            rating: event.rating,
+          ),
         ),
       );
       emit(SearchLoaded(movies));

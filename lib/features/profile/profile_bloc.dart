@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'profile_event.dart';
 import 'domain/repositories/profile_repository.dart';
 import 'domain/usecases/get_user_profile_usecase.dart';
+import '../../../core/network/retry_helper.dart';
 
 class ProfileState extends Equatable {
   final bool loading;
@@ -41,9 +42,11 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   ) async {
     emit(state.copyWith(loading: true, error: ''));
     try {
-      // Використання use case замість прямого виклику репозиторію
-      final user = await getUserProfileUseCase(
-        const GetUserProfileParams(userId: 1),
+      // Використання use case з retry механізмом для мережевих помилок
+      final user = await RetryHelper.retry(
+        operation: () => getUserProfileUseCase(
+          const GetUserProfileParams(userId: 1),
+        ),
       );
       emit(state.copyWith(loading: false, user: user, error: ''));
     } catch (e) {

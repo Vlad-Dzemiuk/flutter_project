@@ -4,6 +4,7 @@ import 'home_event.dart';
 import 'home_media_item.dart';
 import 'domain/usecases/get_popular_content_usecase.dart';
 import 'domain/usecases/search_media_usecase.dart';
+import '../../../core/network/retry_helper.dart';
 
 class HomeState extends Equatable {
   final List<HomeMediaItem> popularMovies;
@@ -96,9 +97,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   ) async {
     emit(state.copyWith(loading: true));
     try {
-      // Використання use case замість прямого виклику репозиторію
-      final result = await getPopularContentUseCase(
-        const GetPopularContentParams(page: 1),
+      // Використання use case з retry механізмом для мережевих помилок
+      final result = await RetryHelper.retry(
+        operation: () => getPopularContentUseCase(
+          const GetPopularContentParams(page: 1),
+        ),
       );
       
       emit(
@@ -130,15 +133,17 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     try {
       int currentPage = event.loadMore ? (state.searchResults.length ~/ 20) + 1 : 1;
       
-      // Використання use case замість прямого виклику репозиторію
-      final result = await searchMediaUseCase(
-        SearchMediaParams(
-          query: event.query,
-          genreName: event.genreName,
-          year: event.year,
-          rating: event.rating,
-          page: currentPage,
-          loadMore: event.loadMore,
+      // Використання use case з retry механізмом для мережевих помилок
+      final result = await RetryHelper.retry(
+        operation: () => searchMediaUseCase(
+          SearchMediaParams(
+            query: event.query,
+            genreName: event.genreName,
+            year: event.year,
+            rating: event.rating,
+            page: currentPage,
+            loadMore: event.loadMore,
+          ),
         ),
       );
       

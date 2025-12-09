@@ -11,6 +11,7 @@ import 'media_collection_entry.dart';
 import 'domain/usecases/get_media_collections_usecase.dart';
 import 'domain/usecases/toggle_favorite_usecase.dart';
 import 'domain/usecases/add_to_watchlist_usecase.dart';
+import '../../../core/network/retry_helper.dart';
 
 class MediaCollectionsState extends Equatable {
   final bool loading;
@@ -120,9 +121,11 @@ class MediaCollectionsBloc extends Bloc<MediaCollectionsEvent, MediaCollectionsS
     
     emit(state.copyWith(loading: true, authorized: true, error: ''));
     try {
-      // Використання use case замість прямого виклику репозиторію
-      final result = await _getMediaCollectionsUseCase(
-        const GetMediaCollectionsParams(),
+      // Використання use case з retry механізмом для мережевих помилок
+      final result = await RetryHelper.retry(
+        operation: () => _getMediaCollectionsUseCase(
+          const GetMediaCollectionsParams(),
+        ),
       );
       emit(
         state.copyWith(
@@ -152,9 +155,11 @@ class MediaCollectionsBloc extends Bloc<MediaCollectionsEvent, MediaCollectionsS
     if (!state.authorized) return;
     emit(state.copyWith(error: ''));
     try {
-      // Використання use case замість прямого виклику репозиторію
-      final result = await _toggleFavoriteUseCase(
-        ToggleFavoriteParams(item: event.item),
+      // Використання use case з retry механізмом для мережевих помилок
+      final result = await RetryHelper.retry(
+        operation: () => _toggleFavoriteUseCase(
+          ToggleFavoriteParams(item: event.item),
+        ),
       );
       emit(
         state.copyWith(
@@ -176,9 +181,11 @@ class MediaCollectionsBloc extends Bloc<MediaCollectionsEvent, MediaCollectionsS
     if (!state.authorized) return;
     emit(state.copyWith(error: ''));
     try {
-      // Використання use case замість прямого виклику репозиторію
-      final result = await _addToWatchlistUseCase(
-        AddToWatchlistParams(item: event.item),
+      // Використання use case з retry механізмом для мережевих помилок
+      final result = await RetryHelper.retry(
+        operation: () => _addToWatchlistUseCase(
+          AddToWatchlistParams(item: event.item),
+        ),
       );
       emit(
         state.copyWith(

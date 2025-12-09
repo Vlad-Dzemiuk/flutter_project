@@ -14,6 +14,7 @@ import 'home_media_item.dart';
 import 'domain/usecases/get_popular_content_usecase.dart';
 import 'media_detail_page.dart';
 import 'home_page.dart';
+import '../../../core/network/retry_helper.dart';
 
 enum MediaListCategory { popularMovies, popularTv, allMovies, allTv }
 
@@ -59,9 +60,11 @@ class _MediaListPageState extends State<MediaListPage> {
     try {
       List<HomeMediaItem> items;
       
-      // Використання use case замість прямого виклику репозиторію
-      final result = await _getPopularContentUseCase(
-        const GetPopularContentParams(page: 1),
+      // Використання use case з retry механізмом для мережевих помилок
+      final result = await RetryHelper.retry(
+        operation: () => _getPopularContentUseCase(
+          const GetPopularContentParams(page: 1),
+        ),
       );
       
       switch (widget.category) {

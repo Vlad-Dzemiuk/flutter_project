@@ -17,6 +17,7 @@ import 'package:project/core/page_transitions.dart';
 import 'package:project/shared/widgets/loading_wrapper.dart';
 import 'package:project/shared/widgets/animated_loading_widget.dart';
 import 'package:project/shared/widgets/auth_dialog.dart';
+import '../../../core/network/retry_helper.dart';
 
 import '../auth/data/models/local_user.dart';
 
@@ -126,9 +127,11 @@ class _SearchPageState extends State<SearchPage> {
     });
 
     try {
-      // Використання use case замість прямого виклику репозиторію
-      final result = await _searchMediaUseCase(
-        SearchMediaParams(query: query, page: 1),
+      // Використання use case з retry механізмом для мережевих помилок
+      final result = await RetryHelper.retry(
+        operation: () => _searchMediaUseCase(
+          SearchMediaParams(query: query, page: 1),
+        ),
       );
 
       if (mounted) {

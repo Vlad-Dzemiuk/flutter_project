@@ -11,7 +11,7 @@ class LocalCacheDb {
 
   Database? _db;
 
-  Future<Database> get _database async {
+  Future<Database> get database async {
     if (_db != null) return _db!;
 
     final dbPath = await getDatabasesPath();
@@ -39,7 +39,7 @@ class LocalCacheDb {
     String key, {
     Duration maxAge = const Duration(minutes: 30),
   }) async {
-    final db = await _database;
+    final db = await database;
     final rows = await db.query(
       'cache_entries',
       where: 'key = ?',
@@ -59,9 +59,24 @@ class LocalCacheDb {
     return jsonDecode(row['data'] as String) as Map<String, dynamic>;
   }
 
+  /// Отримати JSON по ключу без перевірки віку (для fallback при помилках мережі).
+  Future<Map<String, dynamic>?> getJsonStale(String key) async {
+    final db = await database;
+    final rows = await db.query(
+      'cache_entries',
+      where: 'key = ?',
+      whereArgs: [key],
+      limit: 1,
+    );
+    if (rows.isEmpty) return null;
+
+    final row = rows.first;
+    return jsonDecode(row['data'] as String) as Map<String, dynamic>;
+  }
+
   /// Зберегти JSON у кеш.
   Future<void> putJson(String key, Map<String, dynamic> data) async {
-    final db = await _database;
+    final db = await database;
     await db.insert(
       'cache_entries',
       {

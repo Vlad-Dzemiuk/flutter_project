@@ -20,6 +20,7 @@ import 'package:project/core/theme.dart';
 import 'package:project/core/page_transitions.dart';
 import 'package:project/shared/widgets/animated_loading_widget.dart';
 import 'package:project/shared/widgets/auth_dialog.dart';
+import '../../../core/network/retry_helper.dart';
 
 class MediaDetailPage extends StatefulWidget {
   final HomeMediaItem item;
@@ -82,9 +83,11 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
       String? trailerKey;
 
       if (widget.item.isMovie) {
-        // Використання use case замість прямого виклику репозиторію
-        final result = await _getMovieDetailsUseCase(
-          GetMovieDetailsParams(movieId: widget.item.id),
+        // Використання use case з retry механізмом для мережевих помилок
+        final result = await RetryHelper.retry(
+          operation: () => _getMovieDetailsUseCase(
+            GetMovieDetailsParams(movieId: widget.item.id),
+          ),
         );
         
         final details = result['details'] as Map<String, dynamic>;
@@ -107,9 +110,11 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
           _recommendations = recommendationItems;
         });
       } else {
-        // Використання use case замість прямого виклику репозиторію
-        final result = await _getTvDetailsUseCase(
-          GetTvDetailsParams(tvId: widget.item.id),
+        // Використання use case з retry механізмом для мережевих помилок
+        final result = await RetryHelper.retry(
+          operation: () => _getTvDetailsUseCase(
+            GetTvDetailsParams(tvId: widget.item.id),
+          ),
         );
         
         final details = result['details'] as Map<String, dynamic>;

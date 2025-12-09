@@ -14,6 +14,7 @@ import '../auth/domain/entities/user.dart';
 import '../auth/data/mappers/user_mapper.dart';
 import '../profile/domain/usecases/update_profile_usecase.dart';
 import '../../shared/widgets/loading_wrapper.dart';
+import '../../core/network/retry_helper.dart';
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({super.key});
@@ -129,14 +130,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
       // Визначаємо, чи змінився аватар
       final avatarChanged = _avatarPath != _originalAvatarPath;
       
-      // Використання use case замість прямого виклику репозиторію
-      final updated = await _updateProfileUseCase(
-        UpdateProfileParams(
-          displayName: trimmedName.isEmpty ? null : trimmedName,
-          clearDisplayName: trimmedName.isEmpty,
-          // Передаємо avatarUrl тільки якщо він змінився
-          avatarUrl: avatarChanged ? _avatarPath : null,
-          clearAvatar: _avatarPath == null || _avatarPath!.isEmpty,
+      // Використання use case з retry механізмом для мережевих помилок
+      final updated = await RetryHelper.retry(
+        operation: () => _updateProfileUseCase(
+          UpdateProfileParams(
+            displayName: trimmedName.isEmpty ? null : trimmedName,
+            clearDisplayName: trimmedName.isEmpty,
+            // Передаємо avatarUrl тільки якщо він змінився
+            avatarUrl: avatarChanged ? _avatarPath : null,
+            clearAvatar: _avatarPath == null || _avatarPath!.isEmpty,
+          ),
         ),
       );
       if (!mounted) return;

@@ -1,57 +1,101 @@
-import 'package:hive_flutter/hive_flutter.dart';
+import 'dart:convert';
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 
+/// SQLite-зберігання для улюблених та watchlist
 class MediaCollectionsStorage {
   MediaCollectionsStorage._();
   static final MediaCollectionsStorage instance = MediaCollectionsStorage._();
 
-  static const _boxName = 'media_collections_box';
-  static const _favoritesKey = 'favorites';
-  static const _watchlistKey = 'watchlist';
+  Database? _db;
 
-  Box? _box;
+  Future<Database> get database async {
+    if (_db != null) return _db!;
 
-  Future<Box> _getBox() async {
-    if (_box != null && _box!.isOpen) {
-      return _box!;
-    }
-    _box = await Hive.openBox(_boxName);
-    return _box!;
+    final dbPath = await getDatabasesPath();
+    final path = join(dbPath, 'media_collections.db');
+
+    _db = await openDatabase(
+      path,
+      version: 1,
+      onCreate: (db, version) async {
+        await db.execute('''
+          CREATE TABLE favorites (
+            key TEXT PRIMARY KEY,
+            data TEXT NOT NULL,
+            updated_at INTEGER NOT NULL
+          )
+        ''');
+        await db.execute('''
+          CREATE TABLE watchlist (
+            key TEXT PRIMARY KEY,
+            data TEXT NOT NULL,
+            updated_at INTEGER NOT NULL
+          )
+        ''');
+      },
+    );
+
+    return _db!;
   }
 
   Future<Map<String, Map<String, dynamic>>> readFavorites() {
-    return _readCollection(_favoritesKey);
+    return _readCollection('favorites');
   }
 
   Future<Map<String, Map<String, dynamic>>> readWatchlist() {
-    return _readCollection(_watchlistKey);
+    return _readCollection('watchlist');
   }
 
   Future<void> writeFavorites(Map<String, Map<String, dynamic>> data) {
-    return _writeCollection(_favoritesKey, data);
+    return _writeCollection('favorites', data);
   }
 
   Future<void> writeWatchlist(Map<String, Map<String, dynamic>> data) {
-    return _writeCollection(_watchlistKey, data);
+    return _writeCollection('watchlist', data);
   }
 
-  Future<Map<String, Map<String, dynamic>>> _readCollection(String key) async {
-    final box = await _getBox();
-    final raw = box.get(key);
-    if (raw == null) {
-      return {};
+  Future<Map<String, Map<String, dynamic>>> _readCollection(
+    String tableName,
+  ) async {
+    final db = await database;
+    final rows = await db.query(tableName);
+    
+    final result = <String, Map<String, dynamic>>{};
+    for (final row in rows) {
+      final key = row['key'] as String;
+      final dataJson = jsonDecode(row['data'] as String) as Map<String, dynamic>;
+      result[key] = dataJson;
     }
-    final map = Map<String, dynamic>.from(raw as Map);
-    return map.map(
-      (k, value) =>
-          MapEntry(k as String, Map<String, dynamic>.from(value as Map)),
-    );
+    
+    return result;
   }
 
   Future<void> _writeCollection(
-    String key,
+    String tableName,
     Map<String, Map<String, dynamic>> data,
   ) async {
-    final box = await _getBox();
-    await box.put(key, data);
+    final db = await database;
+    
+    // Видаляємо всі старі записи
+    await db.delete(tableName);
+    
+    // Додаємо нові записи
+    final batch = db.batch();
+    final now = DateTime.now().millisecondsSinceEpoch;
+    
+    for (final entry in data.entries) {
+      batch.insert(
+        tableName,
+        {
+          'key': entry.key,
+          'data': jsonEncode(entry.value),
+          'updated_at': now,
+        },
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    }
+    
+    await batch.commit(noResult: true);
   }
 }

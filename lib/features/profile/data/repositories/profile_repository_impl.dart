@@ -1,22 +1,34 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:dio/dio.dart';
 import '../../domain/repositories/profile_repository.dart';
+import 'package:project/core/network/dio_client.dart';
+import 'package:project/core/storage/local_cache_db.dart';
 
 /// Реалізація репозиторію для профілю
 class ProfileRepositoryImpl implements ProfileRepository {
-  final String _baseUrl = 'https://api.themoviedb.org/3';
-  final String _apiKey = dotenv.env['TMDB_API_KEY']!;
+  final Dio _dio = DioClient().dio;
 
   @override
   Future<UserProfile> getUserProfile(int userId) async {
-    final url = Uri.parse('$_baseUrl/account/$userId?api_key=$_apiKey');
-    final response = await http.get(url);
+    final cacheKey = 'user_profile_$userId';
+    final cached =
+        await LocalCacheDb.instance.getJson(cacheKey, maxAge: const Duration(minutes: 15));
 
-    if (response.statusCode == 200) {
-      return UserProfile.fromJson(json.decode(response.body));
-    } else {
-      throw Exception('Failed to load profile');
+    if (cached != null) {
+      return UserProfile.fromJson(cached);
+    }
+
+    try {
+      final response = await _dio.get('/account/$userId');
+      final data = response.data as Map<String, dynamic>;
+      await LocalCacheDb.instance.putJson(cacheKey, data);
+      return UserProfile.fromJson(data);
+    } on DioException catch (e) {
+      // Offline-first: спробувати отримати застарілі дані з кешу
+      final staleCached = await LocalCacheDb.instance.getJsonStale(cacheKey);
+      if (staleCached != null) {
+        return UserProfile.fromJson(staleCached);
+      }
+      throw Exception('Failed to load profile: ${e.message}');
     }
   }
 }

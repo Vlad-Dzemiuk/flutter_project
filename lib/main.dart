@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'core/constants.dart';
 import 'core/di.dart' as di;
 import 'core/app_router.dart';
@@ -12,7 +11,6 @@ import 'features/settings/settings_state.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
-  await Hive.initFlutter();
   await di.init();
 
   runApp(const MyApp());

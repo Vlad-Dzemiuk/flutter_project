@@ -36,12 +36,27 @@ import '../features/search/domain/usecases/search_by_filters_usecase.dart';
 import '../features/settings/settings_bloc.dart';
 import '../features/profile/profile_bloc.dart';
 import '../core/storage/auth_db.dart';
+import '../core/storage/local_cache_db.dart';
+import '../core/storage/user_prefs.dart';
+import '../core/storage/media_collections_storage.dart';
+import '../core/network/dio_client.dart';
 
 final getIt = GetIt.instance;
 
 Future<void> init() async {
   // Initialize databases
   await AuthDb.instance.database;
+  await LocalCacheDb.instance.database;
+  await UserPrefs.instance.database;
+  await MediaCollectionsStorage.instance.database;
+  
+  // Repositories (must be registered before DioClient to pass AuthRepository)
+  getIt.registerLazySingleton<AuthRepository>(() => AuthRepository());
+  
+  // HTTP Client (with AuthRepository for auth headers)
+  getIt.registerLazySingleton<DioClient>(
+    () => DioClient(authRepository: getIt<AuthRepository>()),
+  );
   
   // API Services
   final homeApiService = HomeApiService();
@@ -49,7 +64,6 @@ Future<void> init() async {
 
   // Repositories
   getIt.registerLazySingleton<HomeRepository>(() => HomeRepositoryImpl());
-  getIt.registerLazySingleton<AuthRepository>(() => AuthRepository());
   getIt.registerLazySingleton<SearchRepository>(
     () => SearchRepositoryImpl(homeApiService),
   );
