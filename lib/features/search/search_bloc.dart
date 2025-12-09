@@ -1,13 +1,13 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../home/movie_model.dart';
+import '../home/data/models/movie_model.dart';
 import 'search_event.dart';
 import 'search_state.dart';
-import 'search_repository.dart';
+import 'domain/usecases/search_by_filters_usecase.dart';
 
 class SearchBloc extends Bloc<SearchEvent, SearchState> {
-  final SearchRepository repository;
+  final SearchByFiltersUseCase searchByFiltersUseCase;
 
-  SearchBloc(this.repository) : super(SearchInitial()) {
+  SearchBloc({required this.searchByFiltersUseCase}) : super(SearchInitial()) {
     on<SearchByFilters>(_onSearchByFilters);
   }
 
@@ -17,10 +17,13 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       ) async {
     emit(SearchLoading());
     try {
-      final movies = await repository.searchMovies(
-        genreName: event.genre,
-        year: event.year,
-        rating: event.rating,
+      // Використання use case замість прямого виклику репозиторію
+      final movies = await searchByFiltersUseCase(
+        SearchByFiltersParams(
+          genreName: event.genre,
+          year: event.year,
+          rating: event.rating,
+        ),
       );
       emit(SearchLoaded(movies));
     } catch (e) {

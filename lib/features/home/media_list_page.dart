@@ -10,6 +10,7 @@ import 'package:project/shared/widgets/animated_loading_widget.dart';
 
 import 'home_media_item.dart';
 import 'home_repository.dart';
+import 'domain/usecases/get_popular_content_usecase.dart';
 import 'media_detail_page.dart';
 import 'home_page.dart';
 
@@ -26,7 +27,8 @@ class MediaListPage extends StatefulWidget {
 }
 
 class _MediaListPageState extends State<MediaListPage> {
-  late final HomeRepository _repository = getIt<HomeRepository>();
+  late final GetPopularContentUseCase _getPopularContentUseCase =
+      getIt<GetPopularContentUseCase>();
   late final MediaCollectionsCubit _collectionsCubit =
       getIt<MediaCollectionsCubit>();
   List<HomeMediaItem> _items = [];
@@ -69,22 +71,24 @@ class _MediaListPageState extends State<MediaListPage> {
     });
     try {
       List<HomeMediaItem> items;
+      
+      // Використання use case замість прямого виклику репозиторію
+      final result = await _getPopularContentUseCase(
+        const GetPopularContentParams(page: 1),
+      );
+      
       switch (widget.category) {
         case MediaListCategory.popularMovies:
-          final movies = await _repository.fetchPopularMovies(page: 1);
-          items = movies.map((m) => HomeMediaItem.fromMovie(m)).toList();
+          items = result.popularMovies;
           break;
         case MediaListCategory.popularTv:
-          final tvShows = await _repository.fetchPopularTvShows(page: 1);
-          items = tvShows.map((t) => HomeMediaItem.fromTvShow(t)).toList();
+          items = result.popularTvShows;
           break;
         case MediaListCategory.allMovies:
-          final movies = await _repository.fetchAllMovies(page: 1);
-          items = movies.map((m) => HomeMediaItem.fromMovie(m)).toList();
+          items = result.allMovies;
           break;
         case MediaListCategory.allTv:
-          final tvShows = await _repository.fetchAllTvShows(page: 1);
-          items = tvShows.map((t) => HomeMediaItem.fromTvShow(t)).toList();
+          items = result.allTvShows;
           break;
       }
       setState(() {

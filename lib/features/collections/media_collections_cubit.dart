@@ -3,9 +3,12 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 
 import '../auth/auth_repository.dart';
+import '../auth/data/models/local_user.dart';
 import '../home/home_media_item.dart';
 import 'media_collection_entry.dart';
-import 'media_collections_repository.dart';
+import 'domain/usecases/get_media_collections_usecase.dart';
+import 'domain/usecases/toggle_favorite_usecase.dart';
+import 'domain/usecases/add_to_watchlist_usecase.dart';
 
 class MediaCollectionsState {
   final bool loading;
@@ -51,9 +54,13 @@ class MediaCollectionsState {
 
 class MediaCollectionsCubit extends Cubit<MediaCollectionsState> {
   MediaCollectionsCubit({
-    required MediaCollectionsRepository repository,
+    required GetMediaCollectionsUseCase getMediaCollectionsUseCase,
+    required ToggleFavoriteUseCase toggleFavoriteUseCase,
+    required AddToWatchlistUseCase addToWatchlistUseCase,
     required AuthRepository authRepository,
-  }) : _repository = repository,
+  }) : _getMediaCollectionsUseCase = getMediaCollectionsUseCase,
+       _toggleFavoriteUseCase = toggleFavoriteUseCase,
+       _addToWatchlistUseCase = addToWatchlistUseCase,
        _authRepository = authRepository,
        super(const MediaCollectionsState(loading: true)) {
     _authSubscription = _authRepository.authStateChanges().listen(
@@ -62,7 +69,9 @@ class MediaCollectionsCubit extends Cubit<MediaCollectionsState> {
     _handleAuthChange(_authRepository.currentUser);
   }
 
-  final MediaCollectionsRepository _repository;
+  final GetMediaCollectionsUseCase _getMediaCollectionsUseCase;
+  final ToggleFavoriteUseCase _toggleFavoriteUseCase;
+  final AddToWatchlistUseCase _addToWatchlistUseCase;
   final AuthRepository _authRepository;
   StreamSubscription<LocalUser?>? _authSubscription;
 
@@ -76,42 +85,60 @@ class MediaCollectionsCubit extends Cubit<MediaCollectionsState> {
 
   Future<void> _loadAll() async {
     emit(state.copyWith(loading: true, authorized: true));
-    final favorites = await _repository.fetchFavorites();
-    final watchlist = await _repository.fetchWatchlist();
-    emit(
-      state.copyWith(
-        loading: false,
-        authorized: true,
-        favorites: favorites,
-        watchlist: watchlist,
-        favoriteKeys: favorites.map((e) => e.key).toSet(),
-        watchlistKeys: watchlist.map((e) => e.key).toSet(),
-      ),
-    );
+    try {
+      // Використання use case замість прямого виклику репозиторію
+      final result = await _getMediaCollectionsUseCase(
+        const GetMediaCollectionsParams(),
+      );
+      emit(
+        state.copyWith(
+          loading: false,
+          authorized: true,
+          favorites: result.favorites,
+          watchlist: result.watchlist,
+          favoriteKeys: result.favoriteKeys,
+          watchlistKeys: result.watchlistKeys,
+        ),
+      );
+    } catch (e) {
+      emit(state.copyWith(loading: false, authorized: false));
+    }
   }
 
   Future<void> toggleFavorite(HomeMediaItem item) async {
     if (!state.authorized) return;
-    await _repository.toggleFavorite(item);
-    final favorites = await _repository.fetchFavorites();
-    emit(
-      state.copyWith(
-        favorites: favorites,
-        favoriteKeys: favorites.map((e) => e.key).toSet(),
-      ),
-    );
+    try {
+      // Використання use case замість прямого виклику репозиторію
+      final result = await _toggleFavoriteUseCase(
+        ToggleFavoriteParams(item: item),
+      );
+      emit(
+        state.copyWith(
+          favorites: result.favorites,
+          favoriteKeys: result.favoriteKeys,
+        ),
+      );
+    } catch (e) {
+      // Обробка помилки (можна додати error state)
+    }
   }
 
   Future<void> recordWatch(HomeMediaItem item) async {
     if (!state.authorized) return;
-    await _repository.addToWatchlist(item);
-    final watchlist = await _repository.fetchWatchlist();
-    emit(
-      state.copyWith(
-        watchlist: watchlist,
-        watchlistKeys: watchlist.map((e) => e.key).toSet(),
-      ),
-    );
+    try {
+      // Використання use case замість прямого виклику репозиторію
+      final result = await _addToWatchlistUseCase(
+        AddToWatchlistParams(item: item),
+      );
+      emit(
+        state.copyWith(
+          watchlist: result.watchlist,
+          watchlistKeys: result.watchlistKeys,
+        ),
+      );
+    } catch (e) {
+      // Обробка помилки (можна додати error state)
+    }
   }
 
   @override

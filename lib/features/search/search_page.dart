@@ -9,14 +9,14 @@ import 'package:project/features/auth/auth_repository.dart';
 import 'package:project/features/collections/media_collections_cubit.dart';
 import 'package:project/features/home/home_media_item.dart';
 import 'package:project/features/home/home_page.dart';
-import 'package:project/features/home/home_repository.dart';
+import 'package:project/features/home/domain/usecases/search_media_usecase.dart';
 import 'package:project/features/home/media_detail_page.dart';
-import 'package:project/features/home/movie_model.dart';
-import 'package:project/features/home/tv_show_model.dart';
 import 'package:project/core/theme.dart';
 import 'package:project/core/page_transitions.dart';
 import 'package:project/shared/widgets/loading_wrapper.dart';
 import 'package:project/shared/widgets/animated_loading_widget.dart';
+
+import '../auth/data/models/local_user.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -32,7 +32,7 @@ class _SearchPageState extends State<SearchPage> {
   double _rating = 5.0;
   bool _showFilters = false;
 
-  late final HomeRepository _repository;
+  late final SearchMediaUseCase _searchMediaUseCase;
   late final AuthRepository _authRepository;
   Timer? _searchDebounce;
   StreamSubscription<LocalUser?>? _authSubscription;
@@ -44,7 +44,7 @@ class _SearchPageState extends State<SearchPage> {
   @override
   void initState() {
     super.initState();
-    _repository = getIt<HomeRepository>();
+    _searchMediaUseCase = getIt<SearchMediaUseCase>();
     _authRepository = getIt<AuthRepository>();
     _loadSearchHistory();
     _searchController.addListener(_onSearchChanged);
@@ -124,19 +124,14 @@ class _SearchPageState extends State<SearchPage> {
     });
 
     try {
-      final searchData = await _repository.searchByName(query);
-      final movies = (searchData['movies'] as List<dynamic>)
-          .cast<Movie>()
-          .map((m) => HomeMediaItem.fromMovie(m))
-          .toList();
-      final tvShows = (searchData['tvShows'] as List<dynamic>)
-          .cast<TvShow>()
-          .map((t) => HomeMediaItem.fromTvShow(t))
-          .toList();
+      // Використання use case замість прямого виклику репозиторію
+      final result = await _searchMediaUseCase(
+        SearchMediaParams(query: query, page: 1),
+      );
 
       if (mounted) {
         setState(() {
-          _searchResults = [...movies, ...tvShows];
+          _searchResults = result.results;
           _loading = false;
           _searching = false;
         });
@@ -161,29 +156,19 @@ class _SearchPageState extends State<SearchPage> {
     });
 
     try {
-      final moviesData = await _repository.searchMovies(
-        genreName: genre.isEmpty ? null : genre,
-        year: year,
-        rating: _rating,
+      // Використання use case замість прямого виклику репозиторію
+      final result = await _searchMediaUseCase(
+        SearchMediaParams(
+          genreName: genre.isEmpty ? null : genre,
+          year: year,
+          rating: _rating,
+          page: 1,
+        ),
       );
-      final tvData = await _repository.searchTvShows(
-        genreName: genre.isEmpty ? null : genre,
-        year: year,
-        rating: _rating,
-      );
-
-      final movies = (moviesData['movies'] as List<dynamic>)
-          .cast<Movie>()
-          .map((m) => HomeMediaItem.fromMovie(m))
-          .toList();
-      final tvShows = (tvData['tvShows'] as List<dynamic>)
-          .cast<TvShow>()
-          .map((t) => HomeMediaItem.fromTvShow(t))
-          .toList();
 
       if (mounted) {
         setState(() {
-          _searchResults = [...movies, ...tvShows];
+          _searchResults = result.results;
           _loading = false;
           _searching = false;
         });

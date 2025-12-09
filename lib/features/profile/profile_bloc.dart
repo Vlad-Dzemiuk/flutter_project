@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'profile_repository.dart';
+import 'domain/repositories/profile_repository.dart';
+import 'domain/usecases/get_user_profile_usecase.dart';
 
 class ProfileState {
   final bool loading;
@@ -22,16 +23,19 @@ class ProfileState {
 }
 
 class ProfileBloc extends Cubit<ProfileState> {
-  final ProfileRepository repository;
+  final GetUserProfileUseCase getUserProfileUseCase;
 
-  ProfileBloc({required this.repository}) : super(ProfileState()) {
+  ProfileBloc({required this.getUserProfileUseCase}) : super(ProfileState()) {
     loadProfile();
   }
 
   Future<void> loadProfile() async {
     emit(state.copyWith(loading: true));
     try {
-      final user = await repository.getUserProfile(1);
+      // Використання use case замість прямого виклику репозиторію
+      final user = await getUserProfileUseCase(
+        const GetUserProfileParams(userId: 1),
+      );
       emit(state.copyWith(loading: false, user: user));
     } catch (e) {
       emit(state.copyWith(loading: false, error: e.toString()));

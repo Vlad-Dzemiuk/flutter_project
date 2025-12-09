@@ -1,3 +1,6 @@
+/// Data model для серіалу (для API відповідей)
+/// 
+/// Це модель даних, яка відповідає структурі API відповіді
 class TvShow {
   final int id;
   final String name;

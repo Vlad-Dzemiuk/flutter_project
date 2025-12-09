@@ -9,6 +9,10 @@ import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 import 'home_media_item.dart';
 import 'home_repository.dart';
+import 'domain/usecases/get_movie_details_usecase.dart';
+import 'domain/usecases/get_tv_details_usecase.dart';
+import 'data/models/movie_model.dart';
+import 'data/models/tv_show_model.dart';
 import 'home_page.dart'; // для MediaPosterCard
 import 'package:project/core/responsive.dart';
 import 'package:project/core/theme.dart';
@@ -25,7 +29,10 @@ class MediaDetailPage extends StatefulWidget {
 }
 
 class _MediaDetailPageState extends State<MediaDetailPage> {
-  late final HomeRepository _repository = getIt<HomeRepository>();
+  late final GetMovieDetailsUseCase _getMovieDetailsUseCase =
+      getIt<GetMovieDetailsUseCase>();
+  late final GetTvDetailsUseCase _getTvDetailsUseCase =
+      getIt<GetTvDetailsUseCase>();
   late final MediaCollectionsCubit _collectionsCubit =
       getIt<MediaCollectionsCubit>();
 
@@ -87,9 +94,15 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
       String? trailerKey;
 
       if (widget.item.isMovie) {
-        final details = await _repository.fetchMovieDetails(widget.item.id);
-        final videos = await _repository.fetchMovieVideos(widget.item.id);
-        final reviews = await _repository.fetchMovieReviews(widget.item.id);
+        // Використання use case замість прямого виклику репозиторію
+        final result = await _getMovieDetailsUseCase(
+          GetMovieDetailsParams(movieId: widget.item.id),
+        );
+        
+        final details = result['details'] as Map<String, dynamic>;
+        final videos = result['videos'] as List<dynamic>;
+        final reviews = result['reviews'] as List<dynamic>;
+        final recommendations = result['recommendations'] as List<dynamic>;
 
         trailerKey = _extractTrailerKey(videos);
 
@@ -98,10 +111,23 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
           _reviews = reviews;
           _trailerKey = trailerKey;
         });
+        
+        // Завантажуємо рекомендації
+        final recs = recommendations.cast<Movie>();
+        final recommendationItems = recs.map((m) => HomeMediaItem.fromMovie(m)).toList();
+        setState(() {
+          _recommendations = recommendationItems;
+        });
       } else {
-        final details = await _repository.fetchTvDetails(widget.item.id);
-        final videos = await _repository.fetchTvVideos(widget.item.id);
-        final reviews = await _repository.fetchTvReviews(widget.item.id);
+        // Використання use case замість прямого виклику репозиторію
+        final result = await _getTvDetailsUseCase(
+          GetTvDetailsParams(tvId: widget.item.id),
+        );
+        
+        final details = result['details'] as Map<String, dynamic>;
+        final videos = result['videos'] as List<dynamic>;
+        final reviews = result['reviews'] as List<dynamic>;
+        final recommendations = result['recommendations'] as List<TvShow>;
 
         trailerKey = _extractTrailerKey(videos);
 
@@ -109,6 +135,12 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
           _details = details;
           _reviews = reviews;
           _trailerKey = trailerKey;
+        });
+        
+        // Завантажуємо рекомендації
+        final recommendationItems = recommendations.map((t) => HomeMediaItem.fromTvShow(t)).toList();
+        setState(() {
+          _recommendations = recommendationItems;
         });
       }
 
@@ -140,44 +172,9 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
   }
 
   Future<void> _loadRecommendations() async {
-    if (mounted) {
-      setState(() {
-        _loadingRecommendations = true;
-      });
-    }
-
-    try {
-      List<HomeMediaItem> recommendations;
-      
-      if (widget.item.isMovie) {
-        final recs = await _repository.fetchMovieRecommendations(widget.item.id);
-        debugPrint('Завантажено ${recs.length} рекомендацій для фільму ${widget.item.id}');
-        recommendations = recs.map((m) => HomeMediaItem.fromMovie(m)).toList();
-      } else {
-        final recs = await _repository.fetchTvRecommendations(widget.item.id);
-        debugPrint('Завантажено ${recs.length} рекомендацій для серіалу ${widget.item.id}');
-        recommendations = recs.map((t) => HomeMediaItem.fromTvShow(t)).toList();
-      }
-
-      if (mounted) {
-        setState(() {
-          _recommendations = recommendations;
-          _loadingRecommendations = false;
-        });
-        debugPrint('Рекомендації встановлено: ${recommendations.length} елементів');
-      }
-    } catch (e, stackTrace) {
-      // Якщо не вдалося завантажити рекомендації, просто залишаємо список порожнім
-      // і не показуємо помилку, щоб не блокувати відображення інших даних
-      debugPrint('Помилка завантаження рекомендацій: $e');
-      debugPrint('Stack trace: $stackTrace');
-      if (mounted) {
-        setState(() {
-          _recommendations = [];
-          _loadingRecommendations = false;
-        });
-      }
-    }
+    // Рекомендації тепер завантажуються в _loadData() для обох типів
+    // Цей метод залишено для сумісності, але він більше не використовується
+    return;
   }
 
   String? _extractTrailerKey(List<dynamic> videos) {

@@ -1,3 +1,6 @@
+/// Data model для жанру (для API відповідей)
+/// 
+/// Це модель даних, яка відповідає структурі API відповіді
 class Genre {
   final int id;
   final String name;

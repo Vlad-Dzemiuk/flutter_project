@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'favorites_repository.dart';
+import '../home/data/models/movie_model.dart';
+import 'domain/usecases/get_favorites_usecase.dart';
 
 class FavoritesState {
   final bool loading;
@@ -22,16 +23,19 @@ class FavoritesState {
 }
 
 class FavoritesBloc extends Cubit<FavoritesState> {
-  final FavoritesRepository repository;
+  final GetFavoritesUseCase getFavoritesUseCase;
 
-  FavoritesBloc({required this.repository}) : super(FavoritesState()) {
+  FavoritesBloc({required this.getFavoritesUseCase}) : super(FavoritesState()) {
     loadFavorites();
   }
 
   Future<void> loadFavorites() async {
     emit(state.copyWith(loading: true));
     try {
-      final movies = await repository.getFavoriteMovies(1);
+      // Використання use case замість прямого виклику репозиторію
+      final movies = await getFavoritesUseCase(
+        const GetFavoritesParams(accountId: 1),
+      );
       emit(state.copyWith(loading: false, movies: movies));
     } catch (e) {
       emit(state.copyWith(loading: false, error: e.toString()));

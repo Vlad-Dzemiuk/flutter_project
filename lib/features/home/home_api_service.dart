@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'movie_model.dart';
-import 'tv_show_model.dart';
-import 'genre_model.dart';
+import 'data/models/movie_model.dart';
+import 'data/models/tv_show_model.dart';
+import 'data/models/genre_model.dart';
 import 'package:project/core/storage/local_cache_db.dart';
 import 'package:project/core/storage/secure_storage_service.dart';
 

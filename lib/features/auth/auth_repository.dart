@@ -1,26 +1,7 @@
 import 'dart:async';
 
-import 'package:equatable/equatable.dart';
-
 import '../../core/storage/auth_db.dart';
-
-/// Локальна модель користувача (зберігається в SQLite).
-class LocalUser extends Equatable {
-  final int id;
-  final String email;
-  final String? displayName;
-  final String? avatarUrl;
-
-  const LocalUser({
-    required this.id,
-    required this.email,
-    this.displayName,
-    this.avatarUrl,
-  });
-
-  @override
-  List<Object?> get props => [id, email, displayName, avatarUrl];
-}
+import 'data/models/local_user.dart';
 
 /// Репозиторій авторизації, що працює поверх SQLite (AuthDb).
 class AuthRepository {

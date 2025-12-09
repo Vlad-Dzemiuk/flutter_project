@@ -1,3 +1,6 @@
+/// Data model для фільму (для API відповідей)
+/// 
+/// Це модель даних, яка відповідає структурі API відповіді
 class Movie {
   final int id;
   final String title;
@@ -23,3 +26,4 @@ class Movie {
     );
   }
 }
+

@@ -1,5 +1,5 @@
-import 'movie_model.dart';
-import 'tv_show_model.dart';
+import 'data/models/movie_model.dart';
+import 'data/models/tv_show_model.dart';
 
 class HomeMediaItem {
   final int id;

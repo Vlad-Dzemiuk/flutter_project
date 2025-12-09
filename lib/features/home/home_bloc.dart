@@ -1,8 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'home_media_item.dart';
-import 'home_repository.dart';
-import 'movie_model.dart';
-import 'tv_show_model.dart';
+import 'domain/usecases/get_popular_content_usecase.dart';
+import 'domain/usecases/search_media_usecase.dart';
 
 class HomeState {
   final List<HomeMediaItem> popularMovies;
@@ -61,9 +60,13 @@ class HomeState {
 }
 
 class HomeBloc extends Cubit<HomeState> {
-  final HomeRepository repository;
+  final GetPopularContentUseCase getPopularContentUseCase;
+  final SearchMediaUseCase searchMediaUseCase;
 
-  HomeBloc({required this.repository}) : super(HomeState()) {
+  HomeBloc({
+    required this.getPopularContentUseCase,
+    required this.searchMediaUseCase,
+  }) : super(HomeState()) {
     loadContent();
   }
 
@@ -71,23 +74,18 @@ class HomeBloc extends Cubit<HomeState> {
     if (isClosed) return;
     emit(state.copyWith(loading: true));
     try {
-      final popularMovies = await repository.fetchPopularMovies(page: 1);
-      final popularTv = await repository.fetchPopularTvShows(page: 1);
-      final catalogMovies = await repository.fetchAllMovies(page: 1);
-      final catalogTv = await repository.fetchAllTvShows(page: 1);
-      
-      final List<HomeMediaItem> popularMoviesItems = popularMovies.map((m) => HomeMediaItem.fromMovie(m)).toList();
-      final List<HomeMediaItem> popularTvItems = popularTv.map((t) => HomeMediaItem.fromTvShow(t)).toList();
-      final List<HomeMediaItem> allMoviesItems = catalogMovies.map((m) => HomeMediaItem.fromMovie(m)).toList();
-      final List<HomeMediaItem> allTvItems = catalogTv.map((t) => HomeMediaItem.fromTvShow(t)).toList();
+      // Використання use case замість прямого виклику репозиторію
+      final result = await getPopularContentUseCase(
+        const GetPopularContentParams(page: 1),
+      );
       
       if (!isClosed) {
         emit(
           state.copyWith(
-            popularMovies: popularMoviesItems,
-            popularTvShows: popularTvItems,
-            allMovies: allMoviesItems,
-            allTvShows: allTvItems,
+            popularMovies: result.popularMovies,
+            popularTvShows: result.popularTvShows,
+            allMovies: result.allMovies,
+            allTvShows: result.allTvShows,
             loading: false,
             error: '',
           ),
@@ -117,41 +115,22 @@ class HomeBloc extends Cubit<HomeState> {
     
     try {
       int currentPage = loadMore ? (state.searchResults.length ~/ 20) + 1 : 1;
-      List<HomeMediaItem> newResults = [];
-      bool hasMore = false;
       
-      if (query != null && query.isNotEmpty) {
-        // Пошук за назвою
-        final searchData = await repository.searchByName(query, page: currentPage);
-        final movies = (searchData['movies'] as List<dynamic>).cast<Movie>().map((m) => HomeMediaItem.fromMovie(m)).toList();
-        final tvShows = (searchData['tvShows'] as List<dynamic>).cast<TvShow>().map((t) => HomeMediaItem.fromTvShow(t)).toList();
-        newResults = [...movies, ...tvShows];
-        hasMore = searchData['hasMore'] as bool? ?? false;
-      } else {
-        // Пошук за фільтрами
-        final moviesData = await repository.searchMovies(
+      // Використання use case замість прямого виклику репозиторію
+      final result = await searchMediaUseCase(
+        SearchMediaParams(
+          query: query,
           genreName: genreName,
           year: year,
           rating: rating,
           page: currentPage,
-        );
-        final tvShowsData = await repository.searchTvShows(
-          genreName: genreName,
-          year: year,
-          rating: rating,
-          page: currentPage,
-        );
-        
-        final movies = (moviesData['movies'] as List<dynamic>).cast<Movie>().map((m) => HomeMediaItem.fromMovie(m)).toList();
-        final tvShows = (tvShowsData['tvShows'] as List<dynamic>).cast<TvShow>().map((t) => HomeMediaItem.fromTvShow(t)).toList();
-        newResults = [...movies, ...tvShows];
-        
-        final moviesHasMore = moviesData['hasMore'] as bool? ?? false;
-        final tvHasMore = tvShowsData['hasMore'] as bool? ?? false;
-        hasMore = moviesHasMore || tvHasMore;
-      }
+          loadMore: loadMore,
+        ),
+      );
       
-      final allResults = loadMore ? [...state.searchResults, ...newResults] : newResults;
+      final allResults = loadMore 
+          ? [...state.searchResults, ...result.results] 
+          : result.results;
       
       if (!isClosed) {
         emit(
@@ -160,7 +139,7 @@ class HomeBloc extends Cubit<HomeState> {
             searching: false,
             loadingMore: false,
             searchQuery: query,
-            hasMoreResults: hasMore,
+            hasMoreResults: result.hasMore,
             error: '',
           ),
         );

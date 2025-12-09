@@ -114,15 +114,17 @@ class AboutAppPage extends StatelessWidget {
                                           color: theme.cardColor,
                                           borderRadius: BorderRadius.circular(20),
                                           border: Border.all(
-                                            color: colors.outlineVariant.withOpacity(0.8),
+                                            color: colors.outlineVariant.withValues(alpha:
+                                              theme.brightness == Brightness.light ? 1 : 0.4,
+                                            ),
                                           ),
                                           boxShadow: [
                                             BoxShadow(
-                                              color: Colors.black.withOpacity(
+                                              color: Colors.black.withValues(alpha:
                                                 theme.brightness == Brightness.light ? 0.08 : 0.25,
                                               ),
-                                              blurRadius: 16,
-                                              offset: const Offset(0, 8),
+                                              blurRadius: 22,
+                                              offset: const Offset(0, 14),
                                             ),
                                           ],
                                         ),
@@ -175,17 +177,21 @@ class AboutAppPage extends StatelessWidget {
                                         padding: EdgeInsets.all(spacing * 1.5),
                                         decoration: BoxDecoration(
                                           color: theme.cardColor,
-                                          borderRadius: BorderRadius.circular(18),
+                                          borderRadius: BorderRadius.circular(
+                                            isTablet ? 20 : 18,
+                                          ),
                                           border: Border.all(
-                                            color: colors.outlineVariant.withOpacity(0.8),
+                                            color: colors.outlineVariant.withValues(alpha:
+                                              theme.brightness == Brightness.light ? 1 : 0.4,
+                                            ),
                                           ),
                                           boxShadow: [
                                             BoxShadow(
-                                              color: Colors.black.withOpacity(
+                                              color: Colors.black.withValues(alpha:
                                                 theme.brightness == Brightness.light ? 0.08 : 0.25,
                                               ),
-                                              blurRadius: 14,
-                                              offset: const Offset(0, 8),
+                                              blurRadius: isTablet ? 22 : 18,
+                                              offset: Offset(0, isTablet ? 14 : 12),
                                             ),
                                           ],
                                         ),

@@ -82,7 +82,7 @@ class _HomePageState extends State<HomePage> {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (_) => HomeBloc(repository: getIt<HomeRepository>()),
+          create: (_) => getIt<HomeBloc>(),
         ),
         BlocProvider.value(value: getIt<MediaCollectionsCubit>()),
       ],

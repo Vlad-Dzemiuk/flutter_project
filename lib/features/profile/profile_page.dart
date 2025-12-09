@@ -9,6 +9,9 @@ import '../../core/theme.dart';
 import '../auth/auth_cubit.dart';
 import '../auth/auth_repository.dart';
 import '../auth/auth_state.dart';
+import '../auth/data/models/local_user.dart';
+import '../auth/domain/entities/user.dart';
+import '../auth/data/mappers/user_mapper.dart';
 import '../../shared/widgets/loading_wrapper.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -41,15 +44,16 @@ class _ProfilePageState extends State<ProfilePage> {
         child: StreamBuilder<LocalUser?>(
           stream: authRepo.authStateChanges(),
           builder: (context, snapshot) {
-          final user = snapshot.data ?? authRepo.currentUser;
+            final localUser = snapshot.data ?? authRepo.currentUser;
+            final user = localUser != null ? UserMapper.toEntity(localUser) : null;
 
-          if (user == null) {
-            return _buildUnauthorizedView(context);
-          }
+            if (user == null) {
+              return _buildUnauthorizedView(context);
+            }
 
-          return _buildAuthorizedView(context, user, authRepo);
-        },
-      ),
+            return _buildAuthorizedView(context, user, authRepo);
+          },
+        ),
       ),
     );
   }
@@ -306,7 +310,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _buildAuthorizedView(
       BuildContext context,
-      LocalUser user,
+      User user,
       AuthRepository authRepo,
       ) {
     final theme = Theme.of(context);
@@ -511,6 +515,28 @@ class _ProfilePageState extends State<ProfilePage> {
                                       ],
                                     ),
                                               SizedBox(height: buttonSpacing),
+                                              // Кнопка виходу з акаунта
+                                              FilledButton.icon(
+                                                style: FilledButton.styleFrom(
+                                                  backgroundColor: colors.errorContainer,
+                                                  foregroundColor: colors.onErrorContainer,
+                                                  padding: EdgeInsets.symmetric(
+                                                    vertical: isDesktop ? 16 : 14,
+                                                  ),
+                                                ),
+                                                onPressed: () async {
+                                                  await authRepo.signOut();
+                                                  if (context.mounted) {
+                                                    Navigator.of(context)
+                                                        .pushReplacementNamed(
+                                                      AppConstants.loginRoute,
+                                                    );
+                                                  }
+                                                },
+                                                icon: const Icon(Icons.logout),
+                                                label: const Text('Вийти з акаунта'),
+                                              ),
+                                              SizedBox(height: buttonSpacing),
                                     FilledButton.icon(
                                                 onPressed: () {
                                                   Navigator.of(context).pushNamed(
@@ -578,6 +604,25 @@ class _ProfilePageState extends State<ProfilePage> {
                                                 ],
                                               ),
                                               SizedBox(height: buttonSpacing),
+                                              // Кнопка виходу з акаунта
+                                              FilledButton.icon(
+                                                style: FilledButton.styleFrom(
+                                                  backgroundColor: colors.errorContainer,
+                                                  foregroundColor: colors.onErrorContainer,
+                                                ),
+                                                onPressed: () async {
+                                                  await authRepo.signOut();
+                                                  if (context.mounted) {
+                                                    Navigator.of(context)
+                                                        .pushReplacementNamed(
+                                                      AppConstants.loginRoute,
+                                                    );
+                                                  }
+                                                },
+                                                icon: const Icon(Icons.logout),
+                                                label: const Text('Вийти з акаунта'),
+                                              ),
+                                              SizedBox(height: buttonSpacing),
                                               FilledButton.icon(
                                                 onPressed: () {
                                                   Navigator.of(context).pushNamed(
@@ -604,28 +649,6 @@ class _ProfilePageState extends State<ProfilePage> {
                                     ),
                                   ],
                                 ),
-                              ),
-                              SizedBox(height: spacing * 1.5),
-                              FilledButton.icon(
-                                style: FilledButton.styleFrom(
-                                  minimumSize: Size.fromHeight(
-                                    isDesktop ? 60 : 56,
-                                  ),
-                                  padding: EdgeInsets.symmetric(
-                                    vertical: isDesktop ? 18 : 16,
-                                  ),
-                                ),
-                                onPressed: () async {
-                                  await authRepo.signOut();
-                                  if (context.mounted) {
-                                    Navigator.of(context)
-                                        .pushReplacementNamed(
-                                      AppConstants.loginRoute,
-                                    );
-                                  }
-                                },
-                                icon: const Icon(Icons.logout),
-                                label: const Text('Вийти з акаунта'),
                               ),
                         ],
                       ),

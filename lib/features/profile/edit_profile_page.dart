@@ -9,6 +9,10 @@ import '../../core/di.dart';
 import '../../core/responsive.dart';
 import '../../core/theme.dart';
 import '../auth/auth_repository.dart';
+import '../auth/data/models/local_user.dart';
+import '../auth/domain/entities/user.dart';
+import '../auth/data/mappers/user_mapper.dart';
+import '../profile/domain/usecases/update_profile_usecase.dart';
 import '../../shared/widgets/loading_wrapper.dart';
 
 class EditProfilePage extends StatefulWidget {
@@ -23,22 +27,29 @@ class _EditProfilePageState extends State<EditProfilePage> {
   final _picker = ImagePicker();
 
   late final AuthRepository _authRepository;
+  late final UpdateProfileUseCase _updateProfileUseCase;
   StreamSubscription<LocalUser?>? _subscription;
-  LocalUser? _user;
+  User? _user;
   String? _avatarPath;
+  String? _originalAvatarPath; // Зберігаємо оригінальний шлях для порівняння
 
   @override
   void initState() {
     super.initState();
     _authRepository = getIt<AuthRepository>();
-    _hydrateUser(_authRepository.currentUser);
-    _subscription = _authRepository.authStateChanges().listen(_hydrateUser);
+    _updateProfileUseCase = getIt<UpdateProfileUseCase>();
+    final localUser = _authRepository.currentUser;
+    _hydrateUser(localUser != null ? UserMapper.toEntity(localUser) : null);
+    _subscription = _authRepository.authStateChanges().listen((localUser) {
+      _hydrateUser(localUser != null ? UserMapper.toEntity(localUser) : null);
+    });
   }
 
-  void _hydrateUser(LocalUser? user) {
+  void _hydrateUser(User? user) {
     _user = user;
     _nameController.text = user?.displayName ?? '';
     _avatarPath = user?.avatarUrl;
+    _originalAvatarPath = user?.avatarUrl; // Зберігаємо оригінальний шлях
     if (mounted) {
       setState(() {});
     }
@@ -114,11 +125,19 @@ class _EditProfilePageState extends State<EditProfilePage> {
   Future<void> _saveProfile() async {
     try {
       final trimmedName = _nameController.text.trim();
-      final updated = await _authRepository.updateProfile(
-        displayName: trimmedName.isEmpty ? null : trimmedName,
-        clearDisplayName: trimmedName.isEmpty,
-        avatarUrl: _avatarPath,
-        clearAvatar: _avatarPath == null || _avatarPath!.isEmpty,
+      
+      // Визначаємо, чи змінився аватар
+      final avatarChanged = _avatarPath != _originalAvatarPath;
+      
+      // Використання use case замість прямого виклику репозиторію
+      final updated = await _updateProfileUseCase(
+        UpdateProfileParams(
+          displayName: trimmedName.isEmpty ? null : trimmedName,
+          clearDisplayName: trimmedName.isEmpty,
+          // Передаємо avatarUrl тільки якщо він змінився
+          avatarUrl: avatarChanged ? _avatarPath : null,
+          clearAvatar: _avatarPath == null || _avatarPath!.isEmpty,
+        ),
       );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -139,7 +158,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final changed = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
+      backgroundColor: Colors.transparent,
       builder: (ctx) {
+        final theme = Theme.of(ctx);
+        final colors = theme.colorScheme;
+        final isDesktop = Responsive.isDesktop(ctx);
+        final isTablet = Responsive.isTablet(ctx);
+        final horizontalPadding = Responsive.getHorizontalPadding(ctx);
+        final spacing = Responsive.getSpacing(ctx);
+        final isDark = theme.brightness == Brightness.dark;
+        
         bool isLoading = false;
         return StatefulBuilder(
           builder: (ctx, setModalState) {
@@ -174,60 +202,242 @@ class _EditProfilePageState extends State<EditProfilePage> {
               }
             }
 
-            return Padding(
-              padding: EdgeInsets.only(
-                left: 20,
-                right: 20,
-                top: 24,
-                bottom: 24 + MediaQuery.of(ctx).viewInsets.bottom,
+            return Container(
+              decoration: BoxDecoration(
+                gradient: isDark
+                    ? const LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Color(0xFF0F172A),
+                          Color(0xFF0B1020),
+                        ],
+                      )
+                    : LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          colors.surfaceContainerHighest,
+                          colors.surface,
+                        ],
+                      ),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(24),
+                  topRight: Radius.circular(24),
+                ),
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    'Змінити пароль',
-                    style: Theme.of(context).textTheme.titleLarge,
+              child: SafeArea(
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    left: horizontalPadding.left,
+                    right: horizontalPadding.right,
+                    top: spacing * 1.5,
+                    bottom: spacing * 1.5 + MediaQuery.of(ctx).viewInsets.bottom,
                   ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: currentController,
-                    obscureText: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Поточний пароль',
-                      border: OutlineInputBorder(),
-                    ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Handle bar
+                      Center(
+                        child: Container(
+                          width: 40,
+                          height: 4,
+                          margin: EdgeInsets.only(bottom: spacing),
+                          decoration: BoxDecoration(
+                            color: colors.onSurfaceVariant.withOpacity(0.4),
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
+                      ),
+                      // Header
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.lock_outline,
+                            color: colors.primary,
+                            size: isDesktop ? 28 : isTablet ? 26 : 24,
+                          ),
+                          SizedBox(width: spacing * 0.6),
+                          Text(
+                            'Змінити пароль',
+                            style: TextStyle(
+                              color: colors.onBackground,
+                              fontSize: isDesktop ? 24 : isTablet ? 22 : 20,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: spacing * 1.5),
+                      // Form fields
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: isDesktop ? 18 : isTablet ? 16 : 14,
+                          vertical: isDesktop ? 8 : 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: colors.surfaceVariant.withOpacity(
+                            isDark ? 0.2 : 0.5,
+                          ),
+                          borderRadius: BorderRadius.circular(
+                            isDesktop ? 16 : 14,
+                          ),
+                          border: Border.all(
+                            color: colors.outlineVariant.withOpacity(0.5),
+                          ),
+                        ),
+                        child: TextField(
+                          controller: currentController,
+                          obscureText: true,
+                          style: TextStyle(
+                            color: colors.onSurface,
+                            fontSize: isDesktop ? 16 : 14,
+                          ),
+                          decoration: InputDecoration(
+                            labelText: 'Поточний пароль',
+                            labelStyle: TextStyle(
+                              color: colors.onSurfaceVariant,
+                              fontSize: isDesktop ? 16 : 14,
+                            ),
+                            prefixIcon: Icon(
+                              Icons.lock_outline,
+                              color: colors.onSurfaceVariant,
+                              size: isDesktop ? 22 : 20,
+                            ),
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.symmetric(
+                              vertical: isDesktop ? 16 : 14,
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: spacing),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: isDesktop ? 18 : isTablet ? 16 : 14,
+                          vertical: isDesktop ? 8 : 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: colors.surfaceVariant.withOpacity(
+                            isDark ? 0.2 : 0.5,
+                          ),
+                          borderRadius: BorderRadius.circular(
+                            isDesktop ? 16 : 14,
+                          ),
+                          border: Border.all(
+                            color: colors.outlineVariant.withOpacity(0.5),
+                          ),
+                        ),
+                        child: TextField(
+                          controller: newController,
+                          obscureText: true,
+                          style: TextStyle(
+                            color: colors.onSurface,
+                            fontSize: isDesktop ? 16 : 14,
+                          ),
+                          decoration: InputDecoration(
+                            labelText: 'Новий пароль',
+                            labelStyle: TextStyle(
+                              color: colors.onSurfaceVariant,
+                              fontSize: isDesktop ? 16 : 14,
+                            ),
+                            prefixIcon: Icon(
+                              Icons.lock_open_outlined,
+                              color: colors.onSurfaceVariant,
+                              size: isDesktop ? 22 : 20,
+                            ),
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.symmetric(
+                              vertical: isDesktop ? 16 : 14,
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: spacing),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: isDesktop ? 18 : isTablet ? 16 : 14,
+                          vertical: isDesktop ? 8 : 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: colors.surfaceVariant.withOpacity(
+                            isDark ? 0.2 : 0.5,
+                          ),
+                          borderRadius: BorderRadius.circular(
+                            isDesktop ? 16 : 14,
+                          ),
+                          border: Border.all(
+                            color: colors.outlineVariant.withOpacity(0.5),
+                          ),
+                        ),
+                        child: TextField(
+                          controller: confirmController,
+                          obscureText: true,
+                          style: TextStyle(
+                            color: colors.onSurface,
+                            fontSize: isDesktop ? 16 : 14,
+                          ),
+                          decoration: InputDecoration(
+                            labelText: 'Підтвердити пароль',
+                            labelStyle: TextStyle(
+                              color: colors.onSurfaceVariant,
+                              fontSize: isDesktop ? 16 : 14,
+                            ),
+                            prefixIcon: Icon(
+                              Icons.verified_outlined,
+                              color: colors.onSurfaceVariant,
+                              size: isDesktop ? 22 : 20,
+                            ),
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.symmetric(
+                              vertical: isDesktop ? 16 : 14,
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: spacing * 1.5),
+                      // Submit button
+                      FilledButton.icon(
+                        style: FilledButton.styleFrom(
+                          backgroundColor: colors.primary,
+                          foregroundColor: colors.onPrimary,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                              isDesktop ? 16 : 14,
+                            ),
+                          ),
+                          padding: EdgeInsets.symmetric(
+                            vertical: isDesktop ? 18 : 16,
+                          ),
+                        ),
+                        onPressed: isLoading ? null : submit,
+                        icon: isLoading
+                            ? SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    colors.onPrimary,
+                                  ),
+                                ),
+                              )
+                            : Icon(
+                                Icons.save_outlined,
+                                size: isDesktop ? 22 : 20,
+                              ),
+                        label: Text(
+                          isLoading ? 'Збереження...' : 'Зберегти',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w800,
+                            fontSize: isDesktop ? 16 : 14,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: newController,
-                    obscureText: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Новий пароль',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: confirmController,
-                    obscureText: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Підтвердити пароль',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  FilledButton(
-                    onPressed: isLoading ? null : submit,
-                    child: isLoading
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Text('Зберегти'),
-                  ),
-                ],
+                ),
               ),
             );
           },
