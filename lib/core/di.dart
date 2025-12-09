@@ -38,17 +38,20 @@ import '../features/profile/profile_bloc.dart';
 import '../core/storage/auth_db.dart';
 import '../core/storage/local_cache_db.dart';
 import '../core/storage/user_prefs.dart';
-import '../core/storage/media_collections_storage.dart';
 import '../core/network/dio_client.dart';
 
 final getIt = GetIt.instance;
 
 Future<void> init() async {
   // Initialize databases
-  await AuthDb.instance.database;
-  await LocalCacheDb.instance.database;
-  await UserPrefs.instance.database;
-  await MediaCollectionsStorage.instance.database;
+  // Initialize Drift database for auth
+  await AuthDb.instance.database.then((db) => db.ensureInitialized());
+  // Initialize Drift database for cache
+  await LocalCacheDb.instance.database.then((db) => db.ensureInitialized());
+  // Initialize Hive for user preferences
+  await UserPrefs.instance.init();
+  // Initialize Drift database for media collections
+  await MediaCollectionsStorage.instance.database.then((db) => db.ensureInitialized());
   
   // Repositories (must be registered before DioClient to pass AuthRepository)
   getIt.registerLazySingleton<AuthRepository>(() => AuthRepository());

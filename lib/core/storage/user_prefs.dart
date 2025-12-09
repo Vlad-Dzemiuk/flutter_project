@@ -1,159 +1,138 @@
 import 'dart:convert';
-import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-/// Збереження user preferences (тема, мова, тощо) через SQLite.
+/// Збереження user preferences (тема, мова, тощо) через Hive.
 class UserPrefs {
   UserPrefs._internal();
   static final UserPrefs instance = UserPrefs._internal();
 
-  Database? _db;
+  static const String _prefsBoxName = 'user_preferences';
+  static const String _searchHistoryBoxName = 'search_history';
+  
+  static const String _themeModeKey = 'theme_mode';
+  static const String _languageCodeKey = 'language_code';
 
-  Future<Database> get database async {
-    if (_db != null) return _db!;
+  Box? _prefsBox;
+  Box? _searchHistoryBox;
 
-    final dbPath = await getDatabasesPath();
-    final path = join(dbPath, 'user_prefs.db');
+  /// Ініціалізація Hive boxes для user preferences
+  Future<void> init() async {
+    if (_prefsBox != null && _searchHistoryBox != null) return;
 
-    _db = await openDatabase(
-      path,
-      version: 1,
-      onCreate: (db, version) async {
-        await db.execute('''
-          CREATE TABLE preferences (
-            key TEXT PRIMARY KEY,
-            value TEXT NOT NULL
-          )
-        ''');
-        await db.execute('''
-          CREATE TABLE search_history (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            media_id INTEGER NOT NULL,
-            is_movie INTEGER NOT NULL,
-            data TEXT NOT NULL,
-            added_at INTEGER NOT NULL
-          )
-        ''');
-        // Створюємо індекс для швидкого пошуку
-        await db.execute('''
-          CREATE INDEX idx_search_history_media 
-          ON search_history(media_id, is_movie)
-        ''');
-      },
-    );
+    _prefsBox = await Hive.openBox(_prefsBoxName);
+    _searchHistoryBox = await Hive.openBox(_searchHistoryBoxName);
+  }
 
-    return _db!;
+  Box get prefsBox {
+    if (_prefsBox == null) {
+      throw Exception('UserPrefs not initialized. Call init() first.');
+    }
+    return _prefsBox!;
+  }
+
+  Box get searchHistoryBox {
+    if (_searchHistoryBox == null) {
+      throw Exception('UserPrefs not initialized. Call init() first.');
+    }
+    return _searchHistoryBox!;
   }
 
   // === Тема застосунку ===
 
   Future<void> setThemeMode(String mode) async {
     // 'light', 'dark', 'system'
-    final db = await database;
-    await db.insert(
-      'preferences',
-      {'key': 'theme_mode', 'value': mode},
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    await prefsBox.put(_themeModeKey, mode);
   }
 
   Future<String> getThemeMode() async {
-    final db = await database;
-    final rows = await db.query(
-      'preferences',
-      where: 'key = ?',
-      whereArgs: ['theme_mode'],
-      limit: 1,
-    );
-    if (rows.isEmpty) return 'system';
-    return rows.first['value'] as String;
+    return prefsBox.get(_themeModeKey, defaultValue: 'system') as String;
   }
 
   // === Мова інтерфейсу ===
 
   Future<void> setLanguageCode(String code) async {
-    final db = await database;
-    await db.insert(
-      'preferences',
-      {'key': 'language_code', 'value': code},
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    await prefsBox.put(_languageCodeKey, code);
   }
 
   Future<String> getLanguageCode() async {
-    final db = await database;
-    final rows = await db.query(
-      'preferences',
-      where: 'key = ?',
-      whereArgs: ['language_code'],
-      limit: 1,
-    );
-    if (rows.isEmpty) return 'en';
-    return rows.first['value'] as String;
+    return prefsBox.get(_languageCodeKey, defaultValue: 'en') as String;
   }
 
   // === Історія переглянутих фільмів/серіалів з пошуку ===
 
   Future<void> addToSearchHistory(Map<String, dynamic> mediaItem) async {
-    final db = await database;
     final mediaId = mediaItem['id'] as int;
     final isMovie = (mediaItem['isMovie'] as bool?) ?? false;
     
-    // Видаляємо якщо вже є (за id та isMovie)
-    await db.delete(
-      'search_history',
-      where: 'media_id = ? AND is_movie = ?',
-      whereArgs: [mediaId, isMovie ? 1 : 0],
-    );
-
-    // Додаємо новий запис
-    await db.insert(
-      'search_history',
-      {
-        'media_id': mediaId,
-        'is_movie': isMovie ? 1 : 0,
-        'data': jsonEncode(mediaItem),
-        'added_at': DateTime.now().millisecondsSinceEpoch,
-      },
-    );
+    // Створюємо ключ для унікальності (media_id + isMovie)
+    final key = '${mediaId}_${isMovie ? 1 : 0}';
+    
+    // Зберігаємо дані з timestamp
+    final entry = {
+      'data': mediaItem,
+      'added_at': DateTime.now().millisecondsSinceEpoch,
+    };
+    
+    await searchHistoryBox.put(key, jsonEncode(entry));
 
     // Обмежуємо до 50 елементів - видаляємо найстаріші
-    final count = Sqflite.firstIntValue(
-      await db.rawQuery('SELECT COUNT(*) FROM search_history'),
-    ) ?? 0;
-    
-    if (count > 50) {
-      final rowsToDelete = await db.query(
-        'search_history',
-        orderBy: 'added_at ASC',
-        limit: count - 50,
-      );
-      for (final row in rowsToDelete) {
-        await db.delete(
-          'search_history',
-          where: 'id = ?',
-          whereArgs: [row['id']],
-        );
+    final allKeys = searchHistoryBox.keys.toList();
+    if (allKeys.length > 50) {
+      // Сортуємо ключі за timestamp (найстаріші спочатку)
+      final entriesWithTimestamps = <MapEntry<String, int>>[];
+      for (final key in allKeys) {
+        final entryJson = searchHistoryBox.get(key) as String?;
+        if (entryJson != null) {
+          try {
+            final entry = jsonDecode(entryJson) as Map<String, dynamic>;
+            final timestamp = entry['added_at'] as int;
+            entriesWithTimestamps.add(MapEntry(key.toString(), timestamp));
+          } catch (e) {
+            // Якщо не вдалося розпарсити, видаляємо
+            await searchHistoryBox.delete(key);
+          }
+        }
+      }
+      
+      entriesWithTimestamps.sort((a, b) => a.value.compareTo(b.value));
+      
+      // Видаляємо найстаріші записи
+      final toDelete = entriesWithTimestamps.length - 50;
+      for (var i = 0; i < toDelete; i++) {
+        await searchHistoryBox.delete(entriesWithTimestamps[i].key);
       }
     }
   }
 
   Future<List<Map<String, dynamic>>> getSearchHistory() async {
-    final db = await database;
-    final rows = await db.query(
-      'search_history',
-      orderBy: 'added_at DESC',
-      limit: 50,
-    );
+    final allKeys = searchHistoryBox.keys.toList();
+    final entriesWithTimestamps = <MapEntry<Map<String, dynamic>, int>>[];
     
-    return rows.map((row) {
-      final dataJson = jsonDecode(row['data'] as String) as Map<String, dynamic>;
-      return dataJson;
-    }).toList();
+    for (final key in allKeys) {
+      final entryJson = searchHistoryBox.get(key) as String?;
+      if (entryJson != null) {
+        try {
+          final entry = jsonDecode(entryJson) as Map<String, dynamic>;
+          final data = entry['data'] as Map<String, dynamic>;
+          final timestamp = entry['added_at'] as int;
+          entriesWithTimestamps.add(MapEntry(data, timestamp));
+        } catch (e) {
+          // Пропускаємо пошкоджені записи
+          continue;
+        }
+      }
+    }
+    
+    // Сортуємо за timestamp (найновіші спочатку) та обмежуємо до 50
+    entriesWithTimestamps.sort((a, b) => b.value.compareTo(a.value));
+    
+    return entriesWithTimestamps
+        .take(50)
+        .map((entry) => entry.key)
+        .toList();
   }
 
   Future<void> clearSearchHistory() async {
-    final db = await database;
-    await db.delete('search_history');
+    await searchHistoryBox.clear();
   }
 }

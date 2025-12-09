@@ -3,7 +3,7 @@ import 'dart:async';
 import '../../core/storage/auth_db.dart';
 import 'data/models/local_user.dart';
 
-/// Репозиторій авторизації, що працює поверх SQLite (AuthDb).
+/// Репозиторій авторизації, що працює поверх Drift бази даних (AuthDb).
 class AuthRepository {
   AuthRepository() : _db = AuthDb.instance;
 

@@ -1,5 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../home/data/models/movie_model.dart';
 import 'search_event.dart';
 import 'search_state.dart';
 import 'domain/usecases/search_by_filters_usecase.dart';

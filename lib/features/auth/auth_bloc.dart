@@ -109,7 +109,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final errorString = error.toString().toLowerCase();
     final errorMessage = error.toString();
     
-    // Обробка помилок з локальної бази даних (SQLite)
+    // Обробка помилок з локальної бази даних (Drift)
     if (errorMessage.contains('Користувача з таким email не знайдено') ||
         errorString.contains('user-not-found')) {
       return 'Користувача з таким email не знайдено. Перевірте email або зареєструйтеся.';

@@ -1,6 +1,5 @@
 import '../../../../core/domain/base_usecase.dart';
 import '../../home_repository.dart';
-import '../../data/models/tv_show_model.dart';
 
 /// Параметри для GetTvDetailsUseCase
 class GetTvDetailsParams {

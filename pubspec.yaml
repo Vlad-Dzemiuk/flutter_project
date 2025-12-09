@@ -26,8 +26,11 @@ dependencies:
 
   # Local storage
   flutter_secure_storage: ^8.0.0
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
 
-  # Offline DB (Drift)
+  # Offline DB (Drift) - ORM для локальних баз даних
+  # Використовується для: кешу API, авторизації, улюблених та watchlist
   drift: ^2.7.0
   drift_sqflite: ^2.0.0
 
@@ -35,6 +38,8 @@ dependencies:
   flutter_dotenv: ^5.0.2
   cached_network_image: ^3.2.3
   equatable: ^2.0.5
+  # sqflite використовується тільки для getDatabasesPath() в drift_sqflite
+  # user_prefs використовує Hive
   sqflite: ^2.3.0
   path: ^1.9.0
   youtube_player_iframe: ^5.1.2

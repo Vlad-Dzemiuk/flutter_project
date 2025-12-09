@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/constants.dart';
 import '../../core/responsive.dart';
-import '../../core/theme.dart';
 
 /// Стилізований діалог для неавторизованих користувачів
 class AuthDialog extends StatelessWidget {
@@ -41,7 +40,6 @@ class AuthDialog extends StatelessWidget {
     final isDesktop = Responsive.isDesktop(context);
     final isTablet = Responsive.isTablet(context);
     final spacing = Responsive.getSpacing(context);
-    final horizontalPadding = Responsive.getHorizontalPadding(context);
 
     return Dialog(
       backgroundColor: Colors.transparent,

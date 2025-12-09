@@ -403,7 +403,6 @@ class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    final isMobile = Responsive.isMobile(context);
     final horizontalPadding = Responsive.getHorizontalPadding(context);
     
     return Container(

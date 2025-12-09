@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-/// Data model для користувача (для збереження в SQLite)
+/// Data model для користувача (для збереження в Drift базі даних)
 /// 
 /// Це модель даних, яка відповідає структурі бази даних
 class LocalUser extends Equatable {

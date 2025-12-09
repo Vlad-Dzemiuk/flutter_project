@@ -54,10 +54,6 @@ class _LoginPageState extends State<LoginPage> {
         value: getIt<AuthBloc>(),
         child: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
-          final theme = Theme.of(context);
-          final colors = theme.colorScheme;
-          final isDark = theme.brightness == Brightness.dark;
-          
           if (state is AuthAuthenticated) {
             // Показуємо нотифікацію про успішну авторизацію
             AppNotification.showSuccess(
