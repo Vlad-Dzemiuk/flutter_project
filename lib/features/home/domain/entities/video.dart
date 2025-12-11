@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 /// Domain entity для відео
 /// 
 /// Це чиста domain entity без залежностей від data layer
@@ -52,11 +50,6 @@ class Video {
     final type = json['type'] as String? ?? '';
     final name = json['name'] as String? ?? '';
     final official = json['official'] as bool? ?? false;
-
-    // Логування для дебагу (тільки якщо є дані)
-    if (kDebugMode && key.isNotEmpty) {
-      debugPrint('Video.fromJson: key=$key, site=$site, type=$type, name=$name, official=$official');
-    }
 
     return Video(
       id: id,

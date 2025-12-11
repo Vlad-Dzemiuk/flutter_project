@@ -139,10 +139,16 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
 
       if (trailerKey != null && trailerKey.isNotEmpty) {
         _youtubeController?.close();
+        // Витягуємо video ID з ключа (якщо це URL)
+        final extractedVideoId = _extractVideoId(trailerKey);
         _youtubeController = YoutubePlayerController.fromVideoId(
-          videoId: trailerKey,
+          videoId: extractedVideoId,
           autoPlay: false,
-          params: const YoutubePlayerParams(showFullscreenButton: true),
+          params: const YoutubePlayerParams(
+            showControls: true,
+            showFullscreenButton: true,
+            origin: 'https://www.youtube-nocookie.com',
+          ),
         );
         _playerValueSubscription?.cancel();
         _playerValueSubscription = _youtubeController!.listen(
@@ -168,6 +174,52 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
     // Рекомендації тепер завантажуються в _loadData() для обох типів
     // Цей метод залишено для сумісності, але він більше не використовується
     return;
+  }
+
+  /// Витягує video ID з різних форматів YouTube URL
+  /// Підтримує формати:
+  /// - https://www.youtube.com/embed/VIDEO_ID
+  /// - https://www.youtube.com/watch?v=VIDEO_ID
+  /// - https://youtu.be/VIDEO_ID
+  /// - VIDEO_ID (якщо вже є ID)
+  String _extractVideoId(String key) {
+    if (key.isEmpty) return key;
+    
+    // Якщо це вже просто ID (без URL), повертаємо як є
+    if (!key.contains('http') && !key.contains('youtube') && !key.contains('youtu.be')) {
+      return key;
+    }
+    
+    // Обробка embed URL: https://www.youtube.com/embed/VIDEO_ID
+    final embedMatch = RegExp(r'youtube\.com/embed/([a-zA-Z0-9_-]+)').firstMatch(key);
+    if (embedMatch != null) {
+      return embedMatch.group(1)!;
+    }
+    
+    // Обробка watch URL: https://www.youtube.com/watch?v=VIDEO_ID
+    final watchMatch = RegExp(r'[?&]v=([a-zA-Z0-9_-]+)').firstMatch(key);
+    if (watchMatch != null) {
+      return watchMatch.group(1)!;
+    }
+    
+    // Обробка youtu.be URL: https://youtu.be/VIDEO_ID
+    final shortMatch = RegExp(r'youtu\.be/([a-zA-Z0-9_-]+)').firstMatch(key);
+    if (shortMatch != null) {
+      return shortMatch.group(1)!;
+    }
+    
+    // Спробуємо використати вбудований метод, якщо він доступний
+    try {
+      final convertedId = YoutubePlayerController.convertUrlToId(key);
+      if (convertedId != null && convertedId.isNotEmpty) {
+        return convertedId;
+      }
+    } catch (e) {
+      // Ігноруємо помилки конвертації
+    }
+    
+    // Якщо нічого не спрацювало, повертаємо оригінальний ключ
+    return key;
   }
 
   String? _extractTrailerKey(List<dynamic> videos) {
@@ -546,7 +598,10 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
     // Використовуємо новий MovieTrailerPlayer для фільмів
     if (widget.item.isMovie) {
       // MovieTrailerPlayer вже має свій заголовок, тому не обгортаємо в _Section
-      return MovieTrailerPlayer(movieId: widget.item.id);
+      return MovieTrailerPlayer(
+        movieId: widget.item.id,
+        mediaItem: widget.item,
+      );
     }
 
     // Для серіалів залишаємо стару логіку (можна також створити TV версію)
@@ -794,8 +849,6 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
   }
 
   Widget _buildRecommendationsSection() {
-    debugPrint('_buildRecommendationsSection: _loadingRecommendations=$_loadingRecommendations, _recommendations.length=${_recommendations.length}');
-    
     // Показуємо секцію навіть під час завантаження або якщо є рекомендації
     if (_loadingRecommendations) {
       return _Section(
@@ -810,11 +863,8 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
     }
 
     if (_recommendations.isEmpty) {
-      debugPrint('Рекомендації порожні, не показуємо секцію');
       return const SizedBox.shrink();
     }
-
-    debugPrint('Відображаємо ${_recommendations.length} рекомендацій');
 
     final isDesktop = Responsive.isDesktop(context);
     final isTablet = Responsive.isTablet(context);

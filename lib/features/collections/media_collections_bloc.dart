@@ -80,7 +80,9 @@ class MediaCollectionsBloc extends Bloc<MediaCollectionsEvent, MediaCollectionsS
        _toggleFavoriteUseCase = toggleFavoriteUseCase,
        _addToWatchlistUseCase = addToWatchlistUseCase,
        _authRepository = authRepository,
-       super(const MediaCollectionsState(loading: true)) {
+       super(authRepository.currentUser != null 
+         ? const MediaCollectionsState(loading: true)
+         : const MediaCollectionsState(loading: false, authorized: false)) {
     on<LoadCollectionsEvent>(_onLoadCollections);
     on<ToggleFavoriteEvent>(_onToggleFavorite);
     on<RecordWatchEvent>(_onRecordWatch);
@@ -98,8 +100,6 @@ class MediaCollectionsBloc extends Bloc<MediaCollectionsEvent, MediaCollectionsS
     // Завантажуємо колекції при ініціалізації
     if (_authRepository.currentUser != null) {
       add(const LoadCollectionsEvent());
-    } else {
-      emit(const MediaCollectionsState(loading: false, authorized: false));
     }
   }
 

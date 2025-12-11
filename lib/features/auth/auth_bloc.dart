@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'auth_repository.dart';
@@ -35,23 +34,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(AuthLoading());
     try {
-      debugPrint('🔐 [AUTH] Початок входу для email: ${event.email}');
       // Використання use case замість прямого виклику репозиторію
       final user = await signInUseCase(
         SignInParams(email: event.email, password: event.password),
       );
-      debugPrint('✅ [AUTH] Успішний вхід. User ID: ${user.id}, Email: ${user.email}');
       emit(AuthAuthenticated(user));
-    } catch (e, stackTrace) {
-      // Детальне логування помилки для діагностики
-      debugPrint('❌ [AUTH ERROR] Помилка входу:');
-      debugPrint('   Email: ${event.email}');
-      debugPrint('   Помилка: $e');
-      debugPrint('   Тип помилки: ${e.runtimeType}');
-      debugPrint('   Stack trace:');
-      debugPrint('   $stackTrace');
+    } catch (e) {
       final errorMessage = _getUserFriendlyError(e);
-      debugPrint('   Повідомлення для користувача: $errorMessage');
       emit(AuthError(errorMessage));
     }
   }
@@ -62,23 +51,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(AuthLoading());
     try {
-      debugPrint('📝 [AUTH] Початок реєстрації для email: ${event.email}');
       // Використання use case замість прямого виклику репозиторію
       final user = await registerUseCase(
         RegisterParams(email: event.email, password: event.password),
       );
-      debugPrint('✅ [AUTH] Успішна реєстрація. User ID: ${user.id}, Email: ${user.email}');
       emit(AuthAuthenticated(user));
-    } catch (e, stackTrace) {
-      // Детальне логування помилки для діагностики
-      debugPrint('❌ [AUTH ERROR] Помилка реєстрації:');
-      debugPrint('   Email: ${event.email}');
-      debugPrint('   Помилка: $e');
-      debugPrint('   Тип помилки: ${e.runtimeType}');
-      debugPrint('   Stack trace:');
-      debugPrint('   $stackTrace');
+    } catch (e) {
       final errorMessage = _getUserFriendlyError(e);
-      debugPrint('   Повідомлення для користувача: $errorMessage');
       emit(AuthError(errorMessage));
     }
   }
@@ -88,19 +67,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     try {
-      debugPrint('🚪 [AUTH] Початок виходу');
       await repository.signOut();
-      debugPrint('✅ [AUTH] Успішний вихід');
       emit(AuthInitial());
-    } catch (e, stackTrace) {
-      // Детальне логування помилки для діагностики
-      debugPrint('❌ [AUTH ERROR] Помилка виходу:');
-      debugPrint('   Помилка: $e');
-      debugPrint('   Тип помилки: ${e.runtimeType}');
-      debugPrint('   Stack trace:');
-      debugPrint('   $stackTrace');
+    } catch (e) {
       final errorMessage = _getUserFriendlyError(e);
-      debugPrint('   Повідомлення для користувача: $errorMessage');
       emit(AuthError(errorMessage));
     }
   }

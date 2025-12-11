@@ -98,7 +98,6 @@ class AuthRepository {
         return user;
 
       case AuthMethod.local:
-      default:
         final row = await _db.getUserByEmail(email);
         if (row == null) {
           throw Exception('Користувача з таким email не знайдено');
@@ -142,7 +141,6 @@ class AuthRepository {
         return user;
 
       case AuthMethod.local:
-      default:
         final existing = await _db.getUserByEmail(email);
         if (existing != null) {
           throw Exception('Користувач з таким email вже існує');
@@ -167,7 +165,6 @@ class AuthRepository {
         break;
 
       case AuthMethod.local:
-      default:
         _setCurrentUser(null);
         break;
     }
@@ -195,7 +192,6 @@ class AuthRepository {
 
       case AuthMethod.jwt:
       case AuthMethod.local:
-      default:
         await _db.updateUserProfile(
           user.id,
           displayName: displayName,
@@ -232,7 +228,6 @@ class AuthRepository {
 
       case AuthMethod.jwt:
       case AuthMethod.local:
-      default:
         final row = await _db.getUserByEmail(user.email);
         if (row == null) {
           throw Exception('Користувача не знайдено');
@@ -262,7 +257,6 @@ class AuthRepository {
         break;
 
       case AuthMethod.local:
-      default:
         await _db.deleteUser(user.id);
         _setCurrentUser(null);
         break;
@@ -301,7 +295,6 @@ class AuthRepository {
         break;
 
       case AuthMethod.local:
-      default:
         // Для локальної БД не зберігаємо стан між сесіями
         break;
     }

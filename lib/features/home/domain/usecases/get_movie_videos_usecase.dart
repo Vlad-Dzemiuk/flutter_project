@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import '../../../../core/domain/base_usecase.dart';
 import '../../home_repository.dart';
 import '../entities/video.dart';
@@ -29,25 +28,17 @@ class GetMovieVideosUseCase
     // Завантаження відео
     final videosData = await repository.fetchMovieVideos(params.movieId);
 
-    // Логування для дебагу
-    debugPrint('GetMovieVideosUseCase: Отримано ${videosData.length} відео для фільму ${params.movieId}');
-    if (videosData.isNotEmpty) {
-      debugPrint('Перше відео: ${videosData.first}');
-    }
-
     // Конвертація в domain entities
     final videos = videosData
         .map((videoJson) {
           try {
             return Video.fromJson(videoJson as Map<String, dynamic>);
           } catch (e) {
-            debugPrint('Помилка парсингу відео: $e, дані: $videoJson');
             rethrow;
           }
         })
         .toList();
 
-    debugPrint('GetMovieVideosUseCase: Конвертовано ${videos.length} відео');
     return videos;
   }
 }

@@ -127,6 +127,11 @@ class AppDatabase extends _$AppDatabase {
     );
   }
 
+  /// Видалити конкретний ключ з кешу
+  Future<void> deleteJson(String key) async {
+    await (delete(cacheEntries)..where((tbl) => tbl.key.equals(key))).go();
+  }
+
   /// Очистити весь кеш
   Future<void> clearCache() async {
     await delete(cacheEntries).go();
@@ -165,6 +170,11 @@ class LocalCacheDb {
   /// Зберегти JSON у кеш.
   Future<void> putJson(String key, Map<String, dynamic> data) async {
     return AppDatabase.instance.putJson(key, data);
+  }
+  
+  /// Видалити конкретний ключ з кешу
+  Future<void> deleteJson(String key) async {
+    return AppDatabase.instance.deleteJson(key);
   }
   
   /// Очистити весь кеш (видалити всі записи)

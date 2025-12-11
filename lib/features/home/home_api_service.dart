@@ -198,8 +198,9 @@ class HomeApiService {
 
   Future<List<dynamic>> fetchMovieVideos(int movieId) async {
     final cacheKey = 'movie_videos_$movieId';
+    // Зменшено час кешування з 12 годин до 2 годин для уникнення застарілих відео
     final cached =
-        await LocalCacheDb.instance.getJson(cacheKey, maxAge: const Duration(hours: 12));
+        await LocalCacheDb.instance.getJson(cacheKey, maxAge: const Duration(hours: 2));
 
     if (cached != null) {
       return (cached['results'] as List<dynamic>);
@@ -228,8 +229,9 @@ class HomeApiService {
 
   Future<List<dynamic>> fetchTvVideos(int tvId) async {
     final cacheKey = 'tv_videos_$tvId';
+    // Зменшено час кешування з 12 годин до 2 годин для уникнення застарілих відео
     final cached =
-        await LocalCacheDb.instance.getJson(cacheKey, maxAge: const Duration(hours: 12));
+        await LocalCacheDb.instance.getJson(cacheKey, maxAge: const Duration(hours: 2));
 
     if (cached != null) {
       return (cached['results'] as List<dynamic>);

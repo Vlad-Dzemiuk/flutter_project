@@ -937,7 +937,6 @@ class MediaPosterCard extends StatelessWidget {
                             ),
                           ),
                           errorWidget: (context, url, error) {
-                            debugPrint('Error loading image: $url, error: $error');
                             return Container(
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(

@@ -238,8 +238,6 @@ class _LoginPageState extends State<LoginPage> {
                                                     } else {
                                                       bloc.add(RegisterEvent(email: email, password: password));
                                                     }
-                                                  } else {
-                                                    debugPrint('⚠️ [AUTH] BLoC закритий, не можу додати подію');
                                                   }
                                                 },
                                           icon: isLoading

@@ -241,8 +241,6 @@ class _ProfilePageState extends State<ProfilePage> {
                                     } else {
                                       bloc.add(RegisterEvent(email: email, password: password));
                                     }
-                                  } else {
-                                    debugPrint('⚠️ [AUTH] BLoC закритий, не можу додати подію');
                                   }
                                 },
                                 icon: isLoading
@@ -490,7 +488,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                             },
                                             icon: const Icon(
                                                           Icons.playlist_add_check),
-                                                      label: const Text('Watchlist'),
+                                                      label: const Text('Переглянуті'),
                                                       style: FilledButton.styleFrom(
                                                         padding: EdgeInsets.symmetric(
                                                           vertical: isDesktop ? 16 : 14,
@@ -509,7 +507,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                             },
                                             icon: const Icon(
                                                           Icons.favorite_border),
-                                                      label: const Text('Favorites'),
+                                                      label: const Text('Вподобані'),
                                                       style: FilledButton.styleFrom(
                                                         padding: EdgeInsets.symmetric(
                                                           vertical: isDesktop ? 16 : 14,
@@ -589,7 +587,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                       },
                                       icon: const Icon(
                                                           Icons.playlist_add_check),
-                                                      label: const Text('Watchlist'),
+                                                      label: const Text('Переглянуті'),
                                                     ),
                                                   ),
                                                   SizedBox(width: buttonSpacing),
@@ -603,7 +601,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                       },
                                       icon: const Icon(
                                                           Icons.favorite_border),
-                                                      label: const Text('Favorites'),
+                                                      label: const Text('Вподобані'),
                                                     ),
                                                   ),
                                                 ],

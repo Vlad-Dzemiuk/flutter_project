@@ -61,7 +61,6 @@ class AppRouter {
           child: const AboutAppPage(),
         );
       case AppConstants.searchRoute:
-      case '/search':
         return SlidePageRoute(
           beginOffset: const Offset(0.0, 1.0),
           child: MainScaffold(body: const SearchPage(), title: 'Пошук'),

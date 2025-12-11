@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'core/constants.dart';
@@ -20,7 +20,6 @@ Future<void> main() async {
     await Firebase.initializeApp();
   } catch (e) {
     // Якщо Firebase не налаштовано, продовжуємо без нього
-    debugPrint('Firebase initialization failed: $e');
   }
   
   // Ініціалізація Hive Flutter
@@ -28,7 +27,11 @@ Future<void> main() async {
   
   await di.init();
 
-  runApp(const MyApp());
+  runApp(
+    const ProviderScope(
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -62,24 +65,22 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return ProviderScope(
-      child: BlocProvider<SettingsBloc>.value(
-        value: di.getIt<SettingsBloc>(),
-        child: BlocBuilder<SettingsBloc, SettingsState>(
-          bloc: di.getIt<SettingsBloc>(),
-          builder: (context, settingsState) {
-            return MaterialApp(
-              title: 'Movie Discovery App',
-              theme: AppThemes.light,
-              darkTheme: AppThemes.dark,
-              themeMode: settingsState.themeMode,
-              // MaterialApp автоматично визначає системну тему через MediaQuery
-              // коли themeMode == ThemeMode.system
-              onGenerateRoute: AppRouter.generateRoute,
-              initialRoute: AppConstants.homeRoute,
-            );
-          },
-        ),
+    return BlocProvider<SettingsBloc>.value(
+      value: di.getIt<SettingsBloc>(),
+      child: BlocBuilder<SettingsBloc, SettingsState>(
+        bloc: di.getIt<SettingsBloc>(),
+        builder: (context, settingsState) {
+          return MaterialApp(
+            title: 'Movie Discovery App',
+            theme: AppThemes.light,
+            darkTheme: AppThemes.dark,
+            themeMode: settingsState.themeMode,
+            // MaterialApp автоматично визначає системну тему через MediaQuery
+            // коли themeMode == ThemeMode.system
+            onGenerateRoute: AppRouter.generateRoute,
+            initialRoute: AppConstants.homeRoute,
+          );
+        },
       ),
     );
   }
