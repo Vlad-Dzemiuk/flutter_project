@@ -14,6 +14,7 @@ import 'domain/usecases/get_tv_details_usecase.dart';
 import 'data/models/movie_model.dart';
 import 'data/models/tv_show_model.dart';
 import 'home_page.dart'; // для MediaPosterCard
+import 'widgets/movie_trailer_player.dart';
 import 'package:project/core/responsive.dart';
 import 'package:project/core/theme.dart';
 import 'package:project/core/page_transitions.dart';
@@ -542,8 +543,14 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
   }
 
   Widget _buildTrailerSection() {
+    // Використовуємо новий MovieTrailerPlayer для фільмів
+    if (widget.item.isMovie) {
+      // MovieTrailerPlayer вже має свій заголовок, тому не обгортаємо в _Section
+      return MovieTrailerPlayer(movieId: widget.item.id);
+    }
+
+    // Для серіалів залишаємо стару логіку (можна також створити TV версію)
     if (_trailerKey == null || _youtubeController == null) {
-      // якщо немає робочого трейлера – просто не показуємо секцію
       return const SizedBox.shrink();
     }
 

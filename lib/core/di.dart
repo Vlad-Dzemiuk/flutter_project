@@ -22,6 +22,7 @@ import '../features/profile/data/repositories/profile_repository_impl.dart';
 import '../features/home/domain/usecases/get_popular_content_usecase.dart';
 import '../features/home/domain/usecases/search_media_usecase.dart';
 import '../features/home/domain/usecases/get_movie_details_usecase.dart';
+import '../features/home/domain/usecases/get_movie_videos_usecase.dart';
 import '../features/home/domain/usecases/get_tv_details_usecase.dart';
 import '../features/home/domain/usecases/search_by_name_usecase.dart';
 import '../features/auth/domain/usecases/sign_in_usecase.dart';
@@ -134,6 +135,9 @@ Future<void> init() async {
   );
   getIt.registerFactory<GetMovieDetailsUseCase>(
     () => GetMovieDetailsUseCase(getIt<HomeRepository>()),
+  );
+  getIt.registerFactory<GetMovieVideosUseCase>(
+    () => GetMovieVideosUseCase(getIt<HomeRepository>()),
   );
   getIt.registerFactory<GetTvDetailsUseCase>(
     () => GetTvDetailsUseCase(getIt<HomeRepository>()),
