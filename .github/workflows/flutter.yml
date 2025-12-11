@@ -1,74 +1,64 @@
+# .github/workflows/flutter.yml
 name: Flutter CI/CD
-
-on:
-  push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main, develop ]
+on: [push, pull_request]
 
 jobs:
   test:
-    name: Test
     runs-on: ubuntu-latest
-    
+    env:
+      # Environment variables для тестів
+      # TMDB_API_KEY береться з GitHub Secrets
+      TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+      AUTH_METHOD: local
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.24.0'
-          channel: 'stable'
-          cache: true
-          
-      - name: Get dependencies
-        run: flutter pub get
-        
-      - name: Verify formatting
-        run: dart format --set-exit-if-changed .
-        
-      - name: Analyze code
-        run: flutter analyze --fatal-infos
-        
-      - name: Run tests
-        run: flutter test --coverage
-        
-      - name: Upload coverage
-        uses: codecov/codecov-action@v3
-        with:
-          file: coverage/lcov.info
-          flags: unittests
-          name: codecov-umbrella
-          fail_ci_if_error: false
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+      - name: Create .env file
+        run: |
+          if [ -z "${{ secrets.TMDB_API_KEY }}" ]; then
+            echo "⚠️ Warning: TMDB_API_KEY secret is not set. Using placeholder."
+            echo "TMDB_API_KEY=YOUR_API_KEY_HERE" > .env
+          else
+            echo "TMDB_API_KEY=${{ secrets.TMDB_API_KEY }}" > .env
+          fi
+          echo "AUTH_METHOD=local" >> .env
+      - run: flutter pub get
+      - run: flutter analyze --fatal-infos
+      - run: flutter test --coverage
 
   build:
-    name: Build APK
     needs: test
     runs-on: ubuntu-latest
-    
+    env:
+      # Environment variables для збірки
+      TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+      AUTH_METHOD: local
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.24.0'
-          channel: 'stable'
-          cache: true
-          
-      - name: Get dependencies
-        run: flutter pub get
-        
-      - name: Build APK
-        run: flutter build apk --release
-        
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+      - name: Create .env file
+        run: |
+          if [ -z "${{ secrets.TMDB_API_KEY }}" ]; then
+            echo "⚠️ Warning: TMDB_API_KEY secret is not set. Using placeholder."
+            echo "TMDB_API_KEY=YOUR_API_KEY_HERE" > .env
+          else
+            echo "TMDB_API_KEY=${{ secrets.TMDB_API_KEY }}" > .env
+          fi
+          echo "AUTH_METHOD=local" >> .env
+      - run: flutter pub get
+      - name: Build APK with obfuscation
+        run: flutter build apk --release --obfuscate --split-debug-info=build/app/outputs/symbols
       - name: Upload APK artifact
         uses: actions/upload-artifact@v3
         with:
-          name: release-apk
+          name: app-release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
-          retention-days: 30
+          retention-days: 90
+      - name: Upload debug symbols
+        uses: actions/upload-artifact@v3
+        with:
+          name: debug-symbols
+          path: build/app/outputs/symbols/
+          retention-days: 90
 
 

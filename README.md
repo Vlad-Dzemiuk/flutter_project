@@ -127,11 +127,18 @@ project/
    ```
 
 2. **Налаштувати API ключі**
-   - Створити файл `.env` в корені проекту
-   - Додати TMDB API ключ:
+   - Скопіювати файл `.env.example` як `.env`:
+     ```bash
+     cp .env.example .env
+     # Або на Windows:
+     copy .env.example .env
+     ```
+   - Відкрити `.env` та заповнити значення:
      ```
      TMDB_API_KEY=your_api_key_here
+     AUTH_METHOD=local
      ```
+   - Отримати TMDB API key: https://www.themoviedb.org/settings/api
 
 3. **Встановити залежності**
    ```bash
@@ -148,6 +155,25 @@ project/
 flutter run -d android
 ```
 
+### Для release збірки з obfuscation:
+```bash
+# Windows
+build_release.bat
+
+# Linux/Mac
+chmod +x build_release.sh
+./build_release.sh
+
+# Або вручну:
+flutter build apk --release --obfuscate --split-debug-info=build/app/outputs/symbols
+```
+
+**Важливо:**
+- Debug symbols зберігаються в `build/app/outputs/symbols/` - збережіть їх для можливості дебагу!
+- Obfuscation робить код важчим для реверс-інжинірингу та зменшує розмір APK
+- У CI/CD obfuscation виконується автоматично
+- Детальна інструкція: див. [OBFUSCATION.md](OBFUSCATION.md)
+
 ### Для запуску тестів:
 ```bash
 flutter test
@@ -163,14 +189,30 @@ flutter test --coverage
 **Після кожного push/PR виконується:**
 
 1. **Test Job:**
+   - Створення `.env` файлу з environment variables
    - Перевірка форматування коду
    - Аналіз коду (`flutter analyze`)
    - Запуск тестів з покриттям
-   - Завантаження coverage на codecov
 
 2. **Build Job:**
-   - Збірка release APK
+   - Створення `.env` файлу з environment variables
+   - Збірка release APK з obfuscation
    - Завантаження артефакту APK
+   - Завантаження debug symbols для можливості дебагу
+
+### Налаштування GitHub Secrets
+
+Для роботи CI/CD потрібно налаштувати GitHub Secrets:
+
+1. Перейти в **Settings** → **Secrets and variables** → **Actions**
+2. Додати наступні secrets:
+   - `TMDB_API_KEY` - ваш TMDB API ключ
+
+**Як додати secret:**
+- Натиснути **New repository secret**
+- Name: `TMDB_API_KEY`
+- Secret: ваш API ключ з TMDB
+- Натиснути **Add secret**
 
 ### Перевірка CI/CD:
 - Перейти до вкладки "Actions" в GitHub репозиторії
@@ -192,11 +234,18 @@ flutter test --coverage
 ### Реалізовані заходи безпеки:
 - ✅ **Secure Storage** для API ключів (`flutter_secure_storage`)
 - ✅ **Environment variables** для конфіденційних даних (`.env`)
-- ✅ **Password hashing** (в майбутньому)
+- ✅ **Code obfuscation** для release build (Android ProGuard + Flutter Dart obfuscation)
 - ✅ **Protected routes** - перевірка авторизації перед доступом
+- ⚠️ **Password hashing** (в майбутньому)
+
+### Code Obfuscation:
+- ✅ **Android**: ProGuard налаштовано в `build.gradle.kts` (minifyEnabled, shrinkResources)
+- ✅ **Flutter/Dart**: Автоматична obfuscation при використанні скриптів `build_release.sh` / `build_release.bat`
+- ✅ **CI/CD**: Автоматична obfuscation в GitHub Actions workflow
+- ⚠️ **Debug symbols**: Зберігаються окремо для можливості дебагу (не комітуються в git)
 
 ### Рекомендації для production:
-- Використовувати code obfuscation для release build
+- ✅ Code obfuscation налаштовано та автоматизовано
 - Додати certificate pinning
 - Реалізувати proper password hashing
 

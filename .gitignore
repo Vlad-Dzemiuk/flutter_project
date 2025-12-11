@@ -59,6 +59,9 @@ tmp/
 # ===============================
 app.*.symbols
 app.*.map.json
+build/app/outputs/symbols/
+*.symbols
+*.map.json
 *.class
 *.log
 *.pyc
