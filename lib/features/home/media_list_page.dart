@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../l10n/app_localizations.dart';
 import 'package:project/core/di.dart';
 import 'package:project/core/responsive.dart';
 import 'package:project/core/theme.dart';
@@ -38,10 +39,11 @@ class _MediaListPageState extends State<MediaListPage> {
   String _error = '';
 
   Future<void> _showAuthDialog(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     await AuthDialog.show(
       context,
-      title: 'Потрібна авторизація',
-      message: 'Увійдіть, щоб додавати у вподобання.',
+      title: l10n.authorizationRequired,
+      message: l10n.loginToAddToFavorites,
       icon: Icons.favorite_border,
     );
   }
@@ -114,7 +116,7 @@ class _MediaListPageState extends State<MediaListPage> {
     final isMobile = Responsive.isMobile(context);
     
     return Scaffold(
-      backgroundColor: colors.background,
+      backgroundColor: colors.surface,
       body: Container(
         decoration: AppGradients.background(context),
         child: SafeArea(
@@ -141,7 +143,7 @@ class _MediaListPageState extends State<MediaListPage> {
                           child: Text(
                             widget.title,
                             style: TextStyle(
-                              color: colors.onBackground,
+                              color: colors.onSurface,
                               fontSize: Responsive.isMobile(context) ? 20 : 24,
                               fontWeight: FontWeight.w700,
                             ),
@@ -152,7 +154,7 @@ class _MediaListPageState extends State<MediaListPage> {
                   ),
                   Expanded(
                     child: _loading
-                        ? const AnimatedLoadingWidget(message: 'Завантаження...')
+                        ? AnimatedLoadingWidget(message: AppLocalizations.of(context)!.loading)
                         : _error.isNotEmpty
                             ? Center(
                                 child: Padding(
@@ -163,7 +165,7 @@ class _MediaListPageState extends State<MediaListPage> {
                                       Icon(
                                         Icons.error_outline,
                                         size: Responsive.isMobile(context) ? 64 : 80,
-                                        color: colors.onSurfaceVariant.withOpacity(0.6),
+                                        color: colors.onSurfaceVariant.withValues(alpha: 0.6),
                                       ),
                                       SizedBox(height: Responsive.getSpacing(context)),
                                       Text(
@@ -171,7 +173,7 @@ class _MediaListPageState extends State<MediaListPage> {
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                           fontSize: Responsive.isMobile(context) ? 16 : 18,
-                                          color: colors.onBackground,
+                                          color: colors.onSurface,
                                           fontWeight: FontWeight.w600,
                                         ),
                                       ),
@@ -242,11 +244,11 @@ class _MediaListPageState extends State<MediaListPage> {
             color: theme.cardColor,
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
-              color: colors.outlineVariant.withOpacity(0.8),
+                                  color: colors.outlineVariant.withValues(alpha: 0.8),
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(
+                color: Colors.black.withValues(alpha:
                   theme.brightness == Brightness.light ? 0.08 : 0.25,
                 ),
                 blurRadius: 12,
@@ -293,7 +295,7 @@ class _MediaListPageState extends State<MediaListPage> {
                                   child: Center(
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2,
-                                      color: Colors.white.withOpacity(0.7),
+                                      color: Colors.white.withValues(alpha: 0.7),
                                     ),
                                   ),
                                 ),
@@ -310,7 +312,7 @@ class _MediaListPageState extends State<MediaListPage> {
                                   ),
                                   child: Icon(
                                     Icons.movie,
-                                    color: colors.onSurfaceVariant.withOpacity(0.7),
+                                    color: colors.onSurfaceVariant.withValues(alpha: 0.7),
                                     size: 32,
                                   ),
                                 ),
@@ -328,7 +330,7 @@ class _MediaListPageState extends State<MediaListPage> {
                                 ),
                                 child: Icon(
                                   Icons.movie,
-                                  color: colors.onSurfaceVariant.withOpacity(0.7),
+                                  color: colors.onSurfaceVariant.withValues(alpha: 0.7),
                                   size: 32,
                                 ),
                               ),
@@ -345,7 +347,7 @@ class _MediaListPageState extends State<MediaListPage> {
                           style: TextStyle(
                             fontSize: Responsive.isMobile(context) ? 16 : 18,
                             fontWeight: FontWeight.w700,
-                            color: colors.onBackground,
+                            color: colors.onSurface,
                           ),
                         ),
                         SizedBox(height: Responsive.isMobile(context) ? 6 : 8),
@@ -354,7 +356,7 @@ class _MediaListPageState extends State<MediaListPage> {
                           maxLines: Responsive.isMobile(context) ? 3 : 4,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            color: colors.onSurfaceVariant.withOpacity(0.7),
+                            color: colors.onSurfaceVariant.withValues(alpha: 0.7),
                             fontSize: Responsive.isMobile(context) ? 14 : 15,
                             height: 1.4,
                           ),
@@ -368,12 +370,12 @@ class _MediaListPageState extends State<MediaListPage> {
                                 vertical: 6,
                               ),
                               decoration: BoxDecoration(
-                                color: colors.surfaceVariant.withOpacity(
+                                color: colors.surfaceContainerHighest.withValues(alpha:
                                   theme.brightness == Brightness.light ? 0.7 : 0.25,
                                 ),
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
-                                  color: colors.outlineVariant.withOpacity(0.8),
+                                  color: colors.outlineVariant.withValues(alpha: 0.8),
                                 ),
                               ),
                               child: Row(
@@ -405,7 +407,7 @@ class _MediaListPageState extends State<MediaListPage> {
                                     : Icons.favorite_border_rounded,
                                 color: isFavorite
                                     ? const Color(0xFFFF6B6B)
-                                    : colors.onSurfaceVariant.withOpacity(0.7),
+                                    : colors.onSurfaceVariant.withValues(alpha: 0.7),
                               ),
                             ),
                           ],

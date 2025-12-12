@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../l10n/app_localizations.dart';
 
 import '../../core/constants.dart';
 import '../../core/di.dart';
@@ -93,7 +94,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           children: [
             ListTile(
               leading: const Icon(Icons.photo_library),
-              title: const Text('Обрати з галереї'),
+              title: Text(AppLocalizations.of(context)!.selectFromGallery),
               onTap: () async {
                 Navigator.of(ctx).pop();
                 await _pickAvatar(ImageSource.gallery);
@@ -101,7 +102,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             ),
             ListTile(
               leading: const Icon(Icons.photo_camera),
-              title: const Text('Зробити фото'),
+              title: Text(AppLocalizations.of(context)!.takePhoto),
               onTap: () async {
                 Navigator.of(ctx).pop();
                 await _pickAvatar(ImageSource.camera);
@@ -110,7 +111,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             if (_avatarPath != null && _avatarPath!.isNotEmpty)
               ListTile(
                 leading: const Icon(Icons.delete_outline),
-                title: const Text('Видалити аватар'),
+                title: Text(AppLocalizations.of(context)!.deleteAvatar),
                 onTap: () {
                   Navigator.of(ctx).pop();
                   setState(() {
@@ -144,14 +145,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
         ),
       );
       if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
       AppNotification.showSuccess(
         context,
-        'Профіль оновлено (${updated.email})',
+        l10n.profileUpdated(updated.email),
       );
       Navigator.of(context).maybePop();
     } catch (error) {
       if (!mounted) return;
-      AppNotification.showError(context, 'Помилка: $error');
+      final l10n = AppLocalizations.of(context)!;
+      AppNotification.showError(context, l10n.error(error.toString()));
     }
   }
 
@@ -176,18 +179,19 @@ class _EditProfilePageState extends State<EditProfilePage> {
         return StatefulBuilder(
           builder: (ctx, setModalState) {
             Future<void> submit() async {
+              final l10n = AppLocalizations.of(context)!;
               if (newController.text.trim().isEmpty ||
                   currentController.text.trim().isEmpty) {
                 AppNotification.showWarning(
                   context,
-                  'Заповніть всі поля',
+                  l10n.fillAllFields,
                 );
                 return;
               }
               if (newController.text != confirmController.text) {
                 AppNotification.showWarning(
                   context,
-                  'Паролі не співпадають',
+                  l10n.passwordsDoNotMatch,
                 );
                 return;
               }
@@ -202,7 +206,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 }
               } catch (error) {
                 setModalState(() => isLoading = false);
-                AppNotification.showError(context, 'Помилка: $error');
+                if (context.mounted) {
+                  final l10n = AppLocalizations.of(context)!;
+                  AppNotification.showError(context, l10n.error(error.toString()));
+                }
               }
             }
 
@@ -249,7 +256,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           height: 4,
                           margin: EdgeInsets.only(bottom: spacing),
                           decoration: BoxDecoration(
-                            color: colors.onSurfaceVariant.withOpacity(0.4),
+                            color: colors.onSurfaceVariant.withValues(alpha: 0.4),
                             borderRadius: BorderRadius.circular(2),
                           ),
                         ),
@@ -264,9 +271,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           ),
                           SizedBox(width: spacing * 0.6),
                           Text(
-                            'Змінити пароль',
+                            AppLocalizations.of(context)!.changePassword,
                             style: TextStyle(
-                              color: colors.onBackground,
+                              color: colors.onSurface,
                               fontSize: isDesktop ? 24 : isTablet ? 22 : 20,
                               fontWeight: FontWeight.w700,
                             ),
@@ -281,14 +288,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           vertical: isDesktop ? 8 : 4,
                         ),
                         decoration: BoxDecoration(
-                          color: colors.surfaceVariant.withOpacity(
+                          color: colors.surfaceContainerHighest.withValues(alpha:
                             isDark ? 0.2 : 0.5,
                           ),
                           borderRadius: BorderRadius.circular(
                             isDesktop ? 16 : 14,
                           ),
                           border: Border.all(
-                            color: colors.outlineVariant.withOpacity(0.5),
+                            color: colors.outlineVariant.withValues(alpha: 0.5),
                           ),
                         ),
                         child: TextField(
@@ -299,7 +306,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             fontSize: isDesktop ? 16 : 14,
                           ),
                           decoration: InputDecoration(
-                            labelText: 'Поточний пароль',
+                            labelText: AppLocalizations.of(context)!.currentPassword,
                             labelStyle: TextStyle(
                               color: colors.onSurfaceVariant,
                               fontSize: isDesktop ? 16 : 14,
@@ -323,14 +330,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           vertical: isDesktop ? 8 : 4,
                         ),
                         decoration: BoxDecoration(
-                          color: colors.surfaceVariant.withOpacity(
+                          color: colors.surfaceContainerHighest.withValues(alpha:
                             isDark ? 0.2 : 0.5,
                           ),
                           borderRadius: BorderRadius.circular(
                             isDesktop ? 16 : 14,
                           ),
                           border: Border.all(
-                            color: colors.outlineVariant.withOpacity(0.5),
+                            color: colors.outlineVariant.withValues(alpha: 0.5),
                           ),
                         ),
                         child: TextField(
@@ -341,7 +348,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             fontSize: isDesktop ? 16 : 14,
                           ),
                           decoration: InputDecoration(
-                            labelText: 'Новий пароль',
+                            labelText: AppLocalizations.of(context)!.newPassword,
                             labelStyle: TextStyle(
                               color: colors.onSurfaceVariant,
                               fontSize: isDesktop ? 16 : 14,
@@ -365,14 +372,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           vertical: isDesktop ? 8 : 4,
                         ),
                         decoration: BoxDecoration(
-                          color: colors.surfaceVariant.withOpacity(
+                          color: colors.surfaceContainerHighest.withValues(alpha:
                             isDark ? 0.2 : 0.5,
                           ),
                           borderRadius: BorderRadius.circular(
                             isDesktop ? 16 : 14,
                           ),
                           border: Border.all(
-                            color: colors.outlineVariant.withOpacity(0.5),
+                            color: colors.outlineVariant.withValues(alpha: 0.5),
                           ),
                         ),
                         child: TextField(
@@ -383,7 +390,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             fontSize: isDesktop ? 16 : 14,
                           ),
                           decoration: InputDecoration(
-                            labelText: 'Підтвердити пароль',
+                            labelText: AppLocalizations.of(context)!.confirmPassword,
                             labelStyle: TextStyle(
                               color: colors.onSurfaceVariant,
                               fontSize: isDesktop ? 16 : 14,
@@ -432,7 +439,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 size: isDesktop ? 22 : 20,
                               ),
                         label: Text(
-                          isLoading ? 'Збереження...' : 'Зберегти',
+                          isLoading ? AppLocalizations.of(context)!.saving : AppLocalizations.of(context)!.save,
                           style: TextStyle(
                             fontWeight: FontWeight.w800,
                             fontSize: isDesktop ? 16 : 14,
@@ -449,7 +456,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
       },
     );
     if (changed == true && mounted) {
-      AppNotification.showSuccess(context, 'Пароль змінено');
+      final l10n = AppLocalizations.of(context)!;
+      AppNotification.showSuccess(context, l10n.passwordChanged);
     }
   }
 
@@ -461,7 +469,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
     return LoadingWrapper(
       child: Scaffold(
-      backgroundColor: colors.background,
+      backgroundColor: colors.surface,
       body: Container(
         decoration: AppGradients.background(context),
         child: SafeArea(
@@ -495,9 +503,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         ),
                         SizedBox(width: spacing * 0.6),
                     Text(
-                      'Редагування профілю',
+                      AppLocalizations.of(context)!.editProfile,
                       style: TextStyle(
-                        color: colors.onBackground,
+                        color: colors.onSurface,
                             fontSize: isDesktop ? 24 : 20,
                         fontWeight: FontWeight.w700,
                       ),
@@ -533,13 +541,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                   Icon(
                                     Icons.person_off_outlined,
                                               size: isDesktop ? 80 : isTablet ? 72 : 64,
-                                    color: colors.onSurfaceVariant.withOpacity(0.75),
+                                    color: colors.onSurfaceVariant.withValues(alpha: 0.75),
                                   ),
                                             SizedBox(height: spacing),
                                   Text(
-                                    'Спочатку авторизуйтеся',
+                                    AppLocalizations.of(context)!.authorizeFirst,
                                     style: TextStyle(
-                                      color: colors.onBackground,
+                                      color: colors.onSurface,
                                                 fontSize: isDesktop ? 22 : 18,
                                       fontWeight: FontWeight.w700,
                                     ),
@@ -557,7 +565,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                     .pushReplacementNamed(AppConstants.loginRoute);
                                               },
                                               child: Text(
-                                                'Увійти',
+                                                AppLocalizations.of(context)!.signIn,
                                                 style: TextStyle(
                                                   fontSize: isDesktop ? 16 : 14,
                                                 ),
@@ -575,7 +583,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                       children: [
                                         CircleAvatar(
                                                   radius: isDesktop ? 80 : isTablet ? 72 : 64,
-                                          backgroundColor: colors.surfaceVariant,
+                                          backgroundColor: colors.surfaceContainerHighest,
                                           backgroundImage: _avatarImageProvider(),
                                           child: _avatarPath == null || _avatarPath!.isEmpty
                                               ? Icon(
@@ -587,7 +595,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                         ),
                                         IconButton.filled(
                                           style: IconButton.styleFrom(
-                                            backgroundColor: colors.surfaceVariant.withOpacity(
+                                            backgroundColor: colors.surfaceContainerHighest.withValues(alpha:
                                               theme.brightness == Brightness.light ? 0.8 : 0.3,
                                             ),
                                                     padding: EdgeInsets.all(
@@ -611,14 +619,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                               vertical: isDesktop ? 8 : 4,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: colors.surfaceVariant.withOpacity(
+                                      color: colors.surfaceContainerHighest.withValues(alpha:
                                         theme.brightness == Brightness.light ? 0.5 : 0.2,
                                       ),
                                               borderRadius: BorderRadius.circular(
                                                 isDesktop ? 16 : 14,
                                               ),
                                       border: Border.all(
-                                        color: colors.outlineVariant.withOpacity(0.5),
+                                        color: colors.outlineVariant.withValues(alpha: 0.5),
                                       ),
                                     ),
                                     child: TextField(
@@ -628,14 +636,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                 fontSize: isDesktop ? 16 : 14,
                                               ),
                                       decoration: InputDecoration(
-                                        labelText: 'Ім\'я користувача',
-                                        helperText: 'Можна залишити порожнім',
+                                        labelText: AppLocalizations.of(context)!.username,
+                                        helperText: AppLocalizations.of(context)!.canBeEmpty,
                                         labelStyle: TextStyle(
                                           color: colors.onSurfaceVariant,
                                                   fontSize: isDesktop ? 16 : 14,
                                         ),
                                         helperStyle: TextStyle(
-                                          color: colors.onSurfaceVariant.withOpacity(0.7),
+                                          color: colors.onSurfaceVariant.withValues(alpha: 0.7),
                                                   fontSize: isDesktop ? 14 : 12,
                                         ),
                                         border: InputBorder.none,
@@ -662,7 +670,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                               size: isDesktop ? 22 : 20,
                                             ),
                                             label: Text(
-                                      'Зберегти зміни',
+                                      AppLocalizations.of(context)!.saveChanges,
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w800,
                                                 fontSize: isDesktop ? 16 : 14,
@@ -671,7 +679,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                   ),
                                           SizedBox(height: spacing * 1.5),
                                   Divider(
-                                    color: colors.outlineVariant.withOpacity(0.3),
+                                    color: colors.outlineVariant.withValues(alpha: 0.3),
                                             thickness: 1,
                                           ),
                                           SizedBox(height: spacing),
@@ -690,7 +698,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                   children: [
                                                     FilledButton.tonalIcon(
                                                       style: FilledButton.styleFrom(
-                                                        backgroundColor: colors.surfaceVariant.withOpacity(
+                                                        backgroundColor: colors.surfaceContainerHighest.withValues(alpha:
                                                           theme.brightness == Brightness.light ? 0.5 : 0.2,
                                                         ),
                                                         foregroundColor: colors.onSurfaceVariant,
@@ -700,11 +708,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                       ),
                                                       onPressed: _openPasswordSheet,
                                                       icon: const Icon(Icons.lock_outline),
-                                                      label: const Text('Змінити пароль'),
+                                                      label: Text(AppLocalizations.of(context)!.changePassword),
                                                     ),
                                                     FilledButton.tonal(
                                                       style: FilledButton.styleFrom(
-                                                        backgroundColor: colors.surfaceVariant.withOpacity(
+                                                        backgroundColor: colors.surfaceContainerHighest.withValues(alpha:
                                                           theme.brightness == Brightness.light ? 0.5 : 0.2,
                                                         ),
                                                         foregroundColor: colors.onSurfaceVariant,
@@ -720,7 +728,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                           );
                                                         }
                                                       },
-                                                      child: const Text('Вийти з акаунта'),
+                                                      child: Text(AppLocalizations.of(context)!.signOut),
                                                     ),
                                                   ],
                                                 );
@@ -730,19 +738,19 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                   children: [
                                   FilledButton.tonalIcon(
                                     style: FilledButton.styleFrom(
-                                      backgroundColor: colors.surfaceVariant.withOpacity(
+                                      backgroundColor: colors.surfaceContainerHighest.withValues(alpha:
                                         theme.brightness == Brightness.light ? 0.5 : 0.2,
                                       ),
                                       foregroundColor: colors.onSurfaceVariant,
                                     ),
                                     onPressed: _openPasswordSheet,
                                     icon: const Icon(Icons.lock_outline),
-                                    label: const Text('Змінити пароль'),
+                                    label: Text(AppLocalizations.of(context)!.changePassword),
                                   ),
                                                     SizedBox(height: spacing),
                                   FilledButton.tonal(
                                     style: FilledButton.styleFrom(
-                                      backgroundColor: colors.surfaceVariant.withOpacity(
+                                      backgroundColor: colors.surfaceContainerHighest.withValues(alpha:
                                         theme.brightness == Brightness.light ? 0.5 : 0.2,
                                       ),
                                       foregroundColor: colors.onSurfaceVariant,
@@ -755,7 +763,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                         );
                                       }
                                     },
-                                    child: const Text('Вийти з акаунта'),
+                                    child: Text(AppLocalizations.of(context)!.signOut),
                                   ),
                                                   ],
                                                 );
@@ -778,7 +786,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                       }
                                     },
                                     child: Text(
-                                      'Видалити акаунт',
+                                      AppLocalizations.of(context)!.deleteAccount,
                                               style: TextStyle(
                                                 color: colors.error,
                                                 fontSize: isDesktop ? 16 : 14,

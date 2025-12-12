@@ -4,6 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'l10n/app_localizations.dart';
 import 'core/constants.dart';
 import 'core/di.dart' as di;
 import 'core/app_router.dart';
@@ -70,11 +71,16 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       child: BlocBuilder<SettingsBloc, SettingsState>(
         bloc: di.getIt<SettingsBloc>(),
         builder: (context, settingsState) {
+          final locale = Locale(settingsState.languageCode);
+          
           return MaterialApp(
             title: 'Movie Discovery App',
             theme: AppThemes.light,
             darkTheme: AppThemes.dark,
             themeMode: settingsState.themeMode,
+            locale: locale,
+            supportedLocales: AppLocalizations.supportedLocales,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
             // MaterialApp автоматично визначає системну тему через MediaQuery
             // коли themeMode == ThemeMode.system
             onGenerateRoute: AppRouter.generateRoute,

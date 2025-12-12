@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import '../../core/responsive.dart';
 import '../../core/theme.dart';
 import '../../shared/widgets/loading_wrapper.dart';
@@ -13,7 +14,7 @@ class AboutAppPage extends StatelessWidget {
     
     return LoadingWrapper(
       child: Scaffold(
-      backgroundColor: colors.background,
+      backgroundColor: colors.surface,
       body: Container(
         decoration: AppGradients.background(context),
         child: SafeArea(
@@ -47,9 +48,9 @@ class AboutAppPage extends StatelessWidget {
                         ),
                         SizedBox(width: spacing * 0.6),
                         Text(
-                          'Про застосунок',
+                          AppLocalizations.of(context)!.aboutApp,
                           style: TextStyle(
-                            color: colors.onBackground,
+                            color: colors.onSurface,
                             fontSize: isDesktop ? 24 : 20,
                             fontWeight: FontWeight.w700,
                           ),
@@ -87,17 +88,16 @@ class AboutAppPage extends StatelessWidget {
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              'Movie Discovery App',
+                                              AppLocalizations.of(context)!.appName,
                                               style: TextStyle(
                                                 fontSize: 32,
                                                 fontWeight: FontWeight.bold,
-                                                color: colors.onBackground,
+                                                color: colors.onSurface,
                                               ),
                                             ),
                                             SizedBox(height: spacing * 1.5),
                                             Text(
-                                              'У цьому застосунку ви можете знаходити нові фільми та серіали, '
-                                              'керувати вибраним та переглядати персональні добірки.',
+                                              AppLocalizations.of(context)!.aboutAppDescription,
                                               style: TextStyle(
                                                 fontSize: 18,
                                                 color: colors.onSurfaceVariant,
@@ -137,10 +137,10 @@ class AboutAppPage extends StatelessWidget {
                                             ),
                                             SizedBox(height: spacing),
                                             Text(
-                                              'Версія: 1.0.0',
+                                              AppLocalizations.of(context)!.version('1.0.0'),
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w600,
-                                                color: colors.onBackground,
+                                                color: colors.onSurface,
                                                 fontSize: 18,
                                               ),
                                             ),
@@ -154,17 +154,16 @@ class AboutAppPage extends StatelessWidget {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'Movie Discovery App',
+                                        AppLocalizations.of(context)!.appName,
                                         style: TextStyle(
                                           fontSize: isTablet ? 28 : 24,
                                           fontWeight: FontWeight.bold,
-                                          color: colors.onBackground,
+                                          color: colors.onSurface,
                                         ),
                                       ),
                                       SizedBox(height: spacing),
                                       Text(
-                                        'У цьому застосунку ви можете знаходити нові фільми та серіали, '
-                                        'керувати вибраним та переглядати персональні добірки.',
+                                        AppLocalizations.of(context)!.aboutAppDescription,
                                         style: TextStyle(
                                           fontSize: isTablet ? 17 : 16,
                                           color: colors.onSurfaceVariant,
@@ -205,10 +204,10 @@ class AboutAppPage extends StatelessWidget {
                                             ),
                                             SizedBox(width: spacing),
                                             Text(
-                                              'Версія: 1.0.0',
+                                              AppLocalizations.of(context)!.version('1.0.0'),
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w600,
-                                                color: colors.onBackground,
+                                                color: colors.onSurface,
                                                 fontSize: isTablet ? 17 : 16,
                                               ),
                                             ),

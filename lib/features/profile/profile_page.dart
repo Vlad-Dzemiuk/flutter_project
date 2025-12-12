@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../l10n/app_localizations.dart';
 import '../../core/constants.dart';
 import '../../core/di.dart';
 import '../../core/responsive.dart';
@@ -129,7 +130,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              _isLogin ? 'Вхід' : 'Реєстрація',
+                              _isLogin ? AppLocalizations.of(context)!.login : AppLocalizations.of(context)!.signUp,
                               style: TextStyle(
                                 color: colors.onSurface,
                                           fontSize: isDesktop ? 26 : 22,
@@ -138,8 +139,8 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                             Text(
                               _isLogin
-                                  ? 'Повернись до перегляду'
-                                  : 'Створи акаунт за хвилину',
+                                  ? AppLocalizations.of(context)!.returnToViewing
+                                  : AppLocalizations.of(context)!.createAccountQuick,
                               style: TextStyle(
                                 color: colors.onSurface.withValues(alpha: 0.65),
                                           fontSize: isDesktop ? 16 : 14,
@@ -183,15 +184,16 @@ class _ProfilePageState extends State<ProfilePage> {
                                     SizedBox(height: isDesktop ? 16 : 0),
                             _AuthInput(
                               controller: _emailController,
-                              label: 'Email',
+                              label: AppLocalizations.of(context)!.email,
                               icon: Icons.alternate_email,
                               keyboardType: TextInputType.emailAddress,
                               validator: (value) {
+                                final l10n = AppLocalizations.of(context)!;
                                 if (value == null || value.isEmpty) {
-                                  return 'Введіть email';
+                                  return l10n.enterEmail;
                                 }
                                 if (!value.contains('@')) {
-                                  return 'Некоректний email';
+                                  return l10n.invalidEmail;
                                 }
                                 return null;
                               },
@@ -199,15 +201,16 @@ class _ProfilePageState extends State<ProfilePage> {
                                     SizedBox(height: spacing),
                             _AuthInput(
                               controller: _passwordController,
-                              label: 'Пароль',
+                              label: AppLocalizations.of(context)!.password,
                               icon: Icons.lock_outline,
                               obscureText: true,
                               validator: (value) {
+                                final l10n = AppLocalizations.of(context)!;
                                 if (value == null || value.isEmpty) {
-                                  return 'Введіть пароль';
+                                  return l10n.enterPassword;
                                 }
                                 if (value.length < 6) {
-                                  return 'Мінімум 6 символів';
+                                  return l10n.minPasswordLength;
                                 }
                                 return null;
                               },
@@ -258,8 +261,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                     : const Icon(Icons.login),
                                 label: Text(
                                   _isLogin
-                                      ? 'Увійти'
-                                      : 'Зареєструватись',
+                                      ? AppLocalizations.of(context)!.signIn
+                                      : AppLocalizations.of(context)!.signUp,
                                   style: const TextStyle(
                                     fontWeight: FontWeight.w800,
                                   ),
@@ -280,8 +283,8 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                               child: Text(
                                 _isLogin
-                                    ? 'Немає акаунта? Зареєструватись'
-                                    : 'Вже є акаунт? Увійти',
+                                    ? AppLocalizations.of(context)!.noAccount
+                                    : AppLocalizations.of(context)!.hasAccount,
                               ),
                             ),
                           ],
@@ -295,7 +298,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             .pushNamed(AppConstants.settingsRoute);
                       },
                       icon: const Icon(Icons.settings_outlined),
-                      label: const Text('Налаштування'),
+                      label: Text(AppLocalizations.of(context)!.settings),
                     ),
                           ],
                         ),
@@ -358,7 +361,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                         SizedBox(width: spacing * 0.6),
                     Text(
-                      'Профіль',
+                      AppLocalizations.of(context)!.profile,
                       style: TextStyle(
                                         color: colors.onSurface,
                             fontSize: isDesktop ? 24 : 20,
@@ -488,7 +491,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                             },
                                             icon: const Icon(
                                                           Icons.playlist_add_check),
-                                                      label: const Text('Переглянуті'),
+                                                      label: Text(AppLocalizations.of(context)!.watched),
                                                       style: FilledButton.styleFrom(
                                                         padding: EdgeInsets.symmetric(
                                                           vertical: isDesktop ? 16 : 14,
@@ -507,7 +510,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                             },
                                             icon: const Icon(
                                                           Icons.favorite_border),
-                                                      label: const Text('Вподобані'),
+                                                      label: Text(AppLocalizations.of(context)!.favorites),
                                                       style: FilledButton.styleFrom(
                                                         padding: EdgeInsets.symmetric(
                                                           vertical: isDesktop ? 16 : 14,
@@ -537,7 +540,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                   }
                                                 },
                                                 icon: const Icon(Icons.logout),
-                                                label: const Text('Вийти з акаунта'),
+                                                label: Text(AppLocalizations.of(context)!.signOut),
                                               ),
                                               SizedBox(height: buttonSpacing),
                                     FilledButton.icon(
@@ -547,7 +550,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                   );
                                                 },
                                                 icon: const Icon(Icons.edit_outlined),
-                                                label: const Text('Редагувати профіль'),
+                                                label: Text(AppLocalizations.of(context)!.editProfileButton),
                                                 style: FilledButton.styleFrom(
                                                   padding: EdgeInsets.symmetric(
                                                     vertical: isDesktop ? 16 : 14,
@@ -562,7 +565,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                   );
                                                 },
                                                 icon: const Icon(Icons.settings_outlined),
-                                                label: const Text('Налаштування'),
+                                                label: Text(AppLocalizations.of(context)!.settings),
                                                 style: FilledButton.styleFrom(
                                                   padding: EdgeInsets.symmetric(
                                                     vertical: isDesktop ? 16 : 14,
@@ -587,7 +590,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                       },
                                       icon: const Icon(
                                                           Icons.playlist_add_check),
-                                                      label: const Text('Переглянуті'),
+                                                      label: Text(AppLocalizations.of(context)!.watched),
                                                     ),
                                                   ),
                                                   SizedBox(width: buttonSpacing),
@@ -601,7 +604,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                       },
                                       icon: const Icon(
                                                           Icons.favorite_border),
-                                                      label: const Text('Вподобані'),
+                                                      label: Text(AppLocalizations.of(context)!.favorites),
                                                     ),
                                                   ),
                                                 ],
@@ -623,7 +626,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                   }
                                                 },
                                                 icon: const Icon(Icons.logout),
-                                                label: const Text('Вийти з акаунта'),
+                                                label: Text(AppLocalizations.of(context)!.signOut),
                                               ),
                                               SizedBox(height: buttonSpacing),
                                               FilledButton.icon(
@@ -633,7 +636,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                   );
                                                 },
                                                 icon: const Icon(Icons.edit_outlined),
-                                                label: const Text('Редагувати профіль'),
+                                                label: Text(AppLocalizations.of(context)!.editProfileButton),
                                               ),
                                               SizedBox(height: buttonSpacing * 0.7),
                                               FilledButton.tonalIcon(
@@ -643,7 +646,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                   );
                                                 },
                                                 icon: const Icon(Icons.settings_outlined),
-                                                label: const Text('Налаштування'),
+                                                label: Text(AppLocalizations.of(context)!.settings),
                                               ),
                                             ],
                                           );

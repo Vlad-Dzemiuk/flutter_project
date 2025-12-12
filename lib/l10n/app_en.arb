@@ -1,0 +1,503 @@
+{
+  "@@locale": "en",
+  "appName": "Movie Discovery App",
+  "@appName": {
+    "description": "Application name"
+  },
+  "selectLanguage": "Select Language",
+  "@selectLanguage": {
+    "description": "Title for language selection modal"
+  },
+  "ukrainian": "Ukrainian",
+  "@ukrainian": {
+    "description": "Ukrainian language option"
+  },
+  "english": "English",
+  "@english": {
+    "description": "English language option"
+  },
+  "appLanguage": "App Language",
+  "@appLanguage": {
+    "description": "App language setting title"
+  },
+  "appTheme": "App Theme",
+  "@appTheme": {
+    "description": "App theme setting title"
+  },
+  "systemTheme": "System",
+  "@systemTheme": {
+    "description": "System theme option"
+  },
+  "lightTheme": "Light",
+  "@lightTheme": {
+    "description": "Light theme option"
+  },
+  "darkTheme": "Dark",
+  "@darkTheme": {
+    "description": "Dark theme option"
+  },
+  "aboutApp": "About App",
+  "@aboutApp": {
+    "description": "About app page title"
+  },
+  "appVersion": "App Version: {version}",
+  "@appVersion": {
+    "description": "App version text",
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "version": "Version: {version}",
+  "@version": {
+    "description": "Version label",
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "aboutAppDescription": "In this app you can discover new movies and TV series, manage your favorites and browse personal collections.",
+  "@aboutAppDescription": {
+    "description": "About app description"
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": "Settings page title"
+  },
+  "profile": "Profile",
+  "@profile": {
+    "description": "Profile page title"
+  },
+  "editProfile": "Edit Profile",
+  "@editProfile": {
+    "description": "Edit profile page title"
+  },
+  "email": "Email",
+  "@email": {
+    "description": "Email field label"
+  },
+  "password": "Password",
+  "@password": {
+    "description": "Password field label"
+  },
+  "enterEmail": "Enter email",
+  "@enterEmail": {
+    "description": "Email validation error"
+  },
+  "invalidEmail": "Invalid email",
+  "@invalidEmail": {
+    "description": "Invalid email validation error"
+  },
+  "enterPassword": "Enter password",
+  "@enterPassword": {
+    "description": "Password validation error"
+  },
+  "minPasswordLength": "Minimum 6 characters",
+  "@minPasswordLength": {
+    "description": "Minimum password length validation error"
+  },
+  "signIn": "Sign In",
+  "@signIn": {
+    "description": "Sign in button"
+  },
+  "signUp": "Register",
+  "@signUp": {
+    "description": "Sign up button"
+  },
+  "noAccount": "No account? Register",
+  "@noAccount": {
+    "description": "No account prompt"
+  },
+  "hasAccount": "Already have an account? Sign In",
+  "@hasAccount": {
+    "description": "Has account prompt"
+  },
+  "skip": "Skip",
+  "@skip": {
+    "description": "Skip button"
+  },
+  "returnToStories": "Return to your stories",
+  "@returnToStories": {
+    "description": "Login subtitle"
+  },
+  "createAccount": "Create account and discover new",
+  "@createAccount": {
+    "description": "Sign up subtitle"
+  },
+  "login": "Login",
+  "@login": {
+    "description": "Login page title"
+  },
+  "returnToViewing": "Return to viewing",
+  "@returnToViewing": {
+    "description": "Profile login subtitle"
+  },
+  "createAccountQuick": "Create account in a minute",
+  "@createAccountQuick": {
+    "description": "Profile sign up subtitle"
+  },
+  "successfulLogin": "Successful login!",
+  "@successfulLogin": {
+    "description": "Success notification for login"
+  },
+  "successfulRegistration": "Registration successful!",
+  "@successfulRegistration": {
+    "description": "Success notification for registration"
+  },
+  "watched": "Watched",
+  "@watched": {
+    "description": "Watched button label"
+  },
+  "favorites": "Favorites",
+  "@favorites": {
+    "description": "Favorites button label"
+  },
+  "signOut": "Sign Out",
+  "@signOut": {
+    "description": "Sign out button"
+  },
+  "editProfileButton": "Edit Profile",
+  "@editProfileButton": {
+    "description": "Edit profile button"
+  },
+  "username": "Username",
+  "@username": {
+    "description": "Username field label"
+  },
+  "canBeEmpty": "Can be left empty",
+  "@canBeEmpty": {
+    "description": "Username helper text"
+  },
+  "saveChanges": "Save Changes",
+  "@saveChanges": {
+    "description": "Save changes button"
+  },
+  "changePassword": "Change Password",
+  "@changePassword": {
+    "description": "Change password button"
+  },
+  "currentPassword": "Current Password",
+  "@currentPassword": {
+    "description": "Current password field"
+  },
+  "newPassword": "New Password",
+  "@newPassword": {
+    "description": "New password field"
+  },
+  "confirmPassword": "Confirm Password",
+  "@confirmPassword": {
+    "description": "Confirm password field"
+  },
+  "fillAllFields": "Fill all fields",
+  "@fillAllFields": {
+    "description": "Validation error for empty fields"
+  },
+  "passwordsDoNotMatch": "Passwords do not match",
+  "@passwordsDoNotMatch": {
+    "description": "Password mismatch error"
+  },
+  "saving": "Saving...",
+  "@saving": {
+    "description": "Saving state text"
+  },
+  "save": "Save",
+  "@save": {
+    "description": "Save button"
+  },
+  "passwordChanged": "Password changed",
+  "@passwordChanged": {
+    "description": "Password change success message"
+  },
+  "profileUpdated": "Profile updated ({email})",
+  "@profileUpdated": {
+    "description": "Profile update success message",
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "error": "Error: {error}",
+  "@error": {
+    "description": "Error message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteAccount": "Delete Account",
+  "@deleteAccount": {
+    "description": "Delete account button"
+  },
+  "authorizeFirst": "Authorize first",
+  "@authorizeFirst": {
+    "description": "Authorization required message"
+  },
+  "selectFromGallery": "Select from Gallery",
+  "@selectFromGallery": {
+    "description": "Select image from gallery option"
+  },
+  "takePhoto": "Take Photo",
+  "@takePhoto": {
+    "description": "Take photo option"
+  },
+  "deleteAvatar": "Delete Avatar",
+  "@deleteAvatar": {
+    "description": "Delete avatar option"
+  },
+  "appThemeTitle": "App Theme",
+  "@appThemeTitle": {
+    "description": "App theme modal title"
+  },
+  "loading": "Loading...",
+  "@loading": {
+    "description": "Loading message"
+  },
+  "favoritesEmpty": "Favorites list is empty",
+  "@favoritesEmpty": {
+    "description": "Empty favorites list message"
+  },
+  "favoritesLoginPrompt": "Sign in to save your favorite movies and TV series.",
+  "@favoritesLoginPrompt": {
+    "description": "Favorites login prompt message"
+  },
+  "watchlistEmpty": "Nothing watched yet",
+  "@watchlistEmpty": {
+    "description": "Empty watchlist message"
+  },
+  "watchlistUnavailable": "Watched unavailable",
+  "@watchlistUnavailable": {
+    "description": "Watchlist unavailable title"
+  },
+  "watchlistLoginPrompt": "Sign in to see your watched movies and TV series.",
+  "@watchlistLoginPrompt": {
+    "description": "Watchlist login prompt message"
+  },
+  "searchHistory": "Search History",
+  "@searchHistory": {
+    "description": "Search history title"
+  },
+  "clear": "Clear",
+  "@clear": {
+    "description": "Clear button"
+  },
+  "searchHistoryEmpty": "Search history is empty",
+  "@searchHistoryEmpty": {
+    "description": "Empty search history message"
+  },
+  "searchHistoryUnavailable": "Search history unavailable",
+  "@searchHistoryUnavailable": {
+    "description": "Search history unavailable title"
+  },
+  "searchHistoryLoginPrompt": "Sign in to save and view search history.",
+  "@searchHistoryLoginPrompt": {
+    "description": "Search history login prompt message"
+  },
+  "search": "Search",
+  "@search": {
+    "description": "Search title"
+  },
+  "searchWithFilters": "Search with filters",
+  "@searchWithFilters": {
+    "description": "Search with filters title"
+  },
+  "authorizationRequired": "Authorization Required",
+  "@authorizationRequired": {
+    "description": "Authorization required dialog title"
+  },
+  "loginToAddToFavorites": "Sign in to add to favorites.",
+  "@loginToAddToFavorites": {
+    "description": "Login prompt to add to favorites"
+  },
+  "loginToAddMediaToFavorites": "Sign in to add media to favorites.",
+  "@loginToAddMediaToFavorites": {
+    "description": "Login prompt to add media to favorites"
+  },
+  "popularMovies": "Popular Movies",
+  "@popularMovies": {
+    "description": "Popular movies section title"
+  },
+  "popularTvShows": "Popular TV Shows",
+  "@popularTvShows": {
+    "description": "Popular TV shows section title"
+  },
+  "allMovies": "All Movies",
+  "@allMovies": {
+    "description": "All movies section title"
+  },
+  "allTvShows": "All TV Shows",
+  "@allTvShows": {
+    "description": "All TV shows section title"
+  },
+  "more": "More",
+  "@more": {
+    "description": "See more button"
+  },
+  "noData": "No data",
+  "@noData": {
+    "description": "No data message"
+  },
+  "nothingFound": "Nothing found",
+  "@nothingFound": {
+    "description": "Nothing found message"
+  },
+  "loadMore": "Load more",
+  "@loadMore": {
+    "description": "Load more button"
+  },
+  "headerSubtitle": "We've picked what to watch today",
+  "@headerSubtitle": {
+    "description": "Home header subtitle"
+  },
+  "headerDescription": "Continue discovering stories, add to favorites and come back for recommendations.",
+  "@headerDescription": {
+    "description": "Home header description"
+  },
+  "explore": "Explore",
+  "@explore": {
+    "description": "Explore button"
+  },
+  "trailer": "Trailer",
+  "@trailer": {
+    "description": "Trailer section title"
+  },
+  "overview": "Overview",
+  "@overview": {
+    "description": "Overview section title"
+  },
+  "noOverview": "No overview available",
+  "@noOverview": {
+    "description": "No overview message"
+  },
+  "characteristics": "Characteristics",
+  "@characteristics": {
+    "description": "Characteristics section title"
+  },
+  "releaseDate": "Release Date",
+  "@releaseDate": {
+    "description": "Release date label"
+  },
+  "genres": "Genres",
+  "@genres": {
+    "description": "Genres label"
+  },
+  "status": "Status",
+  "@status": {
+    "description": "Status label"
+  },
+  "voteCount": "Vote Count",
+  "@voteCount": {
+    "description": "Vote count label"
+  },
+  "reviews": "Reviews",
+  "@reviews": {
+    "description": "Reviews section title"
+  },
+  "noReviewsYet": "No reviews yet",
+  "@noReviewsYet": {
+    "description": "No reviews message"
+  },
+  "anonymous": "Anonymous",
+  "@anonymous": {
+    "description": "Anonymous author name"
+  },
+  "recommended": "Recommended",
+  "@recommended": {
+    "description": "Recommended section title"
+  },
+  "trailerUnavailable": "Trailer unavailable",
+  "@trailerUnavailable": {
+    "description": "Trailer unavailable message"
+  },
+  "videoUnavailable": "Video unavailable",
+  "@videoUnavailable": {
+    "description": "Video unavailable message"
+  },
+  "tryingToFindAnotherVideo": "Trying to find another video...",
+  "@tryingToFindAnotherVideo": {
+    "description": "Trying to find another video message"
+  },
+  "enterTitle": "Enter title...",
+  "@enterTitle": {
+    "description": "Search input placeholder"
+  },
+  "genre": "Genre",
+  "@genre": {
+    "description": "Genre label"
+  },
+  "genreExample": "Genre (e.g.: Action, Comedy)",
+  "@genreExample": {
+    "description": "Genre input label with example"
+  },
+  "year": "Year",
+  "@year": {
+    "description": "Year label"
+  },
+  "rating": "Rating",
+  "@rating": {
+    "description": "Rating label"
+  },
+  "noInternetConnection": "No internet connection. Check your network connection.",
+  "@noInternetConnection": {
+    "description": "No internet connection error message"
+  },
+  "timeoutError": "Request timeout. Check your internet connection.",
+  "@timeoutError": {
+    "description": "Timeout error message"
+  },
+  "connectionError": "Connection error to server. Please try again later.",
+  "@connectionError": {
+    "description": "Connection error message"
+  },
+  "insufficientPermissions": "Insufficient permissions. Please sign in.",
+  "@insufficientPermissions": {
+    "description": "Insufficient permissions error message"
+  },
+  "nothingFoundWithFilters": "Nothing found with the specified filters. Try other search parameters.",
+  "@nothingFoundWithFilters": {
+    "description": "Nothing found with filters error message"
+  },
+  "searchFailed": "Failed to perform search. Please try again later.",
+  "@searchFailed": {
+    "description": "General search error message"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel button"
+  },
+  "home": "Home",
+  "@home": {
+    "description": "Home navigation label"
+  },
+  "votes": "{count} votes",
+  "@votes": {
+    "description": "Vote count with number",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "minutes": "{minutes} min",
+  "@minutes": {
+    "description": "Duration in minutes",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "seasons": "Seasons: {count}",
+  "@seasons": {
+    "description": "Number of seasons",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
+}
+

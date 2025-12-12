@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import '../../core/constants.dart';
 import '../../core/responsive.dart';
 
@@ -93,7 +94,7 @@ class HomeHeaderWidget extends StatelessWidget {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'Підібрали, що переглянути сьогодні',
+                              AppLocalizations.of(context)!.headerSubtitle,
                               style: TextStyle(
                                 color: colors.onBackground.withOpacity(0.7),
                                 fontSize: isMobile ? 13 : 15,
@@ -108,7 +109,7 @@ class HomeHeaderWidget extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          'Продовжуй відкривати історії, додавай у вподобане та повертайся за рекомендаціями.',
+                          AppLocalizations.of(context)!.headerDescription,
                           style: TextStyle(
                             color: colors.onBackground.withOpacity(0.9),
                             height: 1.35,
@@ -134,7 +135,7 @@ class HomeHeaderWidget extends StatelessWidget {
                             Navigator.of(context).pushNamed(AppConstants.searchRoute),
                         icon: const Icon(Icons.explore),
                         label: Text(
-                          'Дослідити',
+                          AppLocalizations.of(context)!.explore,
                           style: TextStyle(
                             fontWeight: FontWeight.w800,
                             fontSize: isMobile ? 14 : 16,

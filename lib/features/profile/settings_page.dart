@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../l10n/app_localizations.dart';
 import '../../core/constants.dart';
 import '../../core/di.dart';
 import '../../core/responsive.dart';
@@ -35,11 +36,12 @@ class _SettingsPageState extends State<_SettingsPageContent> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     final settingsState = context.watch<SettingsBloc>().state;
+    final l10n = AppLocalizations.of(context)!;
     // Оновлюємо мову зі стану
     if (settingsState.languageCode == 'uk') {
-      _selectedLanguage = 'Українська';
+      _selectedLanguage = l10n.ukrainian;
     } else {
-      _selectedLanguage = 'English';
+      _selectedLanguage = l10n.english;
     }
   }
 
@@ -56,6 +58,8 @@ class _SettingsPageState extends State<_SettingsPageContent> {
         final horizontalPadding = Responsive.getHorizontalPadding(ctx);
         final spacing = Responsive.getSpacing(ctx);
         final isDark = theme.brightness == Brightness.dark;
+        final modalL10n = AppLocalizations.of(ctx)!;
+        final settingsState = ctx.watch<SettingsBloc>().state;
 
         return Container(
           decoration: BoxDecoration(
@@ -100,7 +104,7 @@ class _SettingsPageState extends State<_SettingsPageContent> {
                       height: 4,
                       margin: EdgeInsets.only(bottom: spacing),
                       decoration: BoxDecoration(
-                        color: colors.onSurfaceVariant.withOpacity(0.4),
+                        color: colors.onSurfaceVariant.withValues(alpha: 0.4),
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
@@ -115,9 +119,9 @@ class _SettingsPageState extends State<_SettingsPageContent> {
                       ),
                       SizedBox(width: spacing * 0.6),
                       Text(
-                        'Оберіть мову',
+                        modalL10n.selectLanguage,
                         style: TextStyle(
-                          color: colors.onBackground,
+                          color: colors.onSurface,
                           fontSize: isDesktop ? 24 : isTablet ? 22 : 20,
                           fontWeight: FontWeight.w700,
                         ),
@@ -127,17 +131,17 @@ class _SettingsPageState extends State<_SettingsPageContent> {
                   SizedBox(height: spacing * 1.5),
                   // Language options
                   _LanguageOption(
-                    title: 'Українська',
+                    title: modalL10n.ukrainian,
                     icon: Icons.flag,
-                    onTap: () => Navigator.of(ctx).pop('Українська'),
-                    isSelected: _selectedLanguage == 'Українська',
+                    onTap: () => Navigator.of(ctx).pop('uk'),
+                    isSelected: settingsState.languageCode == 'uk',
                   ),
                   SizedBox(height: spacing),
                   _LanguageOption(
-                    title: 'English',
+                    title: modalL10n.english,
                     icon: Icons.flag_outlined,
-                    onTap: () => Navigator.of(ctx).pop('English'),
-                    isSelected: _selectedLanguage == 'English',
+                    onTap: () => Navigator.of(ctx).pop('en'),
+                    isSelected: settingsState.languageCode == 'en',
                   ),
                 ],
               ),
@@ -147,9 +151,11 @@ class _SettingsPageState extends State<_SettingsPageContent> {
       },
     );
     if (lang != null && mounted) {
-      final languageCode = lang == 'Українська' ? 'uk' : 'en';
-      context.read<SettingsBloc>().add(SetLanguageEvent(languageCode));
-      setState(() => _selectedLanguage = lang);
+      context.read<SettingsBloc>().add(SetLanguageEvent(lang));
+      final updatedL10n = AppLocalizations.of(context)!;
+      setState(() {
+        _selectedLanguage = lang == 'uk' ? updatedL10n.ukrainian : updatedL10n.english;
+      });
     }
   }
 
@@ -212,7 +218,7 @@ class _SettingsPageState extends State<_SettingsPageContent> {
                       height: 4,
                       margin: EdgeInsets.only(bottom: spacing),
                       decoration: BoxDecoration(
-                        color: colors.onSurfaceVariant.withOpacity(0.4),
+                        color: colors.onSurfaceVariant.withValues(alpha: 0.4),
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
@@ -227,9 +233,9 @@ class _SettingsPageState extends State<_SettingsPageContent> {
                       ),
                       SizedBox(width: spacing * 0.6),
                       Text(
-                        'Тема застосунку',
+                        AppLocalizations.of(context)!.appThemeTitle,
                         style: TextStyle(
-                          color: colors.onBackground,
+                          color: colors.onSurface,
                           fontSize: isDesktop ? 24 : isTablet ? 22 : 20,
                           fontWeight: FontWeight.w700,
                         ),
@@ -239,7 +245,7 @@ class _SettingsPageState extends State<_SettingsPageContent> {
                   SizedBox(height: spacing * 1.5),
                   // Theme options
                   _ThemeOption(
-                    title: 'Системна',
+                    title: AppLocalizations.of(context)!.systemTheme,
                     icon: Icons.brightness_auto,
                     value: ThemeMode.system,
                     groupValue: currentTheme,
@@ -247,7 +253,7 @@ class _SettingsPageState extends State<_SettingsPageContent> {
                   ),
                   SizedBox(height: spacing),
                   _ThemeOption(
-                    title: 'Світла',
+                    title: AppLocalizations.of(context)!.lightTheme,
                     icon: Icons.light_mode,
                     value: ThemeMode.light,
                     groupValue: currentTheme,
@@ -255,7 +261,7 @@ class _SettingsPageState extends State<_SettingsPageContent> {
                   ),
                   SizedBox(height: spacing),
                   _ThemeOption(
-                    title: 'Темна',
+                    title: AppLocalizations.of(context)!.darkTheme,
                     icon: Icons.dark_mode,
                     value: ThemeMode.dark,
                     groupValue: currentTheme,
@@ -274,13 +280,14 @@ class _SettingsPageState extends State<_SettingsPageContent> {
   }
 
   String _getThemeLabel(ThemeMode themeMode) {
+    final l10n = AppLocalizations.of(context)!;
     switch (themeMode) {
       case ThemeMode.light:
-        return 'Світла';
+        return l10n.lightTheme;
       case ThemeMode.dark:
-        return 'Темна';
+        return l10n.darkTheme;
       case ThemeMode.system:
-        return 'Системна';
+        return l10n.systemTheme;
     }
   }
 
@@ -328,14 +335,14 @@ class _SettingsPageState extends State<_SettingsPageContent> {
                                 size: isDesktop ? 28 : 24,
                               ),
                               SizedBox(width: spacing * 0.6),
-                              Text(
-                                'Налаштування',
-                                style: TextStyle(
-                                  color: colors.onSurface,
-                                  fontSize: isDesktop ? 24 : 20,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
+                      Text(
+                        AppLocalizations.of(context)!.settings,
+                        style: TextStyle(
+                          color: colors.onSurface,
+                          fontSize: isDesktop ? 24 : 20,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
                             ],
                           ),
                         ),
@@ -365,13 +372,13 @@ class _SettingsPageState extends State<_SettingsPageContent> {
                                         childAspectRatio: 1.5,
                                         children: [
                                           _SettingsTile(
-                                            title: 'Мова застосунку',
+                                            title: AppLocalizations.of(context)!.appLanguage,
                                             subtitle: _selectedLanguage,
                                             icon: Icons.language,
                                             onTap: _chooseLanguage,
                                           ),
                                           _SettingsTile(
-                                            title: 'Тема застосунку',
+                                            title: AppLocalizations.of(context)!.appTheme,
                                             subtitle: _getThemeLabel(currentTheme),
                                             icon: Icons.dark_mode_outlined,
                                             onTap: _chooseTheme,
@@ -382,14 +389,14 @@ class _SettingsPageState extends State<_SettingsPageContent> {
                                       Column(
                                         children: [
                                           _SettingsTile(
-                                            title: 'Мова застосунку',
+                                            title: AppLocalizations.of(context)!.appLanguage,
                                             subtitle: _selectedLanguage,
                                             icon: Icons.language,
                                             onTap: _chooseLanguage,
                                           ),
                                           SizedBox(height: spacing),
                                           _SettingsTile(
-                                            title: 'Тема застосунку',
+                                            title: AppLocalizations.of(context)!.appTheme,
                                             subtitle: _getThemeLabel(currentTheme),
                                             icon: Icons.dark_mode_outlined,
                                             onTap: _chooseTheme,
@@ -398,7 +405,7 @@ class _SettingsPageState extends State<_SettingsPageContent> {
                                       ),
                                     SizedBox(height: spacing),
                                     _SettingsTile(
-                                      title: 'Про застосунок',
+                                      title: AppLocalizations.of(context)!.aboutApp,
                                       icon: Icons.info_outline,
                                       onTap: () {
                                         Navigator.of(context).pushNamed(AppConstants.aboutRoute);
@@ -406,7 +413,7 @@ class _SettingsPageState extends State<_SettingsPageContent> {
                                     ),
                                     SizedBox(height: spacing * 1.5),
                                     Text(
-                                      'Версія застосунку: 1.0.0',
+                                      AppLocalizations.of(context)!.appVersion('1.0.0'),
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                         color: colors.onSurface.withValues(alpha: 0.6),
@@ -484,7 +491,7 @@ class _SettingsTile extends StatelessWidget {
         leading: Container(
           padding: EdgeInsets.all(isDesktop ? 12 : 10),
           decoration: BoxDecoration(
-            color: colors.primary.withOpacity(0.12),
+            color: colors.primary.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(
@@ -496,7 +503,7 @@ class _SettingsTile extends StatelessWidget {
         title: Text(
           title,
           style: TextStyle(
-            color: colors.onBackground,
+            color: colors.onSurface,
             fontWeight: FontWeight.w700,
             fontSize: isDesktop ? 18 : 16,
           ),
@@ -505,14 +512,14 @@ class _SettingsTile extends StatelessWidget {
             ? Text(
                 subtitle!,
                 style: TextStyle(
-                  color: colors.onBackground.withOpacity(0.6),
+                  color: colors.onSurface.withValues(alpha: 0.6),
                   fontSize: isDesktop ? 15 : 14,
                 ),
               )
             : null,
         trailing: Icon(
           Icons.chevron_right,
-          color: colors.onBackground.withOpacity(0.45),
+          color: colors.onSurface.withValues(alpha: 0.45),
           size: isDesktop ? 28 : 24,
         ),
         onTap: onTap,
@@ -552,13 +559,13 @@ class _LanguageOption extends StatelessWidget {
         ),
         decoration: BoxDecoration(
           color: isSelected
-              ? colors.primary.withOpacity(isDark ? 0.2 : 0.1)
-              : colors.surfaceVariant.withOpacity(isDark ? 0.2 : 0.5),
+              ? colors.primary.withValues(alpha: isDark ? 0.2 : 0.1)
+              : colors.surfaceContainerHighest.withValues(alpha: isDark ? 0.2 : 0.5),
           borderRadius: BorderRadius.circular(isDesktop ? 16 : 14),
           border: Border.all(
             color: isSelected
-                ? colors.primary.withOpacity(0.5)
-                : colors.outlineVariant.withOpacity(0.5),
+                ? colors.primary.withValues(alpha: 0.5)
+                : colors.outlineVariant.withValues(alpha: 0.5),
           ),
         ),
         child: Row(
@@ -626,13 +633,13 @@ class _ThemeOption extends StatelessWidget {
         ),
         decoration: BoxDecoration(
           color: isSelected
-              ? colors.primary.withOpacity(isDark ? 0.2 : 0.1)
-              : colors.surfaceVariant.withOpacity(isDark ? 0.2 : 0.5),
+              ? colors.primary.withValues(alpha: isDark ? 0.2 : 0.1)
+              : colors.surfaceContainerHighest.withValues(alpha: isDark ? 0.2 : 0.5),
           borderRadius: BorderRadius.circular(isDesktop ? 16 : 14),
           border: Border.all(
             color: isSelected
-                ? colors.primary.withOpacity(0.5)
-                : colors.outlineVariant.withOpacity(0.5),
+                ? colors.primary.withValues(alpha: 0.5)
+                : colors.outlineVariant.withValues(alpha: 0.5),
           ),
         ),
         child: Row(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../l10n/app_localizations.dart';
 import 'package:project/core/constants.dart';
 import 'package:project/core/di.dart';
 import 'package:project/core/responsive.dart';
@@ -30,12 +31,13 @@ class FavoritesPage extends StatelessWidget {
         final theme = Theme.of(context);
         final colors = theme.colorScheme;
 
+        final l10n = AppLocalizations.of(context)!;
         if (state.loading) {
-          return const AnimatedLoadingWidget(message: 'Завантаження...');
+          return AnimatedLoadingWidget(message: l10n.loading);
         }
         if (!state.authorized) {
           return _EmptyState(
-            message: 'Список вподобань порожній',
+            message: l10n.favoritesEmpty,
             showLoginPrompt: true,
             onLogin: () {
               Navigator.of(
@@ -45,7 +47,7 @@ class FavoritesPage extends StatelessWidget {
           );
         }
         if (state.favorites.isEmpty) {
-          return const _EmptyState(message: 'Список вподобань порожній');
+          return _EmptyState(message: l10n.favoritesEmpty);
         }
         return Container(
           decoration: AppGradients.background(context),
@@ -73,9 +75,9 @@ class FavoritesPage extends StatelessWidget {
                           ),
                           SizedBox(width: Responsive.isMobile(context) ? 10 : 12),
                           Text(
-                            'Вподобані',
+                            AppLocalizations.of(context)!.favorites,
                             style: TextStyle(
-                              color: colors.onBackground,
+                              color: colors.onSurface,
                               fontSize: Responsive.isMobile(context) ? 20 : 24,
                               fontWeight: FontWeight.w700,
                             ),
@@ -126,11 +128,11 @@ class FavoritesPage extends StatelessWidget {
             color: theme.cardColor,
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
-              color: colors.outlineVariant.withOpacity(0.8),
+              color: colors.outlineVariant.withValues(alpha: 0.8),
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(
+                color: Colors.black.withValues(alpha:
                   theme.brightness == Brightness.light
                       ? 0.08
                       : 0.25,
@@ -179,7 +181,7 @@ class FavoritesPage extends StatelessWidget {
                                                 child: Center(
                                                   child: CircularProgressIndicator(
                                                     strokeWidth: 2,
-                                                    color: Colors.white.withOpacity(0.7),
+                                                    color: Colors.white.withValues(alpha: 0.7),
                                                   ),
                                                 ),
                                               ),
@@ -197,7 +199,7 @@ class FavoritesPage extends StatelessWidget {
                                                 child: Icon(
                                                   Icons.movie,
                                                   color: colors.onSurfaceVariant
-                                                      .withOpacity(0.7),
+                                                      .withValues(alpha: 0.7),
                                                   size: 32,
                                                 ),
                                               ),
@@ -216,7 +218,7 @@ class FavoritesPage extends StatelessWidget {
                                               child: Icon(
                                                 Icons.movie,
                                                 color: colors.onSurfaceVariant
-                                                    .withOpacity(0.7),
+                                                    .withValues(alpha: 0.7),
                                                 size: 32,
                                               ),
                                             ),
@@ -233,7 +235,7 @@ class FavoritesPage extends StatelessWidget {
                           style: TextStyle(
                             fontSize: Responsive.isMobile(context) ? 16 : 18,
                             fontWeight: FontWeight.w700,
-                            color: colors.onBackground,
+                            color: colors.onSurface,
                           ),
                         ),
                         SizedBox(height: Responsive.isMobile(context) ? 6 : 8),
@@ -243,7 +245,7 @@ class FavoritesPage extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             color: colors.onSurfaceVariant
-                                .withOpacity(0.7),
+                                .withValues(alpha: 0.7),
                             fontSize: Responsive.isMobile(context) ? 14 : 15,
                             height: 1.4,
                           ),
@@ -257,8 +259,8 @@ class FavoritesPage extends StatelessWidget {
                                               vertical: 6,
                                             ),
                                             decoration: BoxDecoration(
-                                              color: colors.surfaceVariant
-                                                  .withOpacity(
+                                              color: colors.surfaceContainerHighest
+                                                  .withValues(alpha:
                                                 theme.brightness ==
                                                         Brightness.light
                                                     ? 0.7
@@ -268,7 +270,7 @@ class FavoritesPage extends StatelessWidget {
                                                   BorderRadius.circular(12),
                                               border: Border.all(
                                                 color: colors.outlineVariant
-                                                    .withOpacity(0.8),
+                                                    .withValues(alpha: 0.8),
                                               ),
                                             ),
                                             child: Row(
@@ -387,13 +389,13 @@ class _EmptyState extends StatelessWidget {
               Icon(
                 Icons.favorite_border,
                 size: isMobile ? 64 : 80,
-                color: colors.onBackground.withOpacity(0.7),
+                color: colors.onSurface.withValues(alpha: 0.7),
               ),
               SizedBox(height: Responsive.getSpacing(context)),
               Text(
                 message,
                 style: TextStyle(
-                  color: colors.onBackground,
+                  color: colors.onSurface,
                   fontSize: isMobile ? 18 : 22,
                   fontWeight: FontWeight.w700,
                 ),
@@ -401,10 +403,10 @@ class _EmptyState extends StatelessWidget {
               if (showLoginPrompt && onLogin != null) ...[
                 SizedBox(height: Responsive.getSpacing(context) / 2),
                 Text(
-                  'Увійдіть, щоб зберігати улюблені фільми й серіали.',
+                  AppLocalizations.of(context)!.favoritesLoginPrompt,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: colors.onBackground.withOpacity(0.65),
+                    color: colors.onSurface.withValues(alpha: 0.65),
                     fontSize: isMobile ? 14 : 16,
                     height: 1.4,
                   ),
@@ -422,7 +424,7 @@ class _EmptyState extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    'Увійти',
+                    AppLocalizations.of(context)!.signIn,
                     style: TextStyle(
                       fontWeight: FontWeight.w800,
                       fontSize: isMobile ? 14 : 16,

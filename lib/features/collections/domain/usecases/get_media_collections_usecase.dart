@@ -1,5 +1,5 @@
 import '/core/domain/base_usecase.dart';
-import '../../media_collections_repository.dart';
+import '../repositories/media_collections_repository.dart';
 import '../../media_collection_entry.dart';
 
 /// Параметри для GetMediaCollectionsUseCase

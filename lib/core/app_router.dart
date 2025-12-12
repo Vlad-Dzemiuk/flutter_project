@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import 'package:project/features/home/home_page.dart';
 import 'package:project/features/favorites/favorites_page.dart';
 import 'package:project/features/profile/profile_page.dart';
@@ -23,17 +24,29 @@ class AppRouter {
       case '/':
       case AppConstants.homeRoute:
         return FadePageRoute(
-          child: MainScaffold(body: const HomePage()),
+          child: Builder(
+            builder: (context) => MainScaffold(body: const HomePage()),
+          ),
         );
       case AppConstants.favoritesRoute:
         return SlidePageRoute(
           beginOffset: const Offset(0.0, 1.0),
-          child: MainScaffold(body: const FavoritesPage(), title: 'Вподобані'),
+          child: Builder(
+            builder: (context) => MainScaffold(
+              body: const FavoritesPage(),
+              title: AppLocalizations.of(context)?.favorites ?? 'Вподобані',
+            ),
+          ),
         );
       case AppConstants.profileRoute:
         return SlidePageRoute(
           beginOffset: const Offset(0.0, 1.0),
-          child: MainScaffold(body: const ProfilePage(), title: 'Профіль'),
+          child: Builder(
+            builder: (context) => MainScaffold(
+              body: const ProfilePage(),
+              title: AppLocalizations.of(context)?.profile ?? 'Профіль',
+            ),
+          ),
         );
       case AppConstants.editProfileRoute:
         if (!isLoggedIn) {
@@ -49,7 +62,12 @@ class AppRouter {
       case AppConstants.watchlistRoute:
         return SlidePageRoute(
           beginOffset: const Offset(0.0, 1.0),
-          child: MainScaffold(body: const WatchlistPage(), title: 'Переглянуті'),
+          child: Builder(
+            builder: (context) => MainScaffold(
+              body: const WatchlistPage(),
+              title: AppLocalizations.of(context)?.watched ?? 'Переглянуті',
+            ),
+          ),
         );
       case AppConstants.settingsRoute:
         return SlidePageRoute(
@@ -63,7 +81,12 @@ class AppRouter {
       case AppConstants.searchRoute:
         return SlidePageRoute(
           beginOffset: const Offset(0.0, 1.0),
-          child: MainScaffold(body: const SearchPage(), title: 'Пошук'),
+          child: Builder(
+            builder: (context) => MainScaffold(
+              body: const SearchPage(),
+              title: AppLocalizations.of(context)?.search ?? 'Пошук',
+            ),
+          ),
         );
       case AppConstants.loginRoute:
         return ScalePageRoute(

@@ -1,6 +1,6 @@
-import '../../core/storage/media_collections_storage.dart';
-import '../home/home_media_item.dart';
-import 'media_collection_entry.dart';
+import '../../../../core/storage/media_collections_storage.dart';
+import '../../../home/home_media_item.dart';
+import '../../media_collection_entry.dart';
 
 class MediaCollectionsRepository {
   MediaCollectionsRepository(this._storage);

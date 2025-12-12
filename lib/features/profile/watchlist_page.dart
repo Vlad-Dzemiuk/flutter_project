@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../l10n/app_localizations.dart';
 import 'package:project/core/constants.dart';
 import 'package:project/core/di.dart';
 import 'package:project/core/responsive.dart';
@@ -31,11 +32,14 @@ class WatchlistPage extends StatelessWidget {
         final theme = Theme.of(context);
         final colors = theme.colorScheme;
 
+        final l10n = AppLocalizations.of(context)!;
         if (state.loading) {
-          return const AnimatedLoadingWidget(message: 'Завантаження...');
+          return AnimatedLoadingWidget(message: l10n.loading);
         }
         if (!state.authorized) {
-          return _UnauthorizedMessage(
+          return _EmptyState(
+            message: l10n.watchlistEmpty,
+            showLoginPrompt: true,
             onLogin: () {
               Navigator.of(
                 context,
@@ -44,7 +48,7 @@ class WatchlistPage extends StatelessWidget {
           );
         }
         if (state.watchlist.isEmpty) {
-          return const _EmptyState(message: 'Ще нічого не переглянуто');
+          return _EmptyState(message: l10n.watchlistEmpty);
         }
         return Container(
           decoration: AppGradients.background(context),
@@ -72,9 +76,9 @@ class WatchlistPage extends StatelessWidget {
                           ),
                           SizedBox(width: Responsive.isMobile(context) ? 10 : 12),
                           Text(
-                            'Переглянуті',
+                            AppLocalizations.of(context)!.watched,
                             style: TextStyle(
-                              color: colors.onBackground,
+                              color: colors.onSurface,
                               fontSize: Responsive.isMobile(context) ? 20 : 24,
                               fontWeight: FontWeight.w700,
                             ),
@@ -126,11 +130,11 @@ class WatchlistPage extends StatelessWidget {
             color: theme.cardColor,
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
-              color: colors.outlineVariant.withOpacity(0.8),
+              color: colors.outlineVariant.withValues(alpha: 0.8),
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(
+                color: Colors.black.withValues(alpha:
                   theme.brightness == Brightness.light
                       ? 0.08
                       : 0.25,
@@ -179,7 +183,7 @@ class WatchlistPage extends StatelessWidget {
                                                 child: Center(
                                                   child: CircularProgressIndicator(
                                                     strokeWidth: 2,
-                                                    color: Colors.white.withOpacity(0.7),
+                                                    color: Colors.white.withValues(alpha: 0.7),
                                                   ),
                                                 ),
                                               ),
@@ -197,7 +201,7 @@ class WatchlistPage extends StatelessWidget {
                                                 child: Icon(
                                                   Icons.movie,
                                                   color: colors.onSurfaceVariant
-                                                      .withOpacity(0.7),
+                                                      .withValues(alpha:0.7),
                                                   size: 32,
                                                 ),
                                               ),
@@ -216,7 +220,7 @@ class WatchlistPage extends StatelessWidget {
                                               child: Icon(
                                                 Icons.movie,
                                                 color: colors.onSurfaceVariant
-                                                    .withOpacity(0.7),
+                                                    .withValues(alpha:0.7),
                                                 size: 32,
                                               ),
                                             ),
@@ -233,7 +237,7 @@ class WatchlistPage extends StatelessWidget {
                           style: TextStyle(
                             fontSize: Responsive.isMobile(context) ? 16 : 18,
                             fontWeight: FontWeight.w700,
-                            color: colors.onBackground,
+                            color: colors.onSurface,
                           ),
                         ),
                         SizedBox(height: Responsive.isMobile(context) ? 6 : 8),
@@ -243,7 +247,7 @@ class WatchlistPage extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             color: colors.onSurfaceVariant
-                                .withOpacity(0.7),
+                                .withValues(alpha:0.7),
                             fontSize: Responsive.isMobile(context) ? 14 : 15,
                             height: 1.4,
                           ),
@@ -257,8 +261,8 @@ class WatchlistPage extends StatelessWidget {
                                               vertical: 6,
                                             ),
                                             decoration: BoxDecoration(
-                                              color: colors.surfaceVariant
-                                                  .withOpacity(
+                                              color: colors.surfaceContainerHighest
+                                                  .withValues(alpha:
                                                 theme.brightness ==
                                                         Brightness.light
                                                     ? 0.7
@@ -268,7 +272,7 @@ class WatchlistPage extends StatelessWidget {
                                                   BorderRadius.circular(12),
                                               border: Border.all(
                                                 color: colors.outlineVariant
-                                                    .withOpacity(0.8),
+                                                    .withValues(alpha:0.8),
                                               ),
                                             ),
                                             child: Row(
@@ -301,7 +305,7 @@ class WatchlistPage extends StatelessWidget {
                                               color: isFavorite
                                                   ? const Color(0xFFFF6B6B)
                                                   : colors.onSurfaceVariant
-                                                      .withOpacity(0.7),
+                                                      .withValues(alpha:0.7),
                                             ),
                                           ),
                                         ],
@@ -365,94 +369,22 @@ class WatchlistPage extends StatelessWidget {
   }
 }
 
-class _UnauthorizedMessage extends StatelessWidget {
-  const _UnauthorizedMessage({required this.onLogin});
-
-  final VoidCallback onLogin;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final isMobile = Responsive.isMobile(context);
-    final horizontalPadding = Responsive.getHorizontalPadding(context);
-    
-    return Container(
-      decoration: AppGradients.background(context),
-      child: SafeArea(
-        child: Padding(
-          padding: horizontalPadding,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: EdgeInsets.all(isMobile ? 14 : 18),
-                decoration: BoxDecoration(
-                  color: colors.primary.withOpacity(0.14),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Icon(
-                  Icons.visibility_outlined,
-                  color: colors.primary,
-                  size: isMobile ? 28 : 36,
-                ),
-              ),
-              SizedBox(height: Responsive.getSpacing(context)),
-              Text(
-                'Переглянуті недоступні',
-                style: TextStyle(
-                  color: colors.onBackground,
-                  fontSize: isMobile ? 20 : 24,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              SizedBox(height: Responsive.getSpacing(context) / 2),
-              Text(
-                'Увійдіть, щоб бачити ваші переглянуті фільми та серіали.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: colors.onBackground.withOpacity(0.65),
-                  fontSize: isMobile ? 14 : 16,
-                  height: 1.4,
-                ),
-              ),
-              SizedBox(height: Responsive.getSpacing(context)),
-              FilledButton(
-                onPressed: onLogin,
-                style: FilledButton.styleFrom(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: isMobile ? 24 : 32,
-                    vertical: isMobile ? 12 : 14,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
-                child: Text(
-                  'Увійти',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w800,
-                    fontSize: isMobile ? 14 : 16,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class _EmptyState extends StatelessWidget {
   final String message;
+  final bool showLoginPrompt;
+  final VoidCallback? onLogin;
 
-  const _EmptyState({required this.message});
+  const _EmptyState({
+    required this.message,
+    this.showLoginPrompt = false,
+    this.onLogin,
+  });
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final horizontalPadding = Responsive.getHorizontalPadding(context);
+    final isMobile = Responsive.isMobile(context);
     
     return Container(
       decoration: AppGradients.background(context),
@@ -464,18 +396,50 @@ class _EmptyState extends StatelessWidget {
             children: [
               Icon(
                 Icons.visibility_outlined,
-                size: Responsive.isMobile(context) ? 64 : 80,
-                color: colors.onBackground.withOpacity(0.7),
+                size: isMobile ? 64 : 80,
+                color: colors.onSurface.withValues(alpha: 0.7),
               ),
               SizedBox(height: Responsive.getSpacing(context)),
               Text(
                 message,
                 style: TextStyle(
-                  color: colors.onBackground,
-                  fontSize: Responsive.isMobile(context) ? 18 : 22,
+                  color: colors.onSurface,
+                  fontSize: isMobile ? 18 : 22,
                   fontWeight: FontWeight.w700,
                 ),
               ),
+              if (showLoginPrompt && onLogin != null) ...[
+                SizedBox(height: Responsive.getSpacing(context) / 2),
+                Text(
+                  AppLocalizations.of(context)!.watchlistLoginPrompt,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: colors.onSurface.withValues(alpha: 0.65),
+                    fontSize: isMobile ? 14 : 16,
+                    height: 1.4,
+                  ),
+                ),
+                SizedBox(height: Responsive.getSpacing(context)),
+                FilledButton(
+                  onPressed: onLogin,
+                  style: FilledButton.styleFrom(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: isMobile ? 24 : 32,
+                      vertical: isMobile ? 12 : 14,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  child: Text(
+                    AppLocalizations.of(context)!.signIn,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w800,
+                      fontSize: isMobile ? 14 : 16,
+                    ),
+                  ),
+                ),
+              ],
             ],
           ),
         ),

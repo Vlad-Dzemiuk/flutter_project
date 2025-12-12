@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../l10n/app_localizations.dart';
 import 'package:project/core/di.dart' as di;
 import 'package:project/core/storage/local_cache_db.dart';
 import 'package:project/features/home/domain/entities/video.dart';
@@ -185,7 +186,7 @@ class _MovieTrailerPlayerState extends ConsumerState<MovieTrailerPlayer> {
         // Обробляємо помилки (YoutubeError.none - це нормальний стан, не помилка)
         if (value.error != YoutubeError.none) {
           // Визначаємо повідомлення про помилку в залежності від типу помилки
-          String errorMsg = _getErrorMessage(value.error);
+          String errorMsg = _getErrorMessage(context, value.error);
           
           if (kDebugMode) {
             debugPrint('MovieTrailerPlayer: Помилка відтворення відео - ${value.error}');
@@ -276,19 +277,20 @@ class _MovieTrailerPlayerState extends ConsumerState<MovieTrailerPlayer> {
   }
 
   /// Отримує зрозуміле повідомлення про помилку на основі типу помилки YouTube
-  String _getErrorMessage(YoutubeError error) {
+  String _getErrorMessage(BuildContext context, YoutubeError error) {
+    final l10n = AppLocalizations.of(context)!;
     // Використовуємо тільки існуючі значення enum YoutubeError
     // Доступні значення: none, unknown, videoNotFound, html5Error
     if (error == YoutubeError.none) {
       return '';
     } else if (error == YoutubeError.videoNotFound) {
-      return 'Відео не знайдено';
+      return l10n.videoUnavailable;
     } else if (error == YoutubeError.unknown) {
-      return 'Відео недоступне';
+      return l10n.videoUnavailable;
     } else {
       // Для будь-яких інших помилок (наприклад, html5Error якщо існує)
       // показуємо загальне повідомлення
-      return 'Відео недоступне';
+      return l10n.videoUnavailable;
     }
   }
 
@@ -441,7 +443,7 @@ class _MovieTrailerPlayerState extends ConsumerState<MovieTrailerPlayer> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Трейлер',
+              AppLocalizations.of(context)!.trailer,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -469,7 +471,7 @@ class _MovieTrailerPlayerState extends ConsumerState<MovieTrailerPlayer> {
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                _errorMessage ?? 'Відео недоступне',
+                                _errorMessage ?? AppLocalizations.of(context)!.videoUnavailable,
                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                       color: Colors.grey[600],
                                     ),
@@ -478,7 +480,7 @@ class _MovieTrailerPlayerState extends ConsumerState<MovieTrailerPlayer> {
                               if (_failedVideoKeys.isNotEmpty) ...[
                                 const SizedBox(height: 4),
                                 Text(
-                                  'Спробуємо знайти інше відео...',
+                                  AppLocalizations.of(context)!.tryingToFindAnotherVideo,
                                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                         color: Colors.grey[500],
                                       ),
@@ -576,7 +578,7 @@ class _MovieTrailerPlayerState extends ConsumerState<MovieTrailerPlayer> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Трейлер недоступний',
+                  AppLocalizations.of(context)!.trailerUnavailable,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         color: Colors.grey[600],
                       ),

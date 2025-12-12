@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../l10n/app_localizations.dart';
 import 'package:project/core/di.dart';
 import 'package:project/features/collections/media_collections_bloc.dart';
 import 'package:project/features/collections/media_collections_event.dart';
@@ -44,7 +45,7 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
   Map<String, dynamic>? _details;
   List<dynamic> _reviews = [];
   List<HomeMediaItem> _recommendations = [];
-  bool _loadingRecommendations = false;
+  final bool _loadingRecommendations = false;
   String? _trailerKey;
 
   YoutubePlayerController? _youtubeController;
@@ -52,10 +53,11 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
   StreamSubscription<YoutubePlayerValue>? _playerValueSubscription;
 
   Future<void> _showAuthDialog() async {
+    final l10n = AppLocalizations.of(context)!;
     await AuthDialog.show(
       context,
-      title: 'Потрібна авторизація',
-      message: 'Увійдіть, щоб додати до вподобань.',
+      title: l10n.authorizationRequired,
+      message: l10n.loginToAddToFavorites,
       icon: Icons.favorite_border,
     );
   }
@@ -248,17 +250,17 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
         : widget.item.title;
 
     return Scaffold(
-      backgroundColor: colors.background,
+      backgroundColor: colors.surface,
       body: Container(
         decoration: AppGradients.background(context),
         child: SafeArea(
           child: _loading
-              ? const AnimatedLoadingWidget(message: 'Завантаження...')
+              ? AnimatedLoadingWidget(message: AppLocalizations.of(context)!.loading)
               : _error.isNotEmpty
                   ? Center(
                       child: Text(
                         _error,
-                        style: TextStyle(color: colors.onBackground),
+                        style: TextStyle(color: colors.onSurface),
                       ),
                     )
                   : LayoutBuilder(
@@ -314,7 +316,7 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
                                                     : (isDesktop ? 3 : 2),
                                                 overflow: TextOverflow.ellipsis,
                                                 style: TextStyle(
-                                                  color: colors.onBackground,
+                                                  color: colors.onSurface,
                                                   fontSize: isLandscape
                                                       ? (isDesktop ? 30 : isTablet ? 26 : 22)
                                                       : (isDesktop ? 26 : isTablet ? 22 : 20),
@@ -484,7 +486,7 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
                     maxLines: isLandscape ? (isDesktop ? 5 : 4) : (isDesktop ? 4 : 3),
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      color: colors.onBackground,
+                      color: colors.onSurface,
                       fontSize: isLandscape
                           ? (isDesktop ? 28 : isTablet ? 24 : 20)
                           : (isDesktop ? 24 : isTablet ? 20 : 18),
@@ -502,12 +504,12 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
                           vertical: isDesktop ? 8 : 6,
                         ),
                         decoration: BoxDecoration(
-                          color: colors.surfaceVariant.withOpacity(
+                          color: colors.surfaceContainerHighest.withValues(alpha:
                             theme.brightness == Brightness.light ? 0.7 : 0.25,
                           ),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: colors.outlineVariant.withOpacity(0.8),
+                            color: colors.outlineVariant.withValues(alpha: 0.8),
                           ),
                         ),
                         child: Row(
@@ -534,7 +536,9 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
                           (_details!['vote_count'] as int?) != null)
                         _ChipBadge(
                           icon: Icons.people_outline,
-                          label: '${_details!['vote_count']} голосів',
+                          label: AppLocalizations.of(context)!.votes(
+                            _details!['vote_count'] as int,
+                          ),
                         ),
                     ],
                   ),
@@ -553,12 +557,16 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
                         if ((_details!['runtime'] as int?) != null)
                           _ChipBadge(
                             icon: Icons.schedule,
-                            label: '${_details!['runtime']} хв',
+                            label: AppLocalizations.of(context)!.minutes(
+                              _details!['runtime'] as int,
+                            ),
                           ),
                         if ((_details!['number_of_seasons'] as int?) != null)
                           _ChipBadge(
                             icon: Icons.tv,
-                            label: 'Сезонів: ${_details!['number_of_seasons']}',
+                            label: AppLocalizations.of(context)!.seasons(
+                              _details!['number_of_seasons'] as int,
+                            ),
                           ),
                       ],
                     ),
@@ -579,7 +587,7 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
         final isFavorite = state.authorized && state.isFavorite(widget.item);
         return IconButton.filled(
           style: IconButton.styleFrom(
-            backgroundColor: colors.surfaceVariant.withOpacity(
+            backgroundColor: colors.surfaceContainerHighest.withValues(alpha:
               Theme.of(context).brightness == Brightness.light ? 1 : 0.2,
             ),
           ),
@@ -610,7 +618,7 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
     }
 
     return _Section(
-      title: 'Трейлер',
+      title: AppLocalizations.of(context)!.trailer,
       child: AspectRatio(
         aspectRatio: 16 / 9,
         child: ClipRRect(
@@ -630,10 +638,11 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
         ? _details!['overview'] as String
         : '';
 
+    final l10n = AppLocalizations.of(context)!;
     return _Section(
-      title: 'Опис',
+      title: l10n.overview,
       child: Text(
-        overview.isNotEmpty ? overview : 'Опис відсутній',
+        overview.isNotEmpty ? overview : l10n.noOverview,
         style: TextStyle(
           color: colors.onSurfaceVariant,
           height: 1.4,
@@ -657,21 +666,22 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
         ? _details!['release_date'] as String?
         : _details!['first_air_date'] as String?;
 
+    final l10n = AppLocalizations.of(context)!;
     return _Section(
-      title: 'Характеристики',
+      title: l10n.characteristics,
       child: _GlassCard(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (releaseDate != null && releaseDate.isNotEmpty)
-              _buildCharacteristicRow('Дата виходу', releaseDate),
+              _buildCharacteristicRow(l10n.releaseDate, releaseDate),
             if (genres.isNotEmpty)
-              _buildCharacteristicRow('Жанри', genres.join(', ')),
+              _buildCharacteristicRow(l10n.genres, genres.join(', ')),
             if ((_details!['status'] as String?) != null)
-              _buildCharacteristicRow('Статус', _details!['status'] as String),
+              _buildCharacteristicRow(l10n.status, _details!['status'] as String),
             if ((_details!['vote_count'] as int?) != null)
               _buildCharacteristicRow(
-                'Кількість голосів',
+                l10n.voteCount,
                 (_details!['vote_count'] as int).toString(),
               ),
           ],
@@ -692,7 +702,7 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
             '$label: ',
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              color: colors.onBackground,
+              color: colors.onSurface,
               fontSize: isDesktop ? 16 : 14,
             ),
           ),
@@ -716,11 +726,12 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
     final isLandscape = Responsive.isLandscape(context);
     final spacing = Responsive.getSpacing(context);
     
+    final l10n = AppLocalizations.of(context)!;
     if (_reviews.isEmpty) {
       return _Section(
-        title: 'Відгуки',
+        title: l10n.reviews,
         child: Text(
-          'Ще немає відгуків',
+          l10n.noReviewsYet,
           style: TextStyle(
             color: Theme.of(context).colorScheme.onSurfaceVariant,
             fontSize: isLandscape
@@ -738,7 +749,7 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
         : (isDesktop ? 2 : 2);
 
     return _Section(
-      title: 'Відгуки',
+      title: l10n.reviews,
       child: useGridView
           ? GridView.builder(
               physics: const NeverScrollableScrollPhysics(),
@@ -751,7 +762,7 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
               ),
               itemBuilder: (context, index) {
                 final review = _reviews[index] as Map<String, dynamic>;
-                final author = review['author'] as String? ?? 'Анонім';
+                final author = review['author'] as String? ?? l10n.anonymous;
                 final content = review['content'] as String? ?? '';
 
                 return _GlassCard(
@@ -771,7 +782,7 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
                               author,
                               style: TextStyle(
                                 fontWeight: FontWeight.w700,
-                                color: Theme.of(context).colorScheme.onBackground,
+                                color: Theme.of(context).colorScheme.onSurface,
                                 fontSize: 16,
                               ),
                             ),
@@ -802,7 +813,7 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
               shrinkWrap: true,
               itemBuilder: (context, index) {
                 final review = _reviews[index] as Map<String, dynamic>;
-                final author = review['author'] as String? ?? 'Анонім';
+                final author = review['author'] as String? ?? l10n.anonymous;
                 final content = review['content'] as String? ?? '';
 
                 return _GlassCard(
@@ -822,7 +833,7 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
                               author,
                               style: TextStyle(
                                 fontWeight: FontWeight.w700,
-                                color: Theme.of(context).colorScheme.onBackground,
+                                color: Theme.of(context).colorScheme.onSurface,
                               ),
                             ),
                           ),
@@ -850,9 +861,10 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
 
   Widget _buildRecommendationsSection() {
     // Показуємо секцію навіть під час завантаження або якщо є рекомендації
+    final l10n = AppLocalizations.of(context)!;
     if (_loadingRecommendations) {
       return _Section(
-        title: 'Рекомендовані',
+        title: l10n.recommended,
         child: const Center(
           child: Padding(
             padding: EdgeInsets.all(24.0),
@@ -882,7 +894,7 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
         final useGridView = isDesktop || (isTablet && isLandscape);
         
         return _Section(
-          title: 'Рекомендовані',
+          title: l10n.recommended,
           child: useGridView
               ? GridView.builder(
                   physics: const NeverScrollableScrollPhysics(),
@@ -969,7 +981,7 @@ class _Section extends StatelessWidget {
         Text(
           title,
           style: TextStyle(
-            color: colors.onBackground,
+            color: colors.onSurface,
             fontSize: isDesktop ? 20 : 16,
             fontWeight: FontWeight.w800,
           ),
@@ -1005,10 +1017,10 @@ class _GlassCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(
           isDesktop ? 22 : isTablet ? 20 : 18,
         ),
-        border: Border.all(color: colors.outlineVariant.withOpacity(0.8)),
+        border: Border.all(color: colors.outlineVariant.withValues(alpha: 0.8)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(
+            color: Colors.black.withValues(alpha:
               theme.brightness == Brightness.light ? 0.08 : 0.25,
             ),
             blurRadius: isDesktop ? 18 : 14,
@@ -1039,11 +1051,11 @@ class _ChipBadge extends StatelessWidget {
         vertical: isDesktop ? 8 : 6,
       ),
       decoration: BoxDecoration(
-        color: colors.surfaceVariant.withOpacity(
+        color: colors.surfaceContainerHighest.withValues(alpha:
           theme.brightness == Brightness.light ? 1 : 0.18,
         ),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: colors.outlineVariant.withOpacity(0.8)),
+        border: Border.all(color: colors.outlineVariant.withValues(alpha: 0.8)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -1057,7 +1069,7 @@ class _ChipBadge extends StatelessWidget {
           Text(
             label,
             style: TextStyle(
-              color: colors.onBackground,
+              color: colors.onSurface,
               fontWeight: FontWeight.w700,
               fontSize: isDesktop ? 14 : 12,
             ),

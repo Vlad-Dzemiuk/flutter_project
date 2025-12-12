@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../l10n/app_localizations.dart';
 import 'package:project/core/constants.dart';
 import 'package:project/core/di.dart';
 import 'package:project/core/responsive.dart';
@@ -243,7 +244,7 @@ class _SearchPageState extends State<SearchPage> {
                                             .start,
                                         children: [
                                           Text(
-                                            'Пошук',
+                                            AppLocalizations.of(context)!.search,
                                             style: TextStyle(
                                               fontSize: Responsive.isMobile(
                                                   context) ? 20 : 24,
@@ -309,7 +310,7 @@ class _SearchPageState extends State<SearchPage> {
                                                   context) ? 16 : 18,
                                             ),
                                             decoration: InputDecoration(
-                                              hintText: 'Введіть назву...',
+                                              hintText: AppLocalizations.of(context)!.enterTitle,
                                               hintStyle: TextStyle(
                                                 color: colors.onSurfaceVariant,
                                                 fontSize: Responsive.isMobile(
@@ -407,7 +408,7 @@ class _SearchPageState extends State<SearchPage> {
                                             child: _InputTile(
                                               controller: _genreController,
                                               label:
-                                              'Жанр (наприклад: Action, Comedy)',
+                                              AppLocalizations.of(context)!.genreExample,
                                               icon: Icons.category_outlined,
                                             ),
                                           ),
@@ -420,7 +421,7 @@ class _SearchPageState extends State<SearchPage> {
                                         children: [
                                           _InputTile(
                                             controller: _yearController,
-                                            label: 'Рік',
+                                            label: AppLocalizations.of(context)!.year,
                                             keyboardType: TextInputType.number,
                                             icon: Icons.calendar_month_outlined,
                                           ),
@@ -436,7 +437,7 @@ class _SearchPageState extends State<SearchPage> {
                                                 MainAxisAlignment.spaceBetween,
                                                 children: [
                                                   Text(
-                                                    'Рейтинг',
+                                                    AppLocalizations.of(context)!.rating,
                                                     style: TextStyle(
                                                       color: colors.onSurface,
                                                       fontWeight: FontWeight
@@ -494,7 +495,7 @@ class _SearchPageState extends State<SearchPage> {
                                           Expanded(
                                             child: _InputTile(
                                               controller: _yearController,
-                                              label: 'Рік',
+                                              label: AppLocalizations.of(context)!.year,
                                               keyboardType: TextInputType
                                                   .number,
                                               icon: Icons
@@ -594,7 +595,7 @@ class _SearchPageState extends State<SearchPage> {
                                           onPressed: _searchByFilters,
                                           icon: const Icon(Icons.search),
                                           label: Text(
-                                            'Пошук за фільтрами',
+                                            AppLocalizations.of(context)!.searchWithFilters,
                                             style: TextStyle(
                                               fontWeight: FontWeight.w700,
                                               fontSize: Responsive.isMobile(
@@ -663,7 +664,7 @@ class _SearchPageState extends State<SearchPage> {
   final horizontalPadding = Responsive.getHorizontalPadding(context);
 
   if (_loading) {
-    return const AnimatedLoadingWidget(message: 'Завантаження...');
+    return AnimatedLoadingWidget(message: AppLocalizations.of(context)!.loading);
   }
 
   if (_searchResults.isEmpty && !_searching) {
@@ -781,7 +782,7 @@ class _SearchPageState extends State<SearchPage> {
                           child: Center(
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              color: Colors.white.withOpacity(0.7),
+                              color: Colors.white.withValues(alpha: 0.7),
                             ),
                           ),
                         ),
@@ -891,10 +892,11 @@ class _SearchPageState extends State<SearchPage> {
                               collectionsBloc.add(ToggleFavoriteEvent(item));
                             }
                                 : () {
+                              final l10n = AppLocalizations.of(context)!;
                               AuthDialog.show(
                                 context,
-                                title: 'Потрібна авторизація',
-                                message: 'Увійдіть, щоб додати до вподобань.',
+                                title: l10n.authorizationRequired,
+                                message: l10n.loginToAddToFavorites,
                                 icon: Icons.favorite_border,
                               );
                             },
@@ -951,10 +953,11 @@ class _SearchPageState extends State<SearchPage> {
         onFavoriteToggle: canModify
             ? () => collectionsBloc.add(ToggleFavoriteEvent(item))
             : () {
+          final l10n = AppLocalizations.of(context)!;
           AuthDialog.show(
             context,
-            title: 'Потрібна авторизація',
-            message: 'Увійдіть, щоб додати до вподобань.',
+            title: l10n.authorizationRequired,
+            message: l10n.loginToAddToFavorites,
             icon: Icons.favorite_border,
           );
         },
@@ -980,10 +983,13 @@ class _SearchPageState extends State<SearchPage> {
 
   // Показуємо історію тільки для авторизованих користувачів
   if (!canModify) {
-    return _UnauthorizedMessage(
-      onLogin: () {
-        Navigator.of(context).pushReplacementNamed(AppConstants.loginRoute);
-      },
+    return Container(
+      decoration: AppGradients.background(context),
+      child: _UnauthorizedMessage(
+        onLogin: () {
+          Navigator.of(context).pushReplacementNamed(AppConstants.loginRoute);
+        },
+      ),
     );
   }
 
@@ -999,7 +1005,7 @@ class _SearchPageState extends State<SearchPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Історія пошуку',
+              AppLocalizations.of(context)!.searchHistory,
               style: Theme
                   .of(context)
                   .textTheme
@@ -1014,7 +1020,7 @@ class _SearchPageState extends State<SearchPage> {
                   await UserPrefs.instance.clearSearchHistory();
                   await _loadSearchHistory();
                 },
-                child: const Text('Очистити'),
+                child: Text(AppLocalizations.of(context)!.clear),
               ),
           ],
         ),
@@ -1034,7 +1040,7 @@ class _SearchPageState extends State<SearchPage> {
                 ),
                 SizedBox(height: Responsive.getSpacing(context)),
                 Text(
-                  'Історія пошуку порожня',
+                  AppLocalizations.of(context)!.searchHistoryEmpty,
                   style: TextStyle(
                     fontSize: Responsive.isMobile(context) ? 18 : 22,
                     fontWeight: FontWeight.w600,
@@ -1140,7 +1146,7 @@ class _SearchPageState extends State<SearchPage> {
                           child: Center(
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              color: Colors.white.withOpacity(0.7),
+                              color: Colors.white.withValues(alpha: 0.7),
                             ),
                           ),
                         ),
@@ -1401,38 +1407,31 @@ class _UnauthorizedMessage extends StatelessWidget {
     final isMobile = Responsive.isMobile(context);
     final horizontalPadding = Responsive.getHorizontalPadding(context);
 
-    return Container(
-      decoration: AppGradients.background(context),
-      child: SafeArea(
+    return SafeArea(
+      child: Center(
         child: Padding(
           padding: horizontalPadding,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                padding: EdgeInsets.all(isMobile ? 14 : 18),
-                decoration: BoxDecoration(
-                  color: colors.primary.withValues(alpha: 0.14),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Icon(
-                  Icons.search_outlined,
-                  color: colors.primary,
-                  size: isMobile ? 28 : 36,
-                ),
+              Icon(
+                Icons.history_outlined,
+                size: isMobile ? 64 : 80,
+                color: colors.onSurface.withValues(alpha: 0.7),
               ),
               SizedBox(height: Responsive.getSpacing(context)),
               Text(
-                'Історія пошуку недоступна',
+                AppLocalizations.of(context)!.searchHistoryUnavailable,
                 style: TextStyle(
                   color: colors.onSurface,
-                  fontSize: isMobile ? 20 : 24,
-                  fontWeight: FontWeight.w800,
+                  fontSize: isMobile ? 18 : 22,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
               SizedBox(height: Responsive.getSpacing(context) / 2),
               Text(
-                'Увійдіть, щоб зберігати та переглядати історію пошуку.',
+                AppLocalizations.of(context)!.searchHistoryLoginPrompt,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: colors.onSurface.withValues(alpha: 0.65),
@@ -1453,7 +1452,7 @@ class _UnauthorizedMessage extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  'Увійти',
+                  AppLocalizations.of(context)!.signIn,
                   style: TextStyle(
                     fontWeight: FontWeight.w800,
                     fontSize: isMobile ? 14 : 16,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import 'package:project/core/constants.dart';
 import 'package:project/core/responsive.dart';
 
@@ -19,18 +20,32 @@ class _MainScaffoldState extends State<MainScaffold> {
     if (widget.title == null) {
       return 0; // Головна сторінка
     }
-    switch (widget.title) {
-      case 'Пошук':
-        return 1;
-      case 'Переглянуті':
-        return 2;
-      case 'Вподобані':
-        return 3;
-      case 'Профіль':
-        return 4;
-      default:
-        return 0;
+    final l10n = AppLocalizations.of(context);
+    if (l10n == null) {
+      // Fallback для випадку, коли локалізація недоступна
+      switch (widget.title) {
+        case 'Пошук':
+        case 'Search':
+          return 1;
+        case 'Переглянуті':
+        case 'Watched':
+          return 2;
+        case 'Вподобані':
+        case 'Favorites':
+          return 3;
+        case 'Профіль':
+        case 'Profile':
+          return 4;
+        default:
+          return 0;
+      }
     }
+    // Порівнюємо з локалізованими значеннями
+    if (widget.title == l10n.search) return 1;
+    if (widget.title == l10n.watched) return 2;
+    if (widget.title == l10n.favorites) return 3;
+    if (widget.title == l10n.profile) return 4;
+    return 0;
   }
 
   void _onTabTapped(int index) {
@@ -142,7 +157,7 @@ class _MainScaffoldState extends State<MainScaffold> {
                           isActive: true,
                           size: isDesktop ? 28 : 24,
                         ),
-                        label: Text('Головна'),
+                        label: Text(AppLocalizations.of(context)!.home),
                       ),
                       NavigationRailDestination(
                         icon: _NavIcon(
@@ -155,7 +170,7 @@ class _MainScaffoldState extends State<MainScaffold> {
                           isActive: true,
                           size: isDesktop ? 28 : 24,
                         ),
-                        label: Text('Пошук'),
+                        label: Text(AppLocalizations.of(context)!.search),
                       ),
                       NavigationRailDestination(
                         icon: _NavIcon(
@@ -168,7 +183,7 @@ class _MainScaffoldState extends State<MainScaffold> {
                           isActive: true,
                           size: isDesktop ? 28 : 24,
                         ),
-                        label: Text('Переглянуті'),
+                        label: Text(AppLocalizations.of(context)!.watched),
                       ),
                       NavigationRailDestination(
                         icon: _NavIcon(
@@ -181,7 +196,7 @@ class _MainScaffoldState extends State<MainScaffold> {
                           isActive: true,
                           size: isDesktop ? 28 : 24,
                         ),
-                        label: Text('Вподобані'),
+                        label: Text(AppLocalizations.of(context)!.favorites),
                       ),
                       NavigationRailDestination(
                         icon: _NavIcon(
@@ -194,7 +209,7 @@ class _MainScaffoldState extends State<MainScaffold> {
                           isActive: true,
                           size: isDesktop ? 28 : 24,
                         ),
-                        label: Text('Профіль'),
+                        label: Text(AppLocalizations.of(context)!.profile),
                       ),
                     ],
                   ),
@@ -286,7 +301,7 @@ class _MainScaffoldState extends State<MainScaffold> {
                         isActive: true,
                         size: 24,
                       ),
-                      label: 'Головна',
+                      label: AppLocalizations.of(context)!.home,
                     ),
                     BottomNavigationBarItem(
                       icon: _NavIcon(icon: Icons.search_outlined, isActive: false, size: 24),
@@ -295,7 +310,7 @@ class _MainScaffoldState extends State<MainScaffold> {
                         isActive: true,
                         size: 24,
                       ),
-                      label: 'Пошук',
+                      label: AppLocalizations.of(context)!.search,
                     ),
                     BottomNavigationBarItem(
                       icon: _NavIcon(icon: Icons.visibility_outlined, isActive: false, size: 24),
@@ -304,7 +319,7 @@ class _MainScaffoldState extends State<MainScaffold> {
                         isActive: true,
                         size: 24,
                       ),
-                      label: 'Переглянуті',
+                      label: AppLocalizations.of(context)!.watched,
                     ),
                     BottomNavigationBarItem(
                       icon: _NavIcon(icon: Icons.favorite_border, isActive: false, size: 24),
@@ -313,7 +328,7 @@ class _MainScaffoldState extends State<MainScaffold> {
                         isActive: true,
                         size: 24,
                       ),
-                      label: 'Вподобані',
+                      label: AppLocalizations.of(context)!.favorites,
                     ),
                     BottomNavigationBarItem(
                       icon: _NavIcon(icon: Icons.person_outline, isActive: false, size: 24),
@@ -322,7 +337,7 @@ class _MainScaffoldState extends State<MainScaffold> {
                         isActive: true,
                         size: 24,
                       ),
-                      label: 'Профіль',
+                      label: AppLocalizations.of(context)!.profile,
                     ),
                   ],
                   ),

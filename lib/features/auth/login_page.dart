@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../l10n/app_localizations.dart';
 
 import 'auth_bloc.dart';
 import 'auth_event.dart';
@@ -54,11 +55,12 @@ class _LoginPageState extends State<LoginPage> {
         value: getIt<AuthBloc>(),
         child: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
+          final l10n = AppLocalizations.of(context)!;
           if (state is AuthAuthenticated) {
             // Показуємо нотифікацію про успішну авторизацію
             AppNotification.showSuccess(
               context,
-              _isLogin ? 'Успішний вхід!' : 'Реєстрація успішна!',
+              _isLogin ? l10n.successfulLogin : l10n.successfulRegistration,
             );
             _onSuccess(context, state);
           } else if (state is AuthError) {
@@ -138,8 +140,8 @@ class _LoginPageState extends State<LoginPage> {
                                         SizedBox(height: 4),
                                         Text(
                                           _isLogin
-                                              ? 'Повернись до своїх історій'
-                                              : 'Створи акаунт та відкривай нове',
+                                              ? AppLocalizations.of(context)!.returnToStories
+                                              : AppLocalizations.of(context)!.createAccount,
                                           style: TextStyle(
                                             color: colors.onSurface.withValues(alpha: 0.65),
                                             fontSize: isDesktop ? 16 : 14,
@@ -181,15 +183,16 @@ class _LoginPageState extends State<LoginPage> {
                                       SizedBox(height: isDesktop ? 16 : 12),
                                       _AuthInput(
                                         controller: _emailController,
-                                        label: 'Email',
+                                        label: AppLocalizations.of(context)!.email,
                                         icon: Icons.alternate_email,
                                         keyboardType: TextInputType.emailAddress,
                                         validator: (value) {
+                                          final l10n = AppLocalizations.of(context)!;
                                           if (value == null || value.isEmpty) {
-                                            return 'Введіть email';
+                                            return l10n.enterEmail;
                                           }
                                           if (!value.contains('@')) {
-                                            return 'Некоректний email';
+                                            return l10n.invalidEmail;
                                           }
                                           return null;
                                         },
@@ -197,15 +200,16 @@ class _LoginPageState extends State<LoginPage> {
                                       SizedBox(height: spacing),
                                       _AuthInput(
                                         controller: _passwordController,
-                                        label: 'Пароль',
+                                        label: AppLocalizations.of(context)!.password,
                                         icon: Icons.lock_outline,
                                         obscureText: true,
                                         validator: (value) {
+                                          final l10n = AppLocalizations.of(context)!;
                                           if (value == null || value.isEmpty) {
-                                            return 'Введіть пароль';
+                                            return l10n.enterPassword;
                                           }
                                           if (value.length < 6) {
-                                            return 'Мінімум 6 символів';
+                                            return l10n.minPasswordLength;
                                           }
                                           return null;
                                         },
@@ -254,7 +258,7 @@ class _LoginPageState extends State<LoginPage> {
                                                 )
                                               : const Icon(Icons.login),
                                           label: Text(
-                                            _isLogin ? 'Увійти' : 'Зареєструватись',
+                                            _isLogin ? AppLocalizations.of(context)!.signIn : AppLocalizations.of(context)!.signUp,
                                             style:
                                                 const TextStyle(fontWeight: FontWeight.w800),
                                           ),
@@ -274,8 +278,8 @@ class _LoginPageState extends State<LoginPage> {
                                         ),
                                         child: Text(
                                           _isLogin
-                                              ? 'Немає акаунта? Зареєструватись'
-                                              : 'Вже є акаунт? Увійти',
+                                              ? AppLocalizations.of(context)!.noAccount
+                                              : AppLocalizations.of(context)!.hasAccount,
                                         ),
                                       ),
                                     ],
@@ -297,7 +301,7 @@ class _LoginPageState extends State<LoginPage> {
                                 style: TextButton.styleFrom(
                                   foregroundColor: colors.onSurface.withValues(alpha: 0.6),
                                 ),
-                                child: const Text('Пропустити'),
+                                child: Text(AppLocalizations.of(context)!.skip),
                               ),
                             ],
                           ),

@@ -4,7 +4,7 @@ import '../features/home/home_api_service.dart';
 import '../features/auth/auth_repository.dart';
 import '../features/auth/auth_bloc.dart';
 import '../features/collections/media_collections_bloc.dart';
-import '../features/collections/media_collections_repository.dart';
+import '../features/collections/domain/repositories/media_collections_repository.dart';
 import '../features/home/home_bloc.dart';
 import '../features/search/search_bloc.dart';
 import '../features/favorites/favorites_bloc.dart';

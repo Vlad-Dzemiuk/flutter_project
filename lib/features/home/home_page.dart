@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../l10n/app_localizations.dart';
 import 'package:project/core/di.dart';
 import 'package:project/core/responsive.dart';
 import 'package:project/core/loading_state.dart';
@@ -31,10 +32,11 @@ class _HomePageState extends State<HomePage> {
   final double _rating = 5.0;
 
   Future<void> _showAuthRequiredDialog(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     await AuthDialog.show(
       context,
-      title: 'Потрібна авторизація',
-      message: 'Увійдіть, щоб додавати медіа до вподобань.',
+      title: l10n.authorizationRequired,
+      message: l10n.loginToAddMediaToFavorites,
       icon: Icons.favorite_border,
     );
   }
@@ -106,15 +108,16 @@ class _HomePageState extends State<HomePage> {
             });
           }
 
+          final l10n = AppLocalizations.of(context)!;
           // Показуємо завантаження, поки не завантажаться всі медіа
           // Але якщо є помилка і завантаження завершено, все одно показуємо помилку
           if (state.loading && state.searchResults.isEmpty) {
-            return const AnimatedLoadingWidget(message: 'Завантаження...');
+            return AnimatedLoadingWidget(message: l10n.loading);
           }
           
           // Якщо завантаження завершено, але не всі дані завантажені, показуємо завантаження
           if (isLoadingComplete && !allMediaLoaded && state.error.isEmpty) {
-            return const AnimatedLoadingWidget(message: 'Завантаження...');
+            return AnimatedLoadingWidget(message: l10n.loading);
           }
 
           return Scaffold(
@@ -167,50 +170,50 @@ class _HomePageState extends State<HomePage> {
                               const HomeHeaderWidget(),
                               SizedBox(height: Responsive.getSpacing(context)),
                               MediaSliderSection(
-                                title: 'Популярні фільми',
+                                title: AppLocalizations.of(context)!.popularMovies,
                                 items: state.popularMovies.take(10).toList(),
                                 onSeeMore: () =>
                                     _openMediaList(
                                       context,
                                       MediaListCategory.popularMovies,
-                                      'Популярні фільми',
+                                      AppLocalizations.of(context)!.popularMovies,
                                     ),
                                 onAuthRequired: () =>
                                     _showAuthRequiredDialog(context),
                               ),
                               MediaSliderSection(
-                                title: 'Популярні серіали',
+                                title: AppLocalizations.of(context)!.popularTvShows,
                                 items:
                                 state.popularTvShows.take(10).toList(),
                                 onSeeMore: () =>
                                     _openMediaList(
                                       context,
                                       MediaListCategory.popularTv,
-                                      'Популярні серіали',
+                                      AppLocalizations.of(context)!.popularTvShows,
                                     ),
                                 onAuthRequired: () =>
                                     _showAuthRequiredDialog(context),
                               ),
                               MediaSliderSection(
-                                title: 'Усі фільми',
+                                title: AppLocalizations.of(context)!.allMovies,
                                 items: state.allMovies.take(10).toList(),
                                 onSeeMore: () =>
                                     _openMediaList(
                                       context,
                                       MediaListCategory.allMovies,
-                                      'Усі фільми',
+                                      AppLocalizations.of(context)!.allMovies,
                                     ),
                                 onAuthRequired: () =>
                                     _showAuthRequiredDialog(context),
                               ),
                               MediaSliderSection(
-                                title: 'Усі серіали',
+                                title: AppLocalizations.of(context)!.allTvShows,
                                 items: state.allTvShows.take(10).toList(),
                                 onSeeMore: () =>
                                     _openMediaList(
                                       context,
                                       MediaListCategory.allTv,
-                                      'Усі серіали',
+                                      AppLocalizations.of(context)!.allTvShows,
                                     ),
                                 onAuthRequired: () =>
                                     _showAuthRequiredDialog(context),
@@ -231,12 +234,13 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildSearchResults(BuildContext context, HomeState state) {
+    final l10n = AppLocalizations.of(context)!;
     if (state.searching && state.searchResults.isEmpty) {
-      return const AnimatedLoadingWidget(message: 'Завантаження...');
+      return AnimatedLoadingWidget(message: l10n.loading);
     }
 
     if (state.searchResults.isEmpty && !state.searching) {
-      return const Center(child: Text('Нічого не знайдено'));
+      return Center(child: Text(l10n.nothingFound));
     }
 
     final collectionsBloc = context.watch<MediaCollectionsBloc>();
@@ -276,7 +280,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     TextButton(
                       onPressed: () => context.read<HomeBloc>().add(const ClearSearchEvent()),
-                      child: const Text('Очистити'),
+                      child: Text(AppLocalizations.of(context)!.clear),
                     ),
                   ],
                 ),
@@ -331,7 +335,7 @@ class _HomePageState extends State<HomePage> {
                       context.read<HomeBloc>(),
                       loadMore: true,
                     ),
-                child: const Text('Завантажити більше'),
+                child: Text(AppLocalizations.of(context)!.loadMore),
               ),
             );
           }
@@ -587,7 +591,7 @@ class _HomePageState extends State<HomePage> {
                       context.read<HomeBloc>(),
                       loadMore: true,
                     ),
-                child: const Text('Завантажити більше'),
+                child: Text(AppLocalizations.of(context)!.loadMore),
               ),
             );
           }
@@ -742,13 +746,13 @@ class MediaSliderSection extends StatelessWidget {
                 TextButton(
                   style: TextButton.styleFrom(foregroundColor: colors.primary),
                   onPressed: onSeeMore,
-                  child: const Text('Більше'),
+                  child: Text(AppLocalizations.of(context)!.more),
                 ),
               ],
             ),
           ),
           items.isEmpty
-              ? const Center(child: Text('Немає даних'))
+              ? Center(child: Text(AppLocalizations.of(context)!.noData))
               : isMobile
               ? _buildHorizontalList(
               context, collectionsBloc, collectionsState, canModifyCollections)
@@ -909,10 +913,7 @@ class MediaPosterCard extends StatelessWidget {
                     Positioned.fill(
                       child: item.posterPath != null &&
                           item.posterPath!.isNotEmpty
-                          ? Container(
-                        width: double.infinity,
-                        height: double.infinity,
-                        child: CachedNetworkImage(
+                          ? CachedNetworkImage(
                           imageUrl: 'https://image.tmdb.org/t/p/w500${item.posterPath}',
                           fit: BoxFit.cover,
                           memCacheWidth: 500,
@@ -951,8 +952,7 @@ class MediaPosterCard extends StatelessWidget {
                               child: const Icon(Icons.movie, size: 48),
                             );
                           },
-                        ),
-                      )
+                        )
                           : Container(
                         decoration: BoxDecoration(
                           gradient: LinearGradient(

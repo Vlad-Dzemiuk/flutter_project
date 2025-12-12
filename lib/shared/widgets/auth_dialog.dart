@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import '../../core/constants.dart';
 import '../../core/responsive.dart';
 
@@ -21,12 +22,13 @@ class AuthDialog extends StatelessWidget {
     String? message,
     IconData? icon,
   }) async {
+    final l10n = AppLocalizations.of(context);
     await showDialog<void>(
       context: context,
       barrierColor: Colors.black.withValues(alpha: 0.5),
       builder: (ctx) => AuthDialog(
-        title: title ?? 'Потрібна авторизація',
-        message: message ?? 'Увійдіть, щоб додати до вподобань.',
+        title: title ?? (l10n?.authorizationRequired ?? 'Потрібна авторизація'),
+        message: message ?? (l10n?.loginToAddToFavorites ?? 'Увійдіть, щоб додати до вподобань.'),
         icon: icon,
       ),
     );
@@ -133,7 +135,7 @@ class AuthDialog extends StatelessWidget {
                         vertical: spacing / 2,
                       ),
                     ),
-                    child: const Text('Скасувати'),
+                    child: Text(AppLocalizations.of(context)!.cancel),
                   ),
                   SizedBox(width: spacing / 2),
                   FilledButton(
@@ -152,7 +154,7 @@ class AuthDialog extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const Text('Увійти'),
+                    child: Text(AppLocalizations.of(context)!.signIn),
                   ),
                 ],
               ),
