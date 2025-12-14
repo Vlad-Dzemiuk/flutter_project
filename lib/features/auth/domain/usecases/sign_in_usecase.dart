@@ -1,4 +1,4 @@
-import '/core/domain/base_usecase.dart';
+import '../../../../core/domain/base_usecase.dart';
 import '../../auth_repository.dart';
 import '../entities/user.dart';
 import '../../data/mappers/user_mapper.dart';

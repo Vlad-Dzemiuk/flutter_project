@@ -1,6 +1,8 @@
-import '/core/domain/base_usecase.dart';
+import 'package:project/core/domain/base_usecase.dart';
 import '../../home_repository.dart';
-import '../../home_media_item.dart';
+import 'package:project/features/home/home_media_item.dart';
+import 'package:project/features/home/data/models/movie_model.dart';
+import 'package:project/features/home/data/models/tv_show_model.dart';
 
 /// Параметри для GetPopularContentUseCase
 class GetPopularContentParams {

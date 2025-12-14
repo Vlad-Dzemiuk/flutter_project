@@ -11,11 +11,11 @@ import 'package:project/features/collections/media_collections_event.dart';
 import 'package:project/shared/widgets/animated_loading_widget.dart';
 import 'package:project/shared/widgets/auth_dialog.dart';
 
-import 'home_media_item.dart';
+import 'package:project/features/home/home_media_item.dart';
 import 'domain/usecases/get_popular_content_usecase.dart';
 import 'media_detail_page.dart';
 import 'home_page.dart';
-import '../../../core/network/retry_helper.dart';
+import 'package:project/core/network/retry_helper.dart';
 
 enum MediaListCategory { popularMovies, popularTv, allMovies, allTv }
 

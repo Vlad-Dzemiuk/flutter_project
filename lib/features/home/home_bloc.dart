@@ -1,10 +1,10 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'home_event.dart';
-import 'home_media_item.dart';
+import 'package:project/features/home/home_media_item.dart';
 import 'domain/usecases/get_popular_content_usecase.dart';
 import 'domain/usecases/search_media_usecase.dart';
-import '../../../core/network/retry_helper.dart';
+import 'package:project/core/network/retry_helper.dart';
 
 class HomeState extends Equatable {
   final List<HomeMediaItem> popularMovies;
@@ -45,6 +45,7 @@ class HomeState extends Equatable {
     String? error,
     String? searchQuery,
     bool? hasMoreResults,
+    bool clearSearchQuery = false,
   }) {
     return HomeState(
       popularMovies: popularMovies ?? this.popularMovies,
@@ -56,7 +57,7 @@ class HomeState extends Equatable {
       searching: searching ?? this.searching,
       loadingMore: loadingMore ?? this.loadingMore,
       error: error ?? this.error,
-      searchQuery: searchQuery ?? this.searchQuery,
+      searchQuery: clearSearchQuery ? null : (searchQuery ?? this.searchQuery),
       hasMoreResults: hasMoreResults ?? this.hasMoreResults,
     );
   }
@@ -171,7 +172,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     ClearSearchEvent event,
     Emitter<HomeState> emit,
   ) {
-    emit(state.copyWith(searchResults: [], searchQuery: null, hasMoreResults: false));
+    emit(state.copyWith(searchResults: [], clearSearchQuery: true, hasMoreResults: false));
   }
 
   String _getUserFriendlyError(dynamic error) {

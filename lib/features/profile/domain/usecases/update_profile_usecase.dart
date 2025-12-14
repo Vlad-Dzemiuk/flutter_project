@@ -1,5 +1,5 @@
 import '../../../auth/auth_repository.dart';
-import '/core/domain/base_usecase.dart';
+import '../../../../core/domain/base_usecase.dart';
 import '../../../auth/domain/entities/user.dart';
 import '../../../auth/data/mappers/user_mapper.dart';
 

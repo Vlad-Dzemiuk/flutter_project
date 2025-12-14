@@ -9,7 +9,7 @@ import 'package:project/features/collections/media_collections_bloc.dart';
 import 'package:project/features/collections/media_collections_event.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
-import 'home_media_item.dart';
+import 'package:project/features/home/home_media_item.dart';
 import 'domain/usecases/get_movie_details_usecase.dart';
 import 'domain/usecases/get_tv_details_usecase.dart';
 import 'data/models/movie_model.dart';
@@ -21,7 +21,7 @@ import 'package:project/core/theme.dart';
 import 'package:project/core/page_transitions.dart';
 import 'package:project/shared/widgets/animated_loading_widget.dart';
 import 'package:project/shared/widgets/auth_dialog.dart';
-import '../../../core/network/retry_helper.dart';
+import 'package:project/core/network/retry_helper.dart';
 
 class MediaDetailPage extends StatefulWidget {
   final HomeMediaItem item;

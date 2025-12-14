@@ -8,10 +8,15 @@ import '../storage/secure_storage_service.dart';
 class JwtTokenService {
   static const String _jwtSecret = 'your-secret-key-change-in-production'; // В продакшені використовуйте безпечний ключ
   
-  JwtTokenService._internal();
+  JwtTokenService._internal([SecureStorageService? secureStorage])
+      : _secureStorage = secureStorage ?? SecureStorageService.instance;
   static final JwtTokenService instance = JwtTokenService._internal();
 
-  final SecureStorageService _secureStorage = SecureStorageService.instance;
+  /// Конструктор для тестування (дозволяє передати тестовий SecureStorageService)
+  JwtTokenService.forTesting(SecureStorageService secureStorage)
+      : _secureStorage = secureStorage;
+
+  final SecureStorageService _secureStorage;
 
   /// Генерує JWT токен для користувача
   /// 

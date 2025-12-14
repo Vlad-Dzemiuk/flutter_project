@@ -14,7 +14,7 @@ import 'package:project/core/theme.dart';
 
 import 'home_bloc.dart';
 import 'home_event.dart';
-import 'home_media_item.dart';
+import 'package:project/features/home/home_media_item.dart';
 import 'media_list_page.dart';
 import 'media_detail_page.dart';
 

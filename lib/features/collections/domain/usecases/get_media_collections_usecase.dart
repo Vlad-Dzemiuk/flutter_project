@@ -1,4 +1,4 @@
-import '/core/domain/base_usecase.dart';
+import '../../../../core/domain/base_usecase.dart';
 import '../repositories/media_collections_repository.dart';
 import '../../media_collection_entry.dart';
 

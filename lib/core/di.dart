@@ -47,7 +47,27 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 final getIt = GetIt.instance;
 
+/// Допоміжна функція для безпечної реєстрації (запобігає повторній реєстрації)
+void _registerIfNotRegistered<T extends Object>(
+  T Function() factory, {
+  String? instanceName,
+}) {
+  if (!getIt.isRegistered<T>(instanceName: instanceName)) {
+    getIt.registerLazySingleton<T>(factory, instanceName: instanceName);
+  }
+}
+
 Future<void> init() async {
+  // Для integration тестів - скидаємо GetIt, якщо вже ініціалізовано
+  // Це дозволяє запускати кілька тестів підряд
+  if (getIt.isRegistered<FirebaseAuthService>()) {
+    try {
+      await getIt.reset();
+    } catch (e) {
+      // Якщо не вдалося скинути, продовжуємо
+    }
+  }
+  
   // Initialize databases
   // Initialize Drift database for auth
   await AuthDb.instance.database.then((db) => db.ensureInitialized());
@@ -59,8 +79,8 @@ Future<void> init() async {
   await MediaCollectionsStorage.instance.database.then((db) => db.ensureInitialized());
   
   // Auth Services
-  getIt.registerLazySingleton<FirebaseAuthService>(() => FirebaseAuthService());
-  getIt.registerLazySingleton<JwtTokenService>(() => JwtTokenService.instance);
+  _registerIfNotRegistered<FirebaseAuthService>(() => FirebaseAuthService());
+  _registerIfNotRegistered<JwtTokenService>(() => JwtTokenService.instance);
   
   // Determine auth method from environment or use default (local)
   // Можна встановити AUTH_METHOD в .env файлі: local, firebase, jwt
@@ -89,32 +109,32 @@ Future<void> init() async {
   // Ініціалізуємо AuthRepository (перевіряє збережений стан)
   await authRepository.initialize();
   
-  getIt.registerLazySingleton<AuthRepository>(() => authRepository);
+  _registerIfNotRegistered<AuthRepository>(() => authRepository);
   
   // HTTP Client (with AuthRepository for auth headers)
-  getIt.registerLazySingleton<DioClient>(
+  _registerIfNotRegistered<DioClient>(
     () => DioClient(authRepository: getIt<AuthRepository>()),
   );
   
   // API Services
   final homeApiService = HomeApiService();
-  getIt.registerLazySingleton<HomeApiService>(() => homeApiService);
+  _registerIfNotRegistered<HomeApiService>(() => homeApiService);
 
   // Repositories
-  getIt.registerLazySingleton<HomeRepository>(() => HomeRepositoryImpl());
-  getIt.registerLazySingleton<SearchRepository>(
+  _registerIfNotRegistered<HomeRepository>(() => HomeRepositoryImpl());
+  _registerIfNotRegistered<SearchRepository>(
     () => SearchRepositoryImpl(homeApiService),
   );
-  getIt.registerLazySingleton<FavoritesRepository>(
+  _registerIfNotRegistered<FavoritesRepository>(
     () => FavoritesRepositoryImpl(),
   );
-  getIt.registerLazySingleton<ProfileRepository>(
+  _registerIfNotRegistered<ProfileRepository>(
     () => ProfileRepositoryImpl(),
   );
-  getIt.registerLazySingleton<MediaCollectionsRepository>(
+  _registerIfNotRegistered<MediaCollectionsRepository>(
     () => MediaCollectionsRepository(MediaCollectionsStorage.instance),
   );
-  getIt.registerLazySingleton<MediaCollectionsBloc>(
+  _registerIfNotRegistered<MediaCollectionsBloc>(
     () => MediaCollectionsBloc(
       getMediaCollectionsUseCase: getIt<GetMediaCollectionsUseCase>(),
       toggleFavoriteUseCase: getIt<ToggleFavoriteUseCase>(),
@@ -124,7 +144,7 @@ Future<void> init() async {
   );
 
   // Services
-  getIt.registerLazySingleton<LoadingStateService>(() => LoadingStateService());
+  _registerIfNotRegistered<LoadingStateService>(() => LoadingStateService());
 
   // Use Cases
   getIt.registerFactory<GetPopularContentUseCase>(
@@ -181,14 +201,14 @@ Future<void> init() async {
     ),
   );
   // Global state для auth, favorites, settings
-  getIt.registerLazySingleton<AuthBloc>(
+  _registerIfNotRegistered<AuthBloc>(
     () => AuthBloc(
       repository: getIt<AuthRepository>(),
       signInUseCase: getIt<SignInUseCase>(),
       registerUseCase: getIt<RegisterUseCase>(),
     ),
   );
-  getIt.registerLazySingleton<FavoritesBloc>(
+  _registerIfNotRegistered<FavoritesBloc>(
     () => FavoritesBloc(
       getFavoritesUseCase: getIt<GetFavoritesUseCase>(),
     ),
@@ -198,7 +218,7 @@ Future<void> init() async {
       searchByFiltersUseCase: getIt<SearchByFiltersUseCase>(),
     ),
   );
-  getIt.registerLazySingleton<SettingsBloc>(
+  _registerIfNotRegistered<SettingsBloc>(
     () => SettingsBloc(),
   );
   getIt.registerFactory<ProfileBloc>(

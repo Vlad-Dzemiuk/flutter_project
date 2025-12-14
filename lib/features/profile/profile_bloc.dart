@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'profile_event.dart';
 import 'domain/repositories/profile_repository.dart';
 import 'domain/usecases/get_user_profile_usecase.dart';
-import '../../../core/network/retry_helper.dart';
+import 'package:project/core/network/retry_helper.dart';
 
 class ProfileState extends Equatable {
   final bool loading;

@@ -101,15 +101,23 @@ project/
 ## 🧪 Testing
 
 ### Поточний стан:
-- ✅ **Widget tests**: базові тести UI компонентів
-- ⚠️ **Unit tests**: потрібно розширити покриття
-- ⚠️ **Integration tests**: потрібно додати E2E тести
+- ✅ **Unit tests**: тести для BLoC, use cases, repositories, entities
+- ✅ **Widget tests**: тести для всіх UI компонентів
+- ✅ **Integration tests**: E2E тести для всіх user flows
 
-### Плани:
-- Мінімум 70% code coverage
-- Unit tests для use cases та repositories
-- Widget tests для всіх основних компонентів
-- Integration tests для ключових user flows
+### Запуск тестів:
+```bash
+# Всі тести
+flutter test
+
+# Тільки widget тести
+flutter test test/widget/
+
+# Тільки integration тести
+flutter test integration_test/
+```
+
+Детальні інструкції див. в [TESTING_GUIDE.md](TESTING_GUIDE.md)
 
 ## 🛠️ Setup Instructions
 
@@ -130,8 +138,6 @@ project/
    - Скопіювати файл `.env.example` як `.env`:
      ```bash
      cp .env.example .env
-     # Або на Windows:
-     copy .env.example .env
      ```
    - Відкрити `.env` та заповнити значення:
      ```
@@ -157,14 +163,6 @@ flutter run -d android
 
 ### Для release збірки з obfuscation:
 ```bash
-# Windows
-build_release.bat
-
-# Linux/Mac
-chmod +x build_release.sh
-./build_release.sh
-
-# Або вручну:
 flutter build apk --release --obfuscate --split-debug-info=build/app/outputs/symbols
 ```
 
@@ -177,7 +175,6 @@ flutter build apk --release --obfuscate --split-debug-info=build/app/outputs/sym
 ### Для запуску тестів:
 ```bash
 flutter test
-flutter test --coverage
 ```
 
 ## 🔧 CI/CD

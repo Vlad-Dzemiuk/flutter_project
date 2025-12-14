@@ -1,7 +1,7 @@
 import 'home_api_service.dart';
-import 'data/models/movie_model.dart';
-import 'data/models/tv_show_model.dart';
-import 'data/models/genre_model.dart';
+import 'package:project/features/home/data/models/movie_model.dart';
+import 'package:project/features/home/data/models/tv_show_model.dart';
+import 'package:project/features/home/data/models/genre_model.dart';
 
 abstract class HomeRepository {
   Future<List<Movie>> fetchPopularMovies({int page = 1});

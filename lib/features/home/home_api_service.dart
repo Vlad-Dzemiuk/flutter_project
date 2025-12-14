@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
-import 'data/models/movie_model.dart';
-import 'data/models/tv_show_model.dart';
-import 'data/models/genre_model.dart';
+import 'package:project/features/home/data/models/movie_model.dart';
+import 'package:project/features/home/data/models/tv_show_model.dart';
+import 'package:project/features/home/data/models/genre_model.dart';
 import 'package:project/core/storage/local_cache_db.dart';
 import 'package:project/core/network/dio_client.dart';
 

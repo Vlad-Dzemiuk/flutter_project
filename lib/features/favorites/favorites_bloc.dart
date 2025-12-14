@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'favorites_event.dart';
 import '../home/data/models/movie_model.dart';
 import 'domain/usecases/get_favorites_usecase.dart';
-import '../../../core/network/retry_helper.dart';
+import 'package:project/core/network/retry_helper.dart';
 
 class FavoritesState extends Equatable {
   final bool loading;

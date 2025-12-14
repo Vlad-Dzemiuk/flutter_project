@@ -5,13 +5,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../auth/auth_repository.dart';
 import '../auth/data/models/local_user.dart';
-import '../home/home_media_item.dart';
+import 'package:project/features/home/home_media_item.dart';
 import 'media_collections_event.dart';
 import 'media_collection_entry.dart';
 import 'domain/usecases/get_media_collections_usecase.dart';
 import 'domain/usecases/toggle_favorite_usecase.dart';
 import 'domain/usecases/add_to_watchlist_usecase.dart';
-import '../../../core/network/retry_helper.dart';
+import 'package:project/core/network/retry_helper.dart';
 
 class MediaCollectionsState extends Equatable {
   final bool loading;

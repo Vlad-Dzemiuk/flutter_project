@@ -24,7 +24,7 @@ jobs:
           echo "AUTH_METHOD=local" >> .env
       - run: flutter pub get
       - run: flutter analyze --fatal-infos
-      - run: flutter test --coverage
+      - run: flutter test
 
   build:
     needs: test
@@ -60,5 +60,4 @@ jobs:
           name: debug-symbols
           path: build/app/outputs/symbols/
           retention-days: 90
-
 
