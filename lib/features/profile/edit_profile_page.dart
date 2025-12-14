@@ -82,12 +82,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
         imageQuality: 85,
       );
       if (picked == null) return;
-      if (!mounted) return;
+      if (!context.mounted) return;
       setState(() {
         _avatarPath = picked.path;
       });
     } catch (e) {
-      if (!mounted) return;
+      if (!context.mounted) return;
       final l10n = AppLocalizations.of(context)!;
       // Обробляємо помилки камери (особливо для емуляторів)
       if (e.toString().contains('camera') ||
@@ -161,12 +161,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
           ),
         ),
       );
-      if (!mounted) return;
+      if (!context.mounted) return;
       final l10n = AppLocalizations.of(context)!;
       AppNotification.showSuccess(context, l10n.profileUpdated(updated.email));
       Navigator.of(context).maybePop();
     } catch (error) {
-      if (!mounted) return;
+      if (!context.mounted) return;
       final l10n = AppLocalizations.of(context)!;
       AppNotification.showError(context, l10n.error(error.toString()));
     }
@@ -209,11 +209,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   currentPassword: currentController.text,
                   newPassword: newController.text,
                 );
-                if (!mounted) return;
+                if (!context.mounted) return;
                 Navigator.of(ctx).pop(true);
               } catch (error) {
                 setModalState(() => isLoading = false);
-                if (!mounted) return;
+                if (!context.mounted) return;
                 AppNotification.showError(
                   context,
                   l10n.error(error.toString()),
