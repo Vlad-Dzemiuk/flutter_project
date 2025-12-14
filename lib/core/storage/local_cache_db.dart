@@ -82,11 +82,10 @@ class AppDatabase extends _$AppDatabase {
     String key, {
     Duration maxAge = const Duration(minutes: 30),
   }) async {
-    final entry =
-        await (select(cacheEntries)
-              ..where((tbl) => tbl.key.equals(key))
-              ..limit(1))
-            .getSingleOrNull();
+    final entry = await (select(cacheEntries)
+          ..where((tbl) => tbl.key.equals(key))
+          ..limit(1))
+        .getSingleOrNull();
 
     if (entry == null) return null;
 

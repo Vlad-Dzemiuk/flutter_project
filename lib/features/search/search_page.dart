@@ -588,23 +588,23 @@ class _SearchPageState extends State<SearchPage> {
                                                             color: colors
                                                                 .surfaceContainerHighest
                                                                 .withValues(
-                                                            alpha: theme.brightness ==
-                                                                    Brightness
-                                                                        .light
-                                                                ? 1
-                                                                : 0.18,
-                                                          ),
+                                                              alpha: theme.brightness ==
+                                                                      Brightness
+                                                                          .light
+                                                                  ? 1
+                                                                  : 0.18,
+                                                            ),
                                                             borderRadius:
                                                                 BorderRadius
                                                                     .circular(
                                                               12,
-                                                          ),
+                                                            ),
                                                           ),
                                                           child: Text(
                                                             _rating
                                                                 .toStringAsFixed(
                                                               1,
-                                                          ),
+                                                            ),
                                                             style: TextStyle(
                                                               color: colors
                                                                   .onSurface,
