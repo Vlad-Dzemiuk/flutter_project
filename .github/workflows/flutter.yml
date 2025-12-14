@@ -26,11 +26,16 @@ jobs:
           channel: 'stable'
           cache: true
 
+      - name: Create .env file
+        run: |
+          echo "TMDB_API_KEY=${{ secrets.TMDB_API_KEY }}" > .env
+          echo "AUTH_METHOD=local" >> .env
+
       - name: Get dependencies
         run: flutter pub get
 
       - name: Verify formatting
-        run: flutter format --set-exit-if-changed .
+        run: dart format --set-exit-if-changed .
 
       - name: Analyze code
         run: flutter analyze --fatal-infos
@@ -52,6 +57,11 @@ jobs:
 
       - name: Get dependencies
         run: flutter pub get
+
+      - name: Create .env file
+        run: |
+          echo "TMDB_API_KEY=${{ secrets.TMDB_API_KEY }}" > .env
+          echo "AUTH_METHOD=local" >> .env
 
       - name: Run unit tests with coverage
         run: flutter test test/unit/ --coverage
@@ -81,6 +91,11 @@ jobs:
 
       - name: Get dependencies
         run: flutter pub get
+
+      - name: Create .env file
+        run: |
+          echo "TMDB_API_KEY=${{ secrets.TMDB_API_KEY }}" > .env
+          echo "AUTH_METHOD=local" >> .env
 
       - name: Run widget tests with coverage
         run: flutter test test/widget/ --coverage
