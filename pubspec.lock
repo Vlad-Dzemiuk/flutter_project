@@ -1278,14 +1278,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.3.3"
-  url_launcher_linux:
-    dependency: transitive
-    description:
-      name: url_launcher_linux
-      sha256: "4e9ba368772369e3e08f231d2301b4ef72b9ff87c31192ef471b380ef29a493"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.2.1"
   url_launcher_macos:
     dependency: transitive
     description:
