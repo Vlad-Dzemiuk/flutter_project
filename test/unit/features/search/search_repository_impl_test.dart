@@ -146,4 +146,3 @@ void main() {
 }
 
 class MockHomeApiService extends Mock implements HomeApiService {}
-
