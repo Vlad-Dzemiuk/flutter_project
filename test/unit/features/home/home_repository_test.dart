@@ -1,14 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:project/features/home/home_repository.dart';
-import 'package:project/features/home/home_api_service.dart';
 
 void main() {
   late HomeRepositoryImpl repository;
-  late MockHomeApiService mockApiService;
 
   setUp(() {
-    mockApiService = MockHomeApiService();
     repository = HomeRepositoryImpl();
     // Note: HomeRepositoryImpl creates its own HomeApiService internally
     // For full testing, we would need to refactor to inject the service
@@ -68,4 +64,3 @@ void main() {
   });
 }
 
-class MockHomeApiService extends Mock implements HomeApiService {}
