@@ -1126,14 +1126,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.5.4+6"
-  sqflite_darwin:
-    dependency: transitive
-    description:
-      name: sqflite_darwin
-      sha256: "22adfd9a2c7d634041e96d6241e6e1c8138ca6817018afc5d443fef91dcefa9"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.4.1+1"
   sqflite_platform_interface:
     dependency: transitive
     description:
@@ -1286,14 +1278,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.3.3"
-  url_launcher_linux:
-    dependency: transitive
-    description:
-      name: url_launcher_linux
-      sha256: "4e9ba368772369e3e08f231d2301b4ef72b9ff87c31192ef471b380ef29a493"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.2.1"
   url_launcher_macos:
     dependency: transitive
     description:
