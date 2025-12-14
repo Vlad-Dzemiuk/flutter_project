@@ -192,18 +192,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   currentPassword: currentController.text,
                   newPassword: newController.text,
                 );
-                if (context.mounted) {
-                  Navigator.of(ctx).pop(true);
-                }
+                if (!mounted) return;
+                Navigator.of(ctx).pop(true);
               } catch (error) {
                 setModalState(() => isLoading = false);
-                if (context.mounted) {
-                  final l10n = AppLocalizations.of(context)!;
-                  AppNotification.showError(
-                    context,
-                    l10n.error(error.toString()),
-                  );
-                }
+                if (!mounted) return;
+                AppNotification.showError(
+                  context,
+                  l10n.error(error.toString()),
+                );
               }
             }
 

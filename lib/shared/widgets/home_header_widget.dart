@@ -30,8 +30,8 @@ class HomeHeaderWidget extends StatelessWidget {
                 fit: BoxFit.cover,
                 colorFilter: ColorFilter.mode(
                   isDark
-                      ? Colors.black.withOpacity(0.35)
-                      : Colors.white.withOpacity(0.3),
+                      ? Colors.black.withValues(alpha: 0.35)
+                      : Colors.white.withValues(alpha: 0.3),
                   BlendMode.darken,
                 ),
               ),
@@ -45,12 +45,12 @@ class HomeHeaderWidget extends StatelessWidget {
                   end: Alignment.bottomRight,
                   colors: isDark
                       ? [
-                          Colors.black.withOpacity(0.6),
-                          Colors.black.withOpacity(0.2),
+                          Colors.black.withValues(alpha: 0.6),
+                          Colors.black.withValues(alpha: 0.2),
                         ]
                       : [
-                          Colors.white.withOpacity(0.4),
-                          Colors.white.withOpacity(0.1),
+                          Colors.white.withValues(alpha: 0.4),
+                          Colors.white.withValues(alpha: 0.1),
                         ],
                 ),
               ),
@@ -69,8 +69,8 @@ class HomeHeaderWidget extends StatelessWidget {
                         padding: EdgeInsets.all(isMobile ? 12 : 14),
                         decoration: BoxDecoration(
                           color: isDark
-                              ? colors.primary.withOpacity(0.16)
-                              : colors.primary.withOpacity(0.12),
+                              ? colors.primary.withValues(alpha: 0.16)
+                              : colors.primary.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(14),
                         ),
                         child: Icon(
@@ -87,7 +87,7 @@ class HomeHeaderWidget extends StatelessWidget {
                             Text(
                               'Movie discovery app',
                               style: TextStyle(
-                                color: colors.onBackground,
+                                color: colors.onSurface,
                                 fontSize: isMobile ? 20 : 24,
                                 fontWeight: FontWeight.w800,
                               ),
@@ -96,7 +96,7 @@ class HomeHeaderWidget extends StatelessWidget {
                             Text(
                               AppLocalizations.of(context)!.headerSubtitle,
                               style: TextStyle(
-                                color: colors.onBackground.withOpacity(0.7),
+                                color: colors.onSurface.withValues(alpha: 0.7),
                                 fontSize: isMobile ? 13 : 15,
                               ),
                             ),
@@ -111,7 +111,7 @@ class HomeHeaderWidget extends StatelessWidget {
                         child: Text(
                           AppLocalizations.of(context)!.headerDescription,
                           style: TextStyle(
-                            color: colors.onBackground.withOpacity(0.9),
+                            color: colors.onSurface.withValues(alpha: 0.9),
                             height: 1.35,
                             fontSize: isMobile ? 14 : 16,
                             fontWeight: FontWeight.w600,

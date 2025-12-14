@@ -101,7 +101,7 @@ void main() {
 
     test('should extract userId from token', () async {
       // Arrange
-      final token = await jwtTokenService.generateToken(
+      await jwtTokenService.generateToken(
         userId: 123,
         email: 'test@example.com',
       );
@@ -117,7 +117,7 @@ void main() {
 
     test('should extract email from token', () async {
       // Arrange
-      final token = await jwtTokenService.generateToken(
+      await jwtTokenService.generateToken(
         userId: 1,
         email: 'test@example.com',
       );

@@ -830,6 +830,7 @@ class _SearchPageState extends State<SearchPage> {
                 await _addToHistory(item);
               }
               if (!mounted) return;
+              if (!context.mounted) return;
               Navigator.of(
                 context,
               ).push(DetailPageRoute(child: MediaDetailPage(item: item)));
@@ -1072,6 +1073,7 @@ class _SearchPageState extends State<SearchPage> {
               await _addToHistory(item);
             }
             if (!mounted) return;
+            if (!context.mounted) return;
             Navigator.of(
               context,
             ).push(DetailPageRoute(child: MediaDetailPage(item: item)));

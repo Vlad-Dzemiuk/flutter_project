@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:project/features/home/home_page.dart';
@@ -178,8 +177,6 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(seconds: 1));
 
-      // Find RefreshIndicator (may not be present if content is loading)
-      final refreshIndicator = find.byType(RefreshIndicator);
       // RefreshIndicator may not be present if the page is still loading
       // So we just check that HomePage is displayed
       expect(find.byType(HomePage), findsOneWidget);
