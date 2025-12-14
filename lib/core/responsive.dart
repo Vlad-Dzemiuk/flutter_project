@@ -92,8 +92,7 @@ class Responsive {
     final horizontalPadding = getHorizontalPadding(context);
     final spacing = getSpacing(context);
 
-    final availableWidth =
-        width -
+    final availableWidth = width -
         horizontalPadding.left -
         horizontalPadding.right -
         (spacing * (columns - 1));

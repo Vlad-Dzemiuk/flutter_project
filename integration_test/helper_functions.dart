@@ -186,8 +186,8 @@ class IntegrationTestHelper {
         final signUpBtn = signUpButton.evaluate().isNotEmpty
             ? signUpButton.first
             : (registerButton.evaluate().isNotEmpty
-                  ? registerButton.first
-                  : null);
+                ? registerButton.first
+                : null);
 
         if (signUpBtn != null) {
           await tester.tap(signUpBtn);

@@ -432,29 +432,29 @@ class $$UsersTableOrderingComposer
     super.$removeJoinBuilderFromRootComposer,
   });
   ColumnOrderings<int> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
+        column: $table.id,
+        builder: (column) => ColumnOrderings(column),
+      );
 
   ColumnOrderings<String> get email => $composableBuilder(
-    column: $table.email,
-    builder: (column) => ColumnOrderings(column),
-  );
+        column: $table.email,
+        builder: (column) => ColumnOrderings(column),
+      );
 
   ColumnOrderings<String> get password => $composableBuilder(
-    column: $table.password,
-    builder: (column) => ColumnOrderings(column),
-  );
+        column: $table.password,
+        builder: (column) => ColumnOrderings(column),
+      );
 
   ColumnOrderings<String> get displayName => $composableBuilder(
-    column: $table.displayName,
-    builder: (column) => ColumnOrderings(column),
-  );
+        column: $table.displayName,
+        builder: (column) => ColumnOrderings(column),
+      );
 
   ColumnOrderings<String> get avatarUrl => $composableBuilder(
-    column: $table.avatarUrl,
-    builder: (column) => ColumnOrderings(column),
-  );
+        column: $table.avatarUrl,
+        builder: (column) => ColumnOrderings(column),
+      );
 }
 
 class $$UsersTableAnnotationComposer

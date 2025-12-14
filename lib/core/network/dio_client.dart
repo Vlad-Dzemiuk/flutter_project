@@ -13,7 +13,7 @@ class DioClient {
   final AuthRepository? _authRepository;
 
   DioClient._internal({AuthRepository? authRepository})
-    : _authRepository = authRepository {
+      : _authRepository = authRepository {
     _dio = Dio(
       BaseOptions(
         baseUrl: 'https://api.themoviedb.org/3',

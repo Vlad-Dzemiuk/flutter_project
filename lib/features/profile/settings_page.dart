@@ -120,11 +120,11 @@ class _SettingsPageState extends State<_SettingsPageContent> {
                         modalL10n.selectLanguage,
                         style: TextStyle(
                           color: colors.onSurface,
-                              fontSize: isDesktop
-                                  ? 24
-                                  : isTablet
-                                      ? 22
-                                      : 20,
+                          fontSize: isDesktop
+                              ? 24
+                              : isTablet
+                                  ? 22
+                                  : 20,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -237,11 +237,11 @@ class _SettingsPageState extends State<_SettingsPageContent> {
                         AppLocalizations.of(context)!.appThemeTitle,
                         style: TextStyle(
                           color: colors.onSurface,
-                              fontSize: isDesktop
-                                  ? 24
-                                  : isTablet
-                                      ? 22
-                                      : 20,
+                          fontSize: isDesktop
+                              ? 24
+                              : isTablet
+                                  ? 22
+                                  : 20,
                           fontWeight: FontWeight.w700,
                         ),
                       ),

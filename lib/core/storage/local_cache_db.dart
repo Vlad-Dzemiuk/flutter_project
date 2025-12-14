@@ -102,11 +102,10 @@ class AppDatabase extends _$AppDatabase {
   /// Використовується для offline-first fallback при помилках мережі
   /// Повертає дані навіть якщо вони застарілі
   Future<Map<String, dynamic>?> getJsonStale(String key) async {
-    final entry =
-        await (select(cacheEntries)
-              ..where((tbl) => tbl.key.equals(key))
-              ..limit(1))
-            .getSingleOrNull();
+    final entry = await (select(cacheEntries)
+          ..where((tbl) => tbl.key.equals(key))
+          ..limit(1))
+        .getSingleOrNull();
 
     if (entry == null) return null;
 

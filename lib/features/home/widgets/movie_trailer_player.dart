@@ -528,15 +528,15 @@ class _MovieTrailerPlayerState extends ConsumerState<MovieTrailerPlayer> {
                               ),
                               if (_failedVideoKeys.isNotEmpty) ...[
                                 const SizedBox(height: 4),
-                                  Text(
-                                    AppLocalizations.of(
-                                      context,
-                                    )!
-                                        .tryingToFindAnotherVideo,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodySmall
-                                        ?.copyWith(color: Colors.grey[500]),
+                                Text(
+                                  AppLocalizations.of(
+                                    context,
+                                  )!
+                                      .tryingToFindAnotherVideo,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodySmall
+                                      ?.copyWith(color: Colors.grey[500]),
                                   textAlign: TextAlign.center,
                                 ),
                               ],

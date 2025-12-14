@@ -742,9 +742,9 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
     if (_details == null) return const SizedBox.shrink();
 
     final genres = (_details!['genres'] as List<dynamic>?)
-             ?.map((g) => (g as Map<String, dynamic>)['name'] as String?)
-             .whereType<String>()
-             .toList() ??
+            ?.map((g) => (g as Map<String, dynamic>)['name'] as String?)
+            .whereType<String>()
+            .toList() ??
         [];
 
     final releaseDate = widget.item.isMovie

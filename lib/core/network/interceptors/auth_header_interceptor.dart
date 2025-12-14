@@ -8,7 +8,7 @@ class AuthHeaderInterceptor extends Interceptor {
   final AuthRepository? _authRepository;
 
   AuthHeaderInterceptor({AuthRepository? authRepository})
-    : _authRepository = authRepository;
+      : _authRepository = authRepository;
 
   @override
   void onRequest(

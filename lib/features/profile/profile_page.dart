@@ -615,7 +615,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                                       label: Text(
                                                         AppLocalizations.of(
                                                           context,
-                                                        )!.favorites,
+                                                        )!
+                                                            .favorites,
                                                       ),
                                                       style: FilledButton
                                                           .styleFrom(
@@ -765,7 +766,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                                       label: Text(
                                                         AppLocalizations.of(
                                                           context,
-                                                        )!.favorites,
+                                                        )!
+                                                            .favorites,
                                                       ),
                                                     ),
                                                   ),

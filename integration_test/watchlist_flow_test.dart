@@ -124,8 +124,7 @@ void main() {
       final column = find.byType(Column);
 
       // Сторінка повинна мати хоча б щось з цього (list, grid, scrollable, text, або column для empty state)
-      final hasContent =
-          listView.evaluate().isNotEmpty ||
+      final hasContent = listView.evaluate().isNotEmpty ||
           gridView.evaluate().isNotEmpty ||
           scrollable.evaluate().isNotEmpty ||
           textWidgets.evaluate().isNotEmpty ||
@@ -160,8 +159,7 @@ void main() {
       expect(find.byType(Scaffold), findsWidgets);
 
       // Check for any content (empty state, loading, or list)
-      final hasAnyContent =
-          find.byType(ListView).evaluate().isNotEmpty ||
+      final hasAnyContent = find.byType(ListView).evaluate().isNotEmpty ||
           find.byType(GridView).evaluate().isNotEmpty ||
           find.byType(CircularProgressIndicator).evaluate().isNotEmpty ||
           find.byType(Text).evaluate().isNotEmpty ||

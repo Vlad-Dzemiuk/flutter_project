@@ -9,23 +9,23 @@ class SlidePageRoute<T> extends PageRouteBuilder<T> {
     required this.child,
     this.beginOffset = const Offset(1.0, 0.0),
   }) : super(
-         pageBuilder: (context, animation, secondaryAnimation) => child,
-         transitionsBuilder: (context, animation, secondaryAnimation, child) {
-           const end = Offset.zero;
-           const curve = Curves.easeInOutCubic;
+          pageBuilder: (context, animation, secondaryAnimation) => child,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            const end = Offset.zero;
+            const curve = Curves.easeInOutCubic;
 
-           var tween = Tween(
-             begin: beginOffset,
-             end: end,
-           ).chain(CurveTween(curve: curve));
+            var tween = Tween(
+              begin: beginOffset,
+              end: end,
+            ).chain(CurveTween(curve: curve));
 
-           return SlideTransition(
-             position: animation.drive(tween),
-             child: child,
-           );
-         },
-         transitionDuration: const Duration(milliseconds: 300),
-       );
+            return SlideTransition(
+              position: animation.drive(tween),
+              child: child,
+            );
+          },
+          transitionDuration: const Duration(milliseconds: 300),
+        );
 }
 
 /// Кастомний перехід з fade-анімацією
@@ -33,13 +33,13 @@ class FadePageRoute<T> extends PageRouteBuilder<T> {
   final Widget child;
 
   FadePageRoute({required this.child})
-    : super(
-        pageBuilder: (context, animation, secondaryAnimation) => child,
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return FadeTransition(opacity: animation, child: child);
-        },
-        transitionDuration: const Duration(milliseconds: 250),
-      );
+      : super(
+          pageBuilder: (context, animation, secondaryAnimation) => child,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(opacity: animation, child: child);
+          },
+          transitionDuration: const Duration(milliseconds: 250),
+        );
 }
 
 /// Кастомний перехід з scale-анімацією

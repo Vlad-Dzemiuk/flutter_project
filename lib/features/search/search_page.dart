@@ -274,8 +274,8 @@ class _SearchPageState extends State<SearchPage> {
                                         .withValues(
                                       alpha:
                                           theme.brightness == Brightness.light
-                                               ? 1
-                                               : 0.18,
+                                              ? 1
+                                              : 0.18,
                                     ),
                                     borderRadius: BorderRadius.circular(16),
                                     border: Border.all(
@@ -288,8 +288,8 @@ class _SearchPageState extends State<SearchPage> {
                                         color: Colors.black.withValues(
                                           alpha: theme.brightness ==
                                                   Brightness.light
-                                               ? 0.08
-                                               : 0.25,
+                                              ? 0.08
+                                              : 0.25,
                                         ),
                                         blurRadius: 12,
                                         offset: const Offset(0, 8),
@@ -543,7 +543,8 @@ class _SearchPageState extends State<SearchPage> {
                                                   controller: _yearController,
                                                   label: AppLocalizations.of(
                                                     context,
-                                                  )!.year,
+                                                  )!
+                                                      .year,
                                                   keyboardType:
                                                       TextInputType.number,
                                                   icon: Icons
@@ -575,35 +576,35 @@ class _SearchPageState extends State<SearchPage> {
                                                                 FontWeight.w600,
                                                           ),
                                                         ),
-                                                          Container(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .symmetric(
-                                                              horizontal: 10,
-                                                              vertical: 6,
-                                                            ),
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              color: colors
-                                                                  .surfaceContainerHighest
-                                                                  .withValues(
-                                                              alpha: theme.brightness ==
-                                                                      Brightness
-                                                                          .light
-                                                                  ? 1
-                                                                  : 0.18,
-                                                            ),
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                12,
-                                                            ),
-                                                            ),
-                                                            child: Text(
-                                                              _rating
-                                                                  .toStringAsFixed(
+                                                        Container(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .symmetric(
+                                                            horizontal: 10,
+                                                            vertical: 6,
+                                                          ),
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: colors
+                                                                .surfaceContainerHighest
+                                                                .withValues(
+                                                            alpha: theme.brightness ==
+                                                                    Brightness
+                                                                        .light
+                                                                ? 1
+                                                                : 0.18,
+                                                          ),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                              12,
+                                                          ),
+                                                          ),
+                                                          child: Text(
+                                                            _rating
+                                                                .toStringAsFixed(
                                                               1,
-                                                            ),
+                                                          ),
                                                             style: TextStyle(
                                                               color: colors
                                                                   .onSurface,
@@ -642,8 +643,8 @@ class _SearchPageState extends State<SearchPage> {
                                           backgroundColor: colors.primary,
                                           foregroundColor: theme.brightness ==
                                                   Brightness.light
-                                               ? Colors.white
-                                               : colors.onPrimary,
+                                              ? Colors.white
+                                              : colors.onPrimary,
                                           padding: EdgeInsets.symmetric(
                                             vertical:
                                                 Responsive.isMobile(context)

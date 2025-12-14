@@ -10,12 +10,12 @@ class JwtTokenService {
       'your-secret-key-change-in-production'; // В продакшені використовуйте безпечний ключ
 
   JwtTokenService._internal([SecureStorageService? secureStorage])
-    : _secureStorage = secureStorage ?? SecureStorageService.instance;
+      : _secureStorage = secureStorage ?? SecureStorageService.instance;
   static final JwtTokenService instance = JwtTokenService._internal();
 
   /// Конструктор для тестування (дозволяє передати тестовий SecureStorageService)
   JwtTokenService.forTesting(SecureStorageService secureStorage)
-    : _secureStorage = secureStorage;
+      : _secureStorage = secureStorage;
 
   final SecureStorageService _secureStorage;
 
@@ -37,8 +37,7 @@ class JwtTokenService {
       'userId': userId,
       'email': email,
       'iat': now.millisecondsSinceEpoch ~/ 1000, // Issued at (Unix timestamp)
-      'exp':
-          expiresAt.millisecondsSinceEpoch ~/
+      'exp': expiresAt.millisecondsSinceEpoch ~/
           1000, // Expiration (Unix timestamp)
     };
 
