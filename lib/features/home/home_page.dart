@@ -947,36 +947,52 @@ class MediaPosterCard extends StatelessWidget {
                     aspectRatio: 2 / 3,
                     child: Stack(
                       children: [
-                    Positioned.fill(
-                      child: item.posterPath != null &&
-                              item.posterPath!.isNotEmpty
-                          ? CachedNetworkImage(
-                              imageUrl:
-                                  'https://image.tmdb.org/t/p/w500${item.posterPath}',
-                              fit: BoxFit.cover,
-                              memCacheWidth: 500,
-                              memCacheHeight: 750,
-                              fadeInDuration: const Duration(milliseconds: 300),
-                              placeholder: (context, url) => Container(
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                    colors: [
-                                      Colors.blueGrey.shade900,
-                                      Colors.blueGrey.shade700,
-                                    ],
+                        Positioned.fill(
+                          child: item.posterPath != null &&
+                                  item.posterPath!.isNotEmpty
+                              ? CachedNetworkImage(
+                                  imageUrl:
+                                      'https://image.tmdb.org/t/p/w500${item.posterPath}',
+                                  fit: BoxFit.cover,
+                                  memCacheWidth: 500,
+                                  memCacheHeight: 750,
+                                  fadeInDuration:
+                                      const Duration(milliseconds: 300),
+                                  placeholder: (context, url) => Container(
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                        colors: [
+                                          Colors.blueGrey.shade900,
+                                          Colors.blueGrey.shade700,
+                                        ],
+                                      ),
+                                    ),
+                                    child: const Center(
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Colors.white70,
+                                      ),
+                                    ),
                                   ),
-                                ),
-                                child: const Center(
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: Colors.white70,
-                                  ),
-                                ),
-                              ),
-                              errorWidget: (context, url, error) {
-                                return Container(
+                                  errorWidget: (context, url, error) {
+                                    return Container(
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                          colors: [
+                                            Colors.blueGrey.shade900,
+                                            Colors.blueGrey.shade700,
+                                          ],
+                                        ),
+                                      ),
+                                      child: const Icon(Icons.movie, size: 48),
+                                    );
+                                  },
+                                )
+                              : Container(
                                   decoration: BoxDecoration(
                                     gradient: LinearGradient(
                                       begin: Alignment.topLeft,
@@ -988,92 +1004,77 @@ class MediaPosterCard extends StatelessWidget {
                                     ),
                                   ),
                                   child: const Icon(Icons.movie, size: 48),
-                                );
-                              },
-                            )
-                          : Container(
+                                ),
+                        ),
+                        Positioned.fill(
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  Colors.black.withValues(alpha: 0.05),
+                                  Colors.black.withValues(alpha: 0.40),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        if (isFavorite != null && onFavoriteToggle != null)
+                          Positioned(
+                            top: 8,
+                            right: 8,
+                            child: DecoratedBox(
                               decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [
-                                    Colors.blueGrey.shade900,
-                                    Colors.blueGrey.shade700,
-                                  ],
+                                color: Colors.black.withValues(alpha: 0.55),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: IconButton(
+                                iconSize: 20,
+                                splashRadius: 20,
+                                onPressed: onFavoriteToggle,
+                                icon: Icon(
+                                  isFavorite!
+                                      ? Icons.favorite
+                                      : Icons.favorite_border,
+                                  color: const Color(0xFFFF6B6B),
                                 ),
                               ),
-                              child: const Icon(Icons.movie, size: 48),
                             ),
-                    ),
-                    Positioned.fill(
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Colors.black.withValues(alpha: 0.05),
-                              Colors.black.withValues(alpha: 0.40),
-                            ],
                           ),
-                        ),
-                      ),
-                    ),
-                    if (isFavorite != null && onFavoriteToggle != null)
-                      Positioned(
-                        top: 8,
-                        right: 8,
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: Colors.black.withValues(alpha: 0.55),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: IconButton(
-                            iconSize: 20,
-                            splashRadius: 20,
-                            onPressed: onFavoriteToggle,
-                            icon: Icon(
-                              isFavorite!
-                                  ? Icons.favorite
-                                  : Icons.favorite_border,
-                              color: const Color(0xFFFF6B6B),
+                        Positioned(
+                          left: 10,
+                          bottom: 10,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withValues(alpha: 0.65),
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  Icons.star,
+                                  size: 16,
+                                  color: Colors.amber,
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  item.rating.toStringAsFixed(1),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodySmall
+                                      ?.copyWith(fontWeight: FontWeight.w700),
+                                ),
+                              ],
                             ),
                           ),
                         ),
-                      ),
-                    Positioned(
-                      left: 10,
-                      bottom: 10,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.65),
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(
-                              Icons.star,
-                              size: 16,
-                              color: Colors.amber,
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              item.rating.toStringAsFixed(1),
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall
-                                  ?.copyWith(fontWeight: FontWeight.w700),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
+                      ],
                 ),
               ),
             ),

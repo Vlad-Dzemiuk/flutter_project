@@ -90,7 +90,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       if (!mounted) return;
       final l10n = AppLocalizations.of(context)!;
       // Обробляємо помилки камери (особливо для емуляторів)
-      if (e.toString().contains('camera') || 
+      if (e.toString().contains('camera') ||
           e.toString().contains('Camera') ||
           e.toString().contains('No such file')) {
         AppNotification.showWarning(
