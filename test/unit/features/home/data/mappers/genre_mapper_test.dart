@@ -7,10 +7,7 @@ void main() {
   group('GenreMapper', () {
     test('should convert Genre to GenreEntity', () {
       // Arrange
-      final genre = Genre(
-        id: 1,
-        name: 'Action',
-      );
+      final genre = Genre(id: 1, name: 'Action');
 
       // Act
       final genreEntity = GenreMapper.toEntity(genre);
@@ -23,10 +20,7 @@ void main() {
 
     test('should convert Genre with different values to GenreEntity', () {
       // Arrange
-      final genre = Genre(
-        id: 28,
-        name: 'Drama',
-      );
+      final genre = Genre(id: 28, name: 'Drama');
 
       // Act
       final genreEntity = GenreMapper.toEntity(genre);
@@ -73,10 +67,7 @@ void main() {
 
     test('should preserve all genre properties during conversion', () {
       // Arrange
-      final genre = Genre(
-        id: 99,
-        name: 'Sci-Fi',
-      );
+      final genre = Genre(id: 99, name: 'Sci-Fi');
 
       // Act
       final genreEntity = GenreMapper.toEntity(genre);
@@ -87,6 +78,3 @@ void main() {
     });
   });
 }
-
-
-

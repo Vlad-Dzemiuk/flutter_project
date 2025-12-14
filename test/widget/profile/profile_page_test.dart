@@ -31,7 +31,9 @@ void main() {
 
       // Setup mock AuthRepository
       when(() => mockAuthRepository.currentUser).thenReturn(null);
-      when(() => mockAuthRepository.authStateChanges()).thenAnswer((_) => Stream.value(null));
+      when(
+        () => mockAuthRepository.authStateChanges(),
+      ).thenAnswer((_) => Stream.value(null));
     });
 
     tearDown(() {
@@ -57,7 +59,9 @@ void main() {
       expect(find.byType(ProfilePage), findsOneWidget);
     });
 
-    testWidgets('displays login form when not authenticated', (WidgetTester tester) async {
+    testWidgets('displays login form when not authenticated', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         WidgetTestHelper.createTestApp(
           child: const ProfilePage(),
@@ -67,10 +71,15 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      expect(find.byType(TextFormField), findsNWidgets(2)); // Email and password
+      expect(
+        find.byType(TextFormField),
+        findsNWidgets(2),
+      ); // Email and password
     });
 
-    testWidgets('displays user profile when authenticated', (WidgetTester tester) async {
+    testWidgets('displays user profile when authenticated', (
+      WidgetTester tester,
+    ) async {
       final authenticatedBloc = WidgetTestHelper.createMockAuthBloc(
         isAuthenticated: true,
       );
@@ -82,9 +91,9 @@ void main() {
       getIt.registerLazySingleton<AuthBloc>(() => authenticatedBloc);
 
       // Update mock to return authenticated user
-      when(() => mockAuthRepository.currentUser).thenReturn(
-        TestDataFactory.createLocalUser(),
-      );
+      when(
+        () => mockAuthRepository.currentUser,
+      ).thenReturn(TestDataFactory.createLocalUser());
 
       await tester.pumpWidget(
         WidgetTestHelper.createTestApp(
@@ -119,4 +128,3 @@ void main() {
     });
   });
 }
-

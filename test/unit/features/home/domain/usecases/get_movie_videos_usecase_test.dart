@@ -18,22 +18,13 @@ void main() {
     test('should return list of videos when successful', () async {
       // Arrange
       final videosData = [
-        {
-          'id': '1',
-          'key': 'abc123',
-          'name': 'Trailer',
-          'type': 'Trailer',
-        },
-        {
-          'id': '2',
-          'key': 'def456',
-          'name': 'Teaser',
-          'type': 'Teaser',
-        },
+        {'id': '1', 'key': 'abc123', 'name': 'Trailer', 'type': 'Trailer'},
+        {'id': '2', 'key': 'def456', 'name': 'Teaser', 'type': 'Teaser'},
       ];
 
-      when(() => mockRepository.fetchMovieVideos(any()))
-          .thenAnswer((_) async => videosData);
+      when(
+        () => mockRepository.fetchMovieVideos(any()),
+      ).thenAnswer((_) async => videosData);
 
       // Act
       final result = await useCase(const GetMovieVideosParams(movieId: 1));
@@ -49,11 +40,13 @@ void main() {
       // Act & Assert
       expect(
         () => useCase(const GetMovieVideosParams(movieId: 0)),
-        throwsA(isA<Exception>().having(
-          (e) => e.toString(),
-          'message',
-          contains('Невірний ID фільму'),
-        )),
+        throwsA(
+          isA<Exception>().having(
+            (e) => e.toString(),
+            'message',
+            contains('Невірний ID фільму'),
+          ),
+        ),
       );
       expect(
         () => useCase(const GetMovieVideosParams(movieId: -1)),
@@ -63,4 +56,3 @@ void main() {
     });
   });
 }
-

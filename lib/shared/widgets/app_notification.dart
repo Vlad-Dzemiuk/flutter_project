@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
 
 /// Типи нотифікацій
-enum NotificationType {
-  success,
-  error,
-  info,
-  warning,
-}
+enum NotificationType { success, error, info, warning }
 
 /// Універсальний компонент для відображення нотифікацій
 /// Використовує дизайн як у нотифікацій для авторизації
@@ -62,11 +57,7 @@ class AppNotification {
                 color: Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Icon(
-                icon ?? defaultIcon,
-                color: Colors.white,
-                size: 20,
-              ),
+              child: Icon(icon ?? defaultIcon, color: Colors.white, size: 20),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -82,9 +73,7 @@ class AppNotification {
         ),
         backgroundColor: backgroundColor,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         margin: const EdgeInsets.all(16),
         duration: duration ?? defaultDuration,
       ),
@@ -155,4 +144,3 @@ class AppNotification {
     );
   }
 }
-

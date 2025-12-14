@@ -6,11 +6,7 @@ class AnimatedLoadingWidget extends StatefulWidget {
   final String? message;
   final Color? color;
 
-  const AnimatedLoadingWidget({
-    super.key,
-    this.message,
-    this.color,
-  });
+  const AnimatedLoadingWidget({super.key, this.message, this.color});
 
   @override
   State<AnimatedLoadingWidget> createState() => _AnimatedLoadingWidgetState();
@@ -39,17 +35,12 @@ class _AnimatedLoadingWidgetState extends State<AnimatedLoadingWidget>
       vsync: this,
     )..repeat(reverse: true);
 
-    _rotationAnimation = Tween<double>(begin: 0, end: 2 * math.pi)
-        .animate(CurvedAnimation(
-      parent: _rotationController,
-      curve: Curves.linear,
-    ));
+    _rotationAnimation = Tween<double>(begin: 0, end: 2 * math.pi).animate(
+      CurvedAnimation(parent: _rotationController, curve: Curves.linear),
+    );
 
     _pulseAnimation = Tween<double>(begin: 0.8, end: 1.2).animate(
-      CurvedAnimation(
-        parent: _pulseController,
-        curve: Curves.easeInOut,
-      ),
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
   }
 
@@ -88,7 +79,10 @@ class _AnimatedLoadingWidgetState extends State<AnimatedLoadingWidget>
               mainAxisSize: MainAxisSize.min,
               children: [
                 AnimatedBuilder(
-                  animation: Listenable.merge([_rotationAnimation, _pulseAnimation]),
+                  animation: Listenable.merge([
+                    _rotationAnimation,
+                    _pulseAnimation,
+                  ]),
                   builder: (context, child) {
                     return Transform.scale(
                       scale: _pulseAnimation.value,
@@ -144,4 +138,3 @@ class _AnimatedLoadingWidgetState extends State<AnimatedLoadingWidget>
     );
   }
 }
-

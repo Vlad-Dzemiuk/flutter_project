@@ -10,4 +10,3 @@ abstract class FavoritesEvent extends Equatable {
 class LoadFavoritesEvent extends FavoritesEvent {
   const LoadFavoritesEvent();
 }
-

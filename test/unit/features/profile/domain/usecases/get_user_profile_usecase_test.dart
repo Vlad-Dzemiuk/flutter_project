@@ -22,8 +22,9 @@ void main() {
         avatarPath: '/avatar.jpg',
       );
 
-      when(() => mockRepository.getUserProfile(any()))
-          .thenAnswer((_) async => profile);
+      when(
+        () => mockRepository.getUserProfile(any()),
+      ).thenAnswer((_) async => profile);
 
       // Act
       final result = await useCase(const GetUserProfileParams(userId: 1));
@@ -40,11 +41,13 @@ void main() {
       // Act & Assert
       expect(
         () => useCase(const GetUserProfileParams(userId: 0)),
-        throwsA(isA<Exception>().having(
-          (e) => e.toString(),
-          'message',
-          contains('Невірний ID користувача'),
-        )),
+        throwsA(
+          isA<Exception>().having(
+            (e) => e.toString(),
+            'message',
+            contains('Невірний ID користувача'),
+          ),
+        ),
       );
       expect(
         () => useCase(const GetUserProfileParams(userId: -1)),
@@ -54,4 +57,3 @@ void main() {
     });
   });
 }
-

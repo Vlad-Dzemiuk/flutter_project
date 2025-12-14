@@ -15,24 +15,20 @@ import 'features/settings/settings_state.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
-  
+
   // Ініціалізація Firebase
   try {
     await Firebase.initializeApp();
   } catch (e) {
     // Якщо Firebase не налаштовано, продовжуємо без нього
   }
-  
+
   // Ініціалізація Hive Flutter
   await Hive.initFlutter();
-  
+
   await di.init();
 
-  runApp(
-    const ProviderScope(
-      child: MyApp(),
-    ),
-  );
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatefulWidget {
@@ -72,7 +68,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         bloc: di.getIt<SettingsBloc>(),
         builder: (context, settingsState) {
           final locale = Locale(settingsState.languageCode);
-          
+
           return MaterialApp(
             title: 'Movie Discovery App',
             theme: AppThemes.light,
@@ -91,4 +87,3 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     );
   }
 }
-

@@ -19,11 +19,10 @@ void main() {
   setUp(() {
     mockGetFavoritesUseCase = MockGetFavoritesUseCase();
     // Mock the use case to return a default value to prevent errors during initialization
-    when(() => mockGetFavoritesUseCase(any()))
-        .thenAnswer((_) async => <Movie>[]);
-    favoritesBloc = FavoritesBloc(
-      getFavoritesUseCase: mockGetFavoritesUseCase,
-    );
+    when(
+      () => mockGetFavoritesUseCase(any()),
+    ).thenAnswer((_) async => <Movie>[]);
+    favoritesBloc = FavoritesBloc(getFavoritesUseCase: mockGetFavoritesUseCase);
   });
 
   tearDown(() {
@@ -38,56 +37,46 @@ void main() {
           TestDataFactory.createMovie(id: 1),
           TestDataFactory.createMovie(id: 2),
         ];
-        when(() => mockGetFavoritesUseCase(any()))
-            .thenAnswer((_) async => movies);
-        return FavoritesBloc(
-          getFavoritesUseCase: mockGetFavoritesUseCase,
-        );
+        when(
+          () => mockGetFavoritesUseCase(any()),
+        ).thenAnswer((_) async => movies);
+        return FavoritesBloc(getFavoritesUseCase: mockGetFavoritesUseCase);
       },
-      wait: const Duration(milliseconds: 200), // Wait for initial LoadFavoritesEvent to complete
-      skip: 2, // Skip initial LoadFavoritesEvent states (loading: true, loading: false)
+      wait: const Duration(
+        milliseconds: 200,
+      ), // Wait for initial LoadFavoritesEvent to complete
+      skip:
+          2, // Skip initial LoadFavoritesEvent states (loading: true, loading: false)
       act: (bloc) => bloc.add(const LoadFavoritesEvent()),
       expect: () => [
         isA<FavoritesState>().having((s) => s.loading, 'loading', true),
-        isA<FavoritesState>().having(
-          (s) => s.loading,
-          'loading',
-          false,
-        ).having(
-          (s) => s.movies.length,
-          'movies.length',
-          2,
-        ),
+        isA<FavoritesState>()
+            .having((s) => s.loading, 'loading', false)
+            .having((s) => s.movies.length, 'movies.length', 2),
       ],
     );
 
     blocTest<FavoritesBloc, FavoritesState>(
       'emits error state when LoadFavoritesEvent fails',
       build: () {
-        when(() => mockGetFavoritesUseCase(any()))
-            .thenThrow(Exception('Network error'));
-        return FavoritesBloc(
-          getFavoritesUseCase: mockGetFavoritesUseCase,
-        );
+        when(
+          () => mockGetFavoritesUseCase(any()),
+        ).thenThrow(Exception('Network error'));
+        return FavoritesBloc(getFavoritesUseCase: mockGetFavoritesUseCase);
       },
-      wait: const Duration(milliseconds: 200), // Wait for initial LoadFavoritesEvent to complete
+      wait: const Duration(
+        milliseconds: 200,
+      ), // Wait for initial LoadFavoritesEvent to complete
       skip: 2, // Skip initial LoadFavoritesEvent states
       act: (bloc) => bloc.add(const LoadFavoritesEvent()),
       expect: () => [
         isA<FavoritesState>().having((s) => s.loading, 'loading', true),
-        isA<FavoritesState>().having(
-          (s) => s.loading,
-          'loading',
-          false,
-        ).having(
-          (s) => s.error,
-          'error',
-          isNotEmpty,
-        ),
+        isA<FavoritesState>()
+            .having((s) => s.loading, 'loading', false)
+            .having((s) => s.error, 'error', isNotEmpty),
       ],
     );
   });
 }
 
 class MockGetFavoritesUseCase extends Mock implements GetFavoritesUseCase {}
-

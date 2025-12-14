@@ -30,8 +30,12 @@ void main() {
       if (getIt.isRegistered<MediaCollectionsBloc>()) {
         getIt.unregister<MediaCollectionsBloc>();
       }
-      getIt.registerLazySingleton<GetPopularContentUseCase>(() => mockGetPopularContentUseCase);
-      getIt.registerLazySingleton<MediaCollectionsBloc>(() => mediaCollectionsBloc);
+      getIt.registerLazySingleton<GetPopularContentUseCase>(
+        () => mockGetPopularContentUseCase,
+      );
+      getIt.registerLazySingleton<MediaCollectionsBloc>(
+        () => mediaCollectionsBloc,
+      );
 
       // Setup mock GetPopularContentUseCase
       when(() => mockGetPopularContentUseCase(any())).thenAnswer(
@@ -87,4 +91,3 @@ void main() {
     });
   });
 }
-

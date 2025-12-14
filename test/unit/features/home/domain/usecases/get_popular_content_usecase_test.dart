@@ -27,14 +27,18 @@ void main() {
         TestDataFactory.createTvShow(id: 2, name: 'TV Show 2'),
       ];
 
-      when(() => mockRepository.fetchPopularMovies(page: any(named: 'page')))
-          .thenAnswer((_) async => movies);
-      when(() => mockRepository.fetchPopularTvShows(page: any(named: 'page')))
-          .thenAnswer((_) async => tvShows);
-      when(() => mockRepository.fetchAllMovies(page: any(named: 'page')))
-          .thenAnswer((_) async => movies);
-      when(() => mockRepository.fetchAllTvShows(page: any(named: 'page')))
-          .thenAnswer((_) async => tvShows);
+      when(
+        () => mockRepository.fetchPopularMovies(page: any(named: 'page')),
+      ).thenAnswer((_) async => movies);
+      when(
+        () => mockRepository.fetchPopularTvShows(page: any(named: 'page')),
+      ).thenAnswer((_) async => tvShows);
+      when(
+        () => mockRepository.fetchAllMovies(page: any(named: 'page')),
+      ).thenAnswer((_) async => movies);
+      when(
+        () => mockRepository.fetchAllTvShows(page: any(named: 'page')),
+      ).thenAnswer((_) async => tvShows);
 
       // Act
       final result = await useCase(const GetPopularContentParams(page: 1));
@@ -51,14 +55,18 @@ void main() {
 
     test('should use default page 1 when page is not specified', () async {
       // Arrange
-      when(() => mockRepository.fetchPopularMovies(page: any(named: 'page')))
-          .thenAnswer((_) async => []);
-      when(() => mockRepository.fetchPopularTvShows(page: any(named: 'page')))
-          .thenAnswer((_) async => []);
-      when(() => mockRepository.fetchAllMovies(page: any(named: 'page')))
-          .thenAnswer((_) async => []);
-      when(() => mockRepository.fetchAllTvShows(page: any(named: 'page')))
-          .thenAnswer((_) async => []);
+      when(
+        () => mockRepository.fetchPopularMovies(page: any(named: 'page')),
+      ).thenAnswer((_) async => []);
+      when(
+        () => mockRepository.fetchPopularTvShows(page: any(named: 'page')),
+      ).thenAnswer((_) async => []);
+      when(
+        () => mockRepository.fetchAllMovies(page: any(named: 'page')),
+      ).thenAnswer((_) async => []);
+      when(
+        () => mockRepository.fetchAllTvShows(page: any(named: 'page')),
+      ).thenAnswer((_) async => []);
 
       // Act
       await useCase(const GetPopularContentParams());
@@ -72,14 +80,18 @@ void main() {
 
     test('should use specified page number', () async {
       // Arrange
-      when(() => mockRepository.fetchPopularMovies(page: any(named: 'page')))
-          .thenAnswer((_) async => []);
-      when(() => mockRepository.fetchPopularTvShows(page: any(named: 'page')))
-          .thenAnswer((_) async => []);
-      when(() => mockRepository.fetchAllMovies(page: any(named: 'page')))
-          .thenAnswer((_) async => []);
-      when(() => mockRepository.fetchAllTvShows(page: any(named: 'page')))
-          .thenAnswer((_) async => []);
+      when(
+        () => mockRepository.fetchPopularMovies(page: any(named: 'page')),
+      ).thenAnswer((_) async => []);
+      when(
+        () => mockRepository.fetchPopularTvShows(page: any(named: 'page')),
+      ).thenAnswer((_) async => []);
+      when(
+        () => mockRepository.fetchAllMovies(page: any(named: 'page')),
+      ).thenAnswer((_) async => []);
+      when(
+        () => mockRepository.fetchAllTvShows(page: any(named: 'page')),
+      ).thenAnswer((_) async => []);
 
       // Act
       await useCase(const GetPopularContentParams(page: 2));
@@ -93,14 +105,18 @@ void main() {
 
     test('should return empty lists when repository returns empty', () async {
       // Arrange
-      when(() => mockRepository.fetchPopularMovies(page: any(named: 'page')))
-          .thenAnswer((_) async => <Movie>[]);
-      when(() => mockRepository.fetchPopularTvShows(page: any(named: 'page')))
-          .thenAnswer((_) async => <TvShow>[]);
-      when(() => mockRepository.fetchAllMovies(page: any(named: 'page')))
-          .thenAnswer((_) async => <Movie>[]);
-      when(() => mockRepository.fetchAllTvShows(page: any(named: 'page')))
-          .thenAnswer((_) async => <TvShow>[]);
+      when(
+        () => mockRepository.fetchPopularMovies(page: any(named: 'page')),
+      ).thenAnswer((_) async => <Movie>[]);
+      when(
+        () => mockRepository.fetchPopularTvShows(page: any(named: 'page')),
+      ).thenAnswer((_) async => <TvShow>[]);
+      when(
+        () => mockRepository.fetchAllMovies(page: any(named: 'page')),
+      ).thenAnswer((_) async => <Movie>[]);
+      when(
+        () => mockRepository.fetchAllTvShows(page: any(named: 'page')),
+      ).thenAnswer((_) async => <TvShow>[]);
 
       // Act
       final result = await useCase(const GetPopularContentParams());
@@ -113,4 +129,3 @@ void main() {
     });
   });
 }
-

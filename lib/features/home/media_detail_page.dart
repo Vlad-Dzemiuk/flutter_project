@@ -91,7 +91,7 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
             GetMovieDetailsParams(movieId: widget.item.id),
           ),
         );
-        
+
         final details = result['details'] as Map<String, dynamic>;
         final videos = result['videos'] as List<dynamic>;
         final reviews = result['reviews'] as List<dynamic>;
@@ -104,21 +104,22 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
           _reviews = reviews;
           _trailerKey = trailerKey;
         });
-        
+
         // Завантажуємо рекомендації
         final recs = recommendations.cast<Movie>();
-        final recommendationItems = recs.map((m) => HomeMediaItem.fromMovie(m)).toList();
+        final recommendationItems = recs
+            .map((m) => HomeMediaItem.fromMovie(m))
+            .toList();
         setState(() {
           _recommendations = recommendationItems;
         });
       } else {
         // Використання use case з retry механізмом для мережевих помилок
         final result = await RetryHelper.retry(
-          operation: () => _getTvDetailsUseCase(
-            GetTvDetailsParams(tvId: widget.item.id),
-          ),
+          operation: () =>
+              _getTvDetailsUseCase(GetTvDetailsParams(tvId: widget.item.id)),
         );
-        
+
         final details = result['details'] as Map<String, dynamic>;
         final videos = result['videos'] as List<dynamic>;
         final reviews = result['reviews'] as List<dynamic>;
@@ -131,9 +132,11 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
           _reviews = reviews;
           _trailerKey = trailerKey;
         });
-        
+
         // Завантажуємо рекомендації
-        final recommendationItems = recommendations.map((t) => HomeMediaItem.fromTvShow(t)).toList();
+        final recommendationItems = recommendations
+            .map((t) => HomeMediaItem.fromTvShow(t))
+            .toList();
         setState(() {
           _recommendations = recommendationItems;
         });
@@ -186,30 +189,34 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
   /// - VIDEO_ID (якщо вже є ID)
   String _extractVideoId(String key) {
     if (key.isEmpty) return key;
-    
+
     // Якщо це вже просто ID (без URL), повертаємо як є
-    if (!key.contains('http') && !key.contains('youtube') && !key.contains('youtu.be')) {
+    if (!key.contains('http') &&
+        !key.contains('youtube') &&
+        !key.contains('youtu.be')) {
       return key;
     }
-    
+
     // Обробка embed URL: https://www.youtube.com/embed/VIDEO_ID
-    final embedMatch = RegExp(r'youtube\.com/embed/([a-zA-Z0-9_-]+)').firstMatch(key);
+    final embedMatch = RegExp(
+      r'youtube\.com/embed/([a-zA-Z0-9_-]+)',
+    ).firstMatch(key);
     if (embedMatch != null) {
       return embedMatch.group(1)!;
     }
-    
+
     // Обробка watch URL: https://www.youtube.com/watch?v=VIDEO_ID
     final watchMatch = RegExp(r'[?&]v=([a-zA-Z0-9_-]+)').firstMatch(key);
     if (watchMatch != null) {
       return watchMatch.group(1)!;
     }
-    
+
     // Обробка youtu.be URL: https://youtu.be/VIDEO_ID
     final shortMatch = RegExp(r'youtu\.be/([a-zA-Z0-9_-]+)').firstMatch(key);
     if (shortMatch != null) {
       return shortMatch.group(1)!;
     }
-    
+
     // Спробуємо використати вбудований метод, якщо він доступний
     try {
       final convertedId = YoutubePlayerController.convertUrlToId(key);
@@ -219,7 +226,7 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
     } catch (e) {
       // Ігноруємо помилки конвертації
     }
-    
+
     // Якщо нічого не спрацювало, повертаємо оригінальний ключ
     return key;
   }
@@ -255,111 +262,144 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
         decoration: AppGradients.background(context),
         child: SafeArea(
           child: _loading
-              ? AnimatedLoadingWidget(message: AppLocalizations.of(context)!.loading)
+              ? AnimatedLoadingWidget(
+                  message: AppLocalizations.of(context)!.loading,
+                )
               : _error.isNotEmpty
-                  ? Center(
-                      child: Text(
-                        _error,
-                        style: TextStyle(color: colors.onSurface),
-                      ),
-                    )
-                  : LayoutBuilder(
-                      builder: (context, constraints) {
-                        final isDesktop = Responsive.isDesktop(context);
-                        final isTablet = Responsive.isTablet(context);
-                        final isLandscape = Responsive.isLandscape(context);
-                        final horizontalPadding = Responsive.getHorizontalPadding(context);
-                        final verticalPadding = Responsive.getVerticalPadding(context);
-                        final spacing = Responsive.getSpacing(context);
+              ? Center(
+                  child: Text(
+                    _error,
+                    style: TextStyle(color: colors.onSurface),
+                  ),
+                )
+              : LayoutBuilder(
+                  builder: (context, constraints) {
+                    final isDesktop = Responsive.isDesktop(context);
+                    final isTablet = Responsive.isTablet(context);
+                    final isLandscape = Responsive.isLandscape(context);
+                    final horizontalPadding = Responsive.getHorizontalPadding(
+                      context,
+                    );
+                    final verticalPadding = Responsive.getVerticalPadding(
+                      context,
+                    );
+                    final spacing = Responsive.getSpacing(context);
 
-                        return RefreshIndicator(
-                          edgeOffset: 80,
-                          onRefresh: _loadData,
-                          child: SingleChildScrollView(
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            child: ConstrainedBox(
-                              constraints: BoxConstraints(
-                                maxWidth: isLandscape
-                                    ? (isDesktop ? 1600 : isTablet ? 1400 : double.infinity)
-                                    : (isDesktop ? 1200 : double.infinity),
+                    return RefreshIndicator(
+                      edgeOffset: 80,
+                      onRefresh: _loadData,
+                      child: SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: isLandscape
+                                ? (isDesktop
+                                      ? 1600
+                                      : isTablet
+                                      ? 1400
+                                      : double.infinity)
+                                : (isDesktop ? 1200 : double.infinity),
+                          ),
+                          child: Center(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: isDesktop
+                                    ? horizontalPadding.left
+                                    : 0,
                               ),
-                              child: Center(
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: isDesktop ? horizontalPadding.left : 0,
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Padding(
-                                        padding: EdgeInsets.fromLTRB(
-                                          horizontalPadding.left,
-                                          verticalPadding.top,
-                                          horizontalPadding.right,
-                                          verticalPadding.bottom,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.fromLTRB(
+                                      horizontalPadding.left,
+                                      verticalPadding.top,
+                                      horizontalPadding.right,
+                                      verticalPadding.bottom,
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          widget.item.isMovie
+                                              ? Icons.movie
+                                              : Icons.tv,
+                                          color: colors.primary,
+                                          size: isLandscape
+                                              ? (isDesktop
+                                                    ? 32
+                                                    : isTablet
+                                                    ? 28
+                                                    : 24)
+                                              : (isDesktop ? 28 : 24),
                                         ),
-                                        child: Row(
-                                          children: [
-                                            Icon(
-                                              widget.item.isMovie ? Icons.movie : Icons.tv,
-                                              color: colors.primary,
-                                              size: isLandscape
-                                                  ? (isDesktop ? 32 : isTablet ? 28 : 24)
-                                                  : (isDesktop ? 28 : 24),
+                                        SizedBox(width: spacing * 0.6),
+                                        Expanded(
+                                          child: Text(
+                                            title,
+                                            maxLines: isLandscape
+                                                ? (isDesktop
+                                                      ? 4
+                                                      : isTablet
+                                                      ? 3
+                                                      : 2)
+                                                : (isDesktop ? 3 : 2),
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              color: colors.onSurface,
+                                              fontSize: isLandscape
+                                                  ? (isDesktop
+                                                        ? 30
+                                                        : isTablet
+                                                        ? 26
+                                                        : 22)
+                                                  : (isDesktop
+                                                        ? 26
+                                                        : isTablet
+                                                        ? 22
+                                                        : 20),
+                                              fontWeight: FontWeight.w700,
                                             ),
-                                            SizedBox(width: spacing * 0.6),
-                                            Expanded(
-                                              child: Text(
-                                                title,
-                                                maxLines: isLandscape
-                                                    ? (isDesktop ? 4 : isTablet ? 3 : 2)
-                                                    : (isDesktop ? 3 : 2),
-                                                overflow: TextOverflow.ellipsis,
-                                                style: TextStyle(
-                                                  color: colors.onSurface,
-                                                  fontSize: isLandscape
-                                                      ? (isDesktop ? 30 : isTablet ? 26 : 22)
-                                                      : (isDesktop ? 26 : isTablet ? 22 : 20),
-                                                  fontWeight: FontWeight.w700,
-                                                ),
-                                              ),
-                                            ),
-                                            SizedBox(width: spacing * 0.5),
-                                            _buildFavoriteAction(),
-                                          ],
+                                          ),
                                         ),
-                                      ),
-                                      _buildHeroSection(),
-                                      SizedBox(height: spacing * 1.5),
-                                      Padding(
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: horizontalPadding.left,
-                                        ),
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            _buildTrailerSection(),
-                                            SizedBox(height: spacing * 1.5),
-                                            _buildOverviewSection(),
-                                            SizedBox(height: spacing * 1.5),
-                                            _buildCharacteristics(),
-                                            SizedBox(height: spacing * 1.5),
-                                            _buildReviewsSection(),
-                                            SizedBox(height: spacing * 1.5),
-                                            _buildRecommendationsSection(),
-                                            SizedBox(height: verticalPadding.bottom * 2),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
+                                        SizedBox(width: spacing * 0.5),
+                                        _buildFavoriteAction(),
+                                      ],
+                                    ),
                                   ),
-                                ),
+                                  _buildHeroSection(),
+                                  SizedBox(height: spacing * 1.5),
+                                  Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: horizontalPadding.left,
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        _buildTrailerSection(),
+                                        SizedBox(height: spacing * 1.5),
+                                        _buildOverviewSection(),
+                                        SizedBox(height: spacing * 1.5),
+                                        _buildCharacteristics(),
+                                        SizedBox(height: spacing * 1.5),
+                                        _buildReviewsSection(),
+                                        SizedBox(height: spacing * 1.5),
+                                        _buildRecommendationsSection(),
+                                        SizedBox(
+                                          height: verticalPadding.bottom * 2,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
-                        );
-                      },
-                    ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
         ),
       ),
     );
@@ -373,7 +413,7 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
     final isLandscape = Responsive.isLandscape(context);
     final horizontalPadding = Responsive.getHorizontalPadding(context);
     final spacing = Responsive.getSpacing(context);
-    
+
     final posterPathFromApi = _details != null
         ? _details!['poster_path'] as String?
         : null;
@@ -392,25 +432,50 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
 
     // Адаптивні розміри постеру з урахуванням орієнтації
     final posterWidth = isLandscape
-        ? (isDesktop ? 240.0 : isTablet ? 200.0 : 160.0)
-        : (isDesktop ? 200.0 : isTablet ? 160.0 : 128.0);
+        ? (isDesktop
+              ? 240.0
+              : isTablet
+              ? 200.0
+              : 160.0)
+        : (isDesktop
+              ? 200.0
+              : isTablet
+              ? 160.0
+              : 128.0);
     final posterHeight = isLandscape
-        ? (isDesktop ? 360.0 : isTablet ? 300.0 : 240.0)
-        : (isDesktop ? 300.0 : isTablet ? 240.0 : 188.0);
+        ? (isDesktop
+              ? 360.0
+              : isTablet
+              ? 300.0
+              : 240.0)
+        : (isDesktop
+              ? 300.0
+              : isTablet
+              ? 240.0
+              : 188.0);
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: horizontalPadding.left),
       child: _GlassCard(
         padding: EdgeInsets.all(
           isLandscape
-              ? (isDesktop ? 28 : isTablet ? 24 : 18)
-              : (isDesktop ? 24 : isTablet ? 18 : 14),
+              ? (isDesktop
+                    ? 28
+                    : isTablet
+                    ? 24
+                    : 18)
+              : (isDesktop
+                    ? 24
+                    : isTablet
+                    ? 18
+                    : 14),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Hero(
-              tag: 'poster_${widget.item.id}_${widget.item.isMovie ? 'movie' : 'tv'}',
+              tag:
+                  'poster_${widget.item.id}_${widget.item.isMovie ? 'movie' : 'tv'}',
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(isDesktop ? 20 : 16),
                 child: posterPath != null && posterPath.isNotEmpty
@@ -452,7 +517,11 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
                           ),
                           child: Icon(
                             Icons.movie,
-                            size: isDesktop ? 64 : isTablet ? 56 : 48,
+                            size: isDesktop
+                                ? 64
+                                : isTablet
+                                ? 56
+                                : 48,
                             color: colors.onSurfaceVariant,
                           ),
                         ),
@@ -470,7 +539,11 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
                         ),
                         child: Icon(
                           Icons.movie,
-                          size: isDesktop ? 64 : isTablet ? 56 : 48,
+                          size: isDesktop
+                              ? 64
+                              : isTablet
+                              ? 56
+                              : 48,
                           color: colors.onSurfaceVariant,
                         ),
                       ),
@@ -483,13 +556,23 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
                 children: [
                   Text(
                     title,
-                    maxLines: isLandscape ? (isDesktop ? 5 : 4) : (isDesktop ? 4 : 3),
+                    maxLines: isLandscape
+                        ? (isDesktop ? 5 : 4)
+                        : (isDesktop ? 4 : 3),
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       color: colors.onSurface,
                       fontSize: isLandscape
-                          ? (isDesktop ? 28 : isTablet ? 24 : 20)
-                          : (isDesktop ? 24 : isTablet ? 20 : 18),
+                          ? (isDesktop
+                                ? 28
+                                : isTablet
+                                ? 24
+                                : 20)
+                          : (isDesktop
+                                ? 24
+                                : isTablet
+                                ? 20
+                                : 18),
                       fontWeight: FontWeight.w800,
                     ),
                   ),
@@ -504,8 +587,10 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
                           vertical: isDesktop ? 8 : 6,
                         ),
                         decoration: BoxDecoration(
-                          color: colors.surfaceContainerHighest.withValues(alpha:
-                            theme.brightness == Brightness.light ? 0.7 : 0.25,
+                          color: colors.surfaceContainerHighest.withValues(
+                            alpha: theme.brightness == Brightness.light
+                                ? 0.7
+                                : 0.25,
                           ),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
@@ -536,9 +621,9 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
                           (_details!['vote_count'] as int?) != null)
                         _ChipBadge(
                           icon: Icons.people_outline,
-                          label: AppLocalizations.of(context)!.votes(
-                            _details!['vote_count'] as int,
-                          ),
+                          label: AppLocalizations.of(
+                            context,
+                          )!.votes(_details!['vote_count'] as int),
                         ),
                     ],
                   ),
@@ -551,22 +636,22 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
                         if ((_details!['original_language'] as String?) != null)
                           _ChipBadge(
                             icon: Icons.language,
-                            label:
-                                (_details!['original_language'] as String).toUpperCase(),
+                            label: (_details!['original_language'] as String)
+                                .toUpperCase(),
                           ),
                         if ((_details!['runtime'] as int?) != null)
                           _ChipBadge(
                             icon: Icons.schedule,
-                            label: AppLocalizations.of(context)!.minutes(
-                              _details!['runtime'] as int,
-                            ),
+                            label: AppLocalizations.of(
+                              context,
+                            )!.minutes(_details!['runtime'] as int),
                           ),
                         if ((_details!['number_of_seasons'] as int?) != null)
                           _ChipBadge(
                             icon: Icons.tv,
-                            label: AppLocalizations.of(context)!.seasons(
-                              _details!['number_of_seasons'] as int,
-                            ),
+                            label: AppLocalizations.of(
+                              context,
+                            )!.seasons(_details!['number_of_seasons'] as int),
                           ),
                       ],
                     ),
@@ -587,16 +672,17 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
         final isFavorite = state.authorized && state.isFavorite(widget.item);
         return IconButton.filled(
           style: IconButton.styleFrom(
-            backgroundColor: colors.surfaceContainerHighest.withValues(alpha:
-              Theme.of(context).brightness == Brightness.light ? 1 : 0.2,
+            backgroundColor: colors.surfaceContainerHighest.withValues(
+              alpha: Theme.of(context).brightness == Brightness.light ? 1 : 0.2,
             ),
           ),
           icon: Icon(
             isFavorite ? Icons.favorite : Icons.favorite_border,
             color: isFavorite ? colors.primary : colors.onSurface,
           ),
-          onPressed:
-              state.authorized ? () => _collectionsBloc.add(ToggleFavoriteEvent(widget.item)) : _showAuthDialog,
+          onPressed: state.authorized
+              ? () => _collectionsBloc.add(ToggleFavoriteEvent(widget.item))
+              : _showAuthDialog,
         );
       },
     );
@@ -678,7 +764,10 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
             if (genres.isNotEmpty)
               _buildCharacteristicRow(l10n.genres, genres.join(', ')),
             if ((_details!['status'] as String?) != null)
-              _buildCharacteristicRow(l10n.status, _details!['status'] as String),
+              _buildCharacteristicRow(
+                l10n.status,
+                _details!['status'] as String,
+              ),
             if ((_details!['vote_count'] as int?) != null)
               _buildCharacteristicRow(
                 l10n.voteCount,
@@ -725,7 +814,7 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
     final isTablet = Responsive.isTablet(context);
     final isLandscape = Responsive.isLandscape(context);
     final spacing = Responsive.getSpacing(context);
-    
+
     final l10n = AppLocalizations.of(context)!;
     if (_reviews.isEmpty) {
       return _Section(
@@ -735,7 +824,11 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
           style: TextStyle(
             color: Theme.of(context).colorScheme.onSurfaceVariant,
             fontSize: isLandscape
-                ? (isDesktop ? 18 : isTablet ? 16 : 14)
+                ? (isDesktop
+                      ? 18
+                      : isTablet
+                      ? 16
+                      : 14)
                 : (isDesktop ? 16 : 14),
           ),
         ),
@@ -745,7 +838,11 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
     // Використовуємо GridView для desktop та tablet в landscape
     final useGridView = isDesktop || (isTablet && isLandscape);
     final reviewColumns = isLandscape
-        ? (isDesktop ? 3 : isTablet ? 2 : 2)
+        ? (isDesktop
+              ? 3
+              : isTablet
+              ? 2
+              : 2)
         : (isDesktop ? 2 : 2);
 
     return _Section(
@@ -773,7 +870,9 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
                         children: [
                           Icon(
                             Icons.person,
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
                             size: 20,
                           ),
                           const SizedBox(width: 8),
@@ -795,7 +894,9 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
                           child: Text(
                             content,
                             style: TextStyle(
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
                               height: 1.35,
                               fontSize: 14,
                             ),
@@ -824,7 +925,9 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
                         children: [
                           Icon(
                             Icons.person,
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
                             size: 18,
                           ),
                           const SizedBox(width: 8),
@@ -892,7 +995,7 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
         final canModify = collectionsState.authorized;
         // На desktop та tablet в landscape використовуємо GridView
         final useGridView = isDesktop || (isTablet && isLandscape);
-        
+
         return _Section(
           title: l10n.recommended,
           child: useGridView
@@ -903,15 +1006,20 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
                     crossAxisCount: columns,
                     crossAxisSpacing: spacing,
                     mainAxisSpacing: spacing,
-                    childAspectRatio: Responsive.getMediaCardAspectRatio(context),
+                    childAspectRatio: Responsive.getMediaCardAspectRatio(
+                      context,
+                    ),
                   ),
                   itemBuilder: (context, index) {
                     final item = _recommendations[index];
                     return MediaPosterCard(
                       item: item,
-                      isFavorite: canModify ? collectionsState.isFavorite(item) : false,
+                      isFavorite: canModify
+                          ? collectionsState.isFavorite(item)
+                          : false,
                       onFavoriteToggle: canModify
-                          ? () => _collectionsBloc.add(ToggleFavoriteEvent(item))
+                          ? () =>
+                                _collectionsBloc.add(ToggleFavoriteEvent(item))
                           : _showAuthDialog,
                       onTap: () {
                         Navigator.of(context).push(
@@ -934,9 +1042,13 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
                       return MediaPosterCard(
                         item: item,
                         width: cardWidth,
-                        isFavorite: canModify ? collectionsState.isFavorite(item) : false,
+                        isFavorite: canModify
+                            ? collectionsState.isFavorite(item)
+                            : false,
                         onFavoriteToggle: canModify
-                            ? () => _collectionsBloc.add(ToggleFavoriteEvent(item))
+                            ? () => _collectionsBloc.add(
+                                ToggleFavoriteEvent(item),
+                              )
                             : _showAuthDialog,
                         onTap: () {
                           Navigator.of(context).push(
@@ -974,7 +1086,7 @@ class _Section extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     final isDesktop = Responsive.isDesktop(context);
     final spacing = Responsive.getSpacing(context);
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1008,20 +1120,24 @@ class _GlassCard extends StatelessWidget {
     final colors = theme.colorScheme;
     final isDesktop = Responsive.isDesktop(context);
     final isTablet = Responsive.isTablet(context);
-    
+
     return Container(
       width: double.infinity,
       padding: padding,
       decoration: BoxDecoration(
         color: theme.cardColor,
         borderRadius: BorderRadius.circular(
-          isDesktop ? 22 : isTablet ? 20 : 18,
+          isDesktop
+              ? 22
+              : isTablet
+              ? 20
+              : 18,
         ),
         border: Border.all(color: colors.outlineVariant.withValues(alpha: 0.8)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha:
-              theme.brightness == Brightness.light ? 0.08 : 0.25,
+            color: Colors.black.withValues(
+              alpha: theme.brightness == Brightness.light ? 0.08 : 0.25,
             ),
             blurRadius: isDesktop ? 18 : 14,
             offset: Offset(0, isDesktop ? 12 : 10),
@@ -1044,15 +1160,15 @@ class _ChipBadge extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final isDesktop = Responsive.isDesktop(context);
-    
+
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: isDesktop ? 12 : 10,
         vertical: isDesktop ? 8 : 6,
       ),
       decoration: BoxDecoration(
-        color: colors.surfaceContainerHighest.withValues(alpha:
-          theme.brightness == Brightness.light ? 1 : 0.18,
+        color: colors.surfaceContainerHighest.withValues(
+          alpha: theme.brightness == Brightness.light ? 1 : 0.18,
         ),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: colors.outlineVariant.withValues(alpha: 0.8)),
@@ -1060,11 +1176,7 @@ class _ChipBadge extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            icon,
-            size: isDesktop ? 18 : 16,
-            color: colors.onSurfaceVariant,
-          ),
+          Icon(icon, size: isDesktop ? 18 : 16, color: colors.onSurfaceVariant),
           SizedBox(width: 6),
           Text(
             label,

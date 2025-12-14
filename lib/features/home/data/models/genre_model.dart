@@ -1,5 +1,5 @@
 /// Data model для жанру (для API відповідей)
-/// 
+///
 /// Це модель даних, яка відповідає структурі API відповіді
 class Genre {
   final int id;
@@ -8,11 +8,6 @@ class Genre {
   Genre({required this.id, required this.name});
 
   factory Genre.fromJson(Map<String, dynamic> json) {
-    return Genre(
-      id: json['id'] as int,
-      name: json['name'] as String,
-    );
+    return Genre(id: json['id'] as int, name: json['name'] as String);
   }
 }
-
-

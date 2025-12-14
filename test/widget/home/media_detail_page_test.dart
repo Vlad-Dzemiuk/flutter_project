@@ -55,10 +55,18 @@ void main() {
       if (getIt.isRegistered<MediaCollectionsBloc>()) {
         getIt.unregister<MediaCollectionsBloc>();
       }
-      getIt.registerLazySingleton<GetMovieDetailsUseCase>(() => mockGetMovieDetailsUseCase);
-      getIt.registerLazySingleton<GetTvDetailsUseCase>(() => mockGetTvDetailsUseCase);
-      getIt.registerLazySingleton<GetMovieVideosUseCase>(() => mockGetMovieVideosUseCase);
-      getIt.registerLazySingleton<MediaCollectionsBloc>(() => mediaCollectionsBloc);
+      getIt.registerLazySingleton<GetMovieDetailsUseCase>(
+        () => mockGetMovieDetailsUseCase,
+      );
+      getIt.registerLazySingleton<GetTvDetailsUseCase>(
+        () => mockGetTvDetailsUseCase,
+      );
+      getIt.registerLazySingleton<GetMovieVideosUseCase>(
+        () => mockGetMovieVideosUseCase,
+      );
+      getIt.registerLazySingleton<MediaCollectionsBloc>(
+        () => mediaCollectionsBloc,
+      );
 
       // Setup mock GetMovieDetailsUseCase
       when(() => mockGetMovieDetailsUseCase(any())).thenAnswer(
@@ -93,9 +101,7 @@ void main() {
       );
 
       // Setup mock GetMovieVideosUseCase (needed by MovieTrailerPlayer)
-      when(() => mockGetMovieVideosUseCase(any())).thenAnswer(
-        (_) async => [],
-      );
+      when(() => mockGetMovieVideosUseCase(any())).thenAnswer((_) async => []);
     });
 
     tearDown(() {
@@ -166,4 +172,3 @@ void main() {
     });
   });
 }
-

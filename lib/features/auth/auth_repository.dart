@@ -16,10 +16,10 @@ class AuthRepository {
     AuthMethod? authMethod,
     FirebaseAuthService? firebaseAuthService,
     JwtTokenService? jwtTokenService,
-  })  : _db = AuthDb.instance,
-        _authMethod = authMethod ?? AuthMethod.local,
-        _firebaseAuthService = firebaseAuthService ?? FirebaseAuthService(),
-        _jwtTokenService = jwtTokenService ?? JwtTokenService.instance;
+  }) : _db = AuthDb.instance,
+       _authMethod = authMethod ?? AuthMethod.local,
+       _firebaseAuthService = firebaseAuthService ?? FirebaseAuthService(),
+       _jwtTokenService = jwtTokenService ?? JwtTokenService.instance;
 
   final AuthDb _db;
   final AuthMethod _authMethod;
@@ -34,7 +34,9 @@ class AuthRepository {
   Stream<LocalUser?> authStateChanges() {
     if (_authMethod == AuthMethod.firebase) {
       // Для Firebase використовуємо stream з Firebase Auth
-      return _firebaseAuthService.authStateChanges().asyncMap((firebaseUser) async {
+      return _firebaseAuthService.authStateChanges().asyncMap((
+        firebaseUser,
+      ) async {
         if (firebaseUser == null) {
           _setCurrentUser(null);
           return null;
@@ -308,7 +310,7 @@ class AuthRepository {
   LocalUser _firebaseUserToLocalUser(firebase_auth.User firebaseUser) {
     // Використовуємо hash code як id для сумісності
     final id = firebaseUser.uid.hashCode;
-    
+
     return LocalUser(
       id: id,
       email: firebaseUser.email ?? '',
@@ -317,6 +319,3 @@ class AuthRepository {
     );
   }
 }
-
-
-

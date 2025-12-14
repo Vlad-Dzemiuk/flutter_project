@@ -1,5 +1,5 @@
 /// Domain entity для фільму
-/// 
+///
 /// Це чиста domain entity без залежностей від data layer
 class MovieEntity {
   final int id;
@@ -29,5 +29,3 @@ class MovieEntity {
 
   bool get hasPoster => posterPath != null && posterPath!.isNotEmpty;
 }
-
-

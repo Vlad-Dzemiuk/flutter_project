@@ -26,7 +26,9 @@ void main() {
         getIt.unregister<MediaCollectionsBloc>();
       }
       getIt.registerLazySingleton<HomeBloc>(() => homeBloc);
-      getIt.registerLazySingleton<MediaCollectionsBloc>(() => mediaCollectionsBloc);
+      getIt.registerLazySingleton<MediaCollectionsBloc>(
+        () => mediaCollectionsBloc,
+      );
     });
 
     tearDown(() {
@@ -40,15 +42,17 @@ void main() {
       }
     });
 
-    testWidgets('displays loading state when loading', (WidgetTester tester) async {
+    testWidgets('displays loading state when loading', (
+      WidgetTester tester,
+    ) async {
       final loadingBloc = WidgetTestHelper.createMockHomeBloc(isLoading: true);
-      
+
       // Register the loading bloc in GetIt
       if (getIt.isRegistered<HomeBloc>()) {
         getIt.unregister<HomeBloc>();
       }
       getIt.registerLazySingleton<HomeBloc>(() => loadingBloc);
-      
+
       await tester.pumpWidget(
         WidgetTestHelper.createTestApp(
           child: const HomePage(),
@@ -61,7 +65,7 @@ void main() {
 
       // HomePage uses AnimatedLoadingWidget for loading state
       expect(find.byType(AnimatedLoadingWidget), findsOneWidget);
-      
+
       // Cleanup
       loadingBloc.close();
       if (getIt.isRegistered<HomeBloc>()) {
@@ -103,7 +107,7 @@ void main() {
 
       // Should display content sections
       expect(find.byType(HomePage), findsOneWidget);
-      
+
       // Cleanup
       bloc.close();
       if (getIt.isRegistered<HomeBloc>()) {
@@ -112,7 +116,9 @@ void main() {
       getIt.registerLazySingleton<HomeBloc>(() => homeBloc);
     });
 
-    testWidgets('displays error message when error occurs', (WidgetTester tester) async {
+    testWidgets('displays error message when error occurs', (
+      WidgetTester tester,
+    ) async {
       final errorBloc = WidgetTestHelper.createMockHomeBloc();
       when(() => errorBloc.state).thenReturn(
         HomeState(
@@ -148,7 +154,7 @@ void main() {
       await tester.pump(const Duration(seconds: 1));
 
       expect(find.text('Network error'), findsOneWidget);
-      
+
       // Cleanup
       errorBloc.close();
       if (getIt.isRegistered<HomeBloc>()) {
@@ -157,7 +163,9 @@ void main() {
       getIt.registerLazySingleton<HomeBloc>(() => homeBloc);
     });
 
-    testWidgets('can refresh content with pull to refresh', (WidgetTester tester) async {
+    testWidgets('can refresh content with pull to refresh', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         WidgetTestHelper.createTestApp(
           child: const HomePage(),
@@ -178,4 +186,3 @@ void main() {
     });
   });
 }
-

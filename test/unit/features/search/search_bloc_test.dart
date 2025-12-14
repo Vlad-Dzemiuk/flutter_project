@@ -19,9 +19,7 @@ void main() {
 
   setUp(() {
     mockSearchByFiltersUseCase = MockSearchByFiltersUseCase();
-    searchBloc = SearchBloc(
-      searchByFiltersUseCase: mockSearchByFiltersUseCase,
-    );
+    searchBloc = SearchBloc(searchByFiltersUseCase: mockSearchByFiltersUseCase);
   });
 
   tearDown(() {
@@ -40,41 +38,32 @@ void main() {
           TestDataFactory.createMovie(id: 1),
           TestDataFactory.createMovie(id: 2),
         ];
-        when(() => mockSearchByFiltersUseCase(any()))
-            .thenAnswer((_) async => movies);
+        when(
+          () => mockSearchByFiltersUseCase(any()),
+        ).thenAnswer((_) async => movies);
         return searchBloc;
       },
-      act: (bloc) => bloc.add(
-        const SearchByFilters(genre: 'Action', year: 2020),
-      ),
+      act: (bloc) =>
+          bloc.add(const SearchByFilters(genre: 'Action', year: 2020)),
       expect: () => [
         isA<SearchLoading>(),
-        isA<SearchLoaded>().having(
-          (s) => s.movies.length,
-          'movies.length',
-          2,
-        ),
+        isA<SearchLoaded>().having((s) => s.movies.length, 'movies.length', 2),
       ],
     );
 
     blocTest<SearchBloc, SearchState>(
       'emits [SearchLoading, SearchError] when SearchByFilters fails',
       build: () {
-        when(() => mockSearchByFiltersUseCase(any()))
-            .thenThrow(Exception('Network error'));
+        when(
+          () => mockSearchByFiltersUseCase(any()),
+        ).thenThrow(Exception('Network error'));
         return searchBloc;
       },
-      act: (bloc) => bloc.add(
-        const SearchByFilters(genre: 'Action'),
-      ),
-      expect: () => [
-        isA<SearchLoading>(),
-        isA<SearchError>(),
-      ],
+      act: (bloc) => bloc.add(const SearchByFilters(genre: 'Action')),
+      expect: () => [isA<SearchLoading>(), isA<SearchError>()],
     );
   });
 }
 
 class MockSearchByFiltersUseCase extends Mock
     implements SearchByFiltersUseCase {}
-

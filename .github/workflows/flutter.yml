@@ -34,8 +34,19 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
-      - name: Verify formatting
-        run: dart format --set-exit-if-changed .
+      - name: Format code
+        run: dart format .
+        
+      - name: Check formatting
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "❌ Code formatting check failed. Some files need to be formatted."
+            echo "Please run 'dart format .' locally and commit the changes."
+            git diff
+            exit 1
+          else
+            echo "✅ Code is properly formatted."
+          fi
 
       - name: Analyze code
         run: flutter analyze --fatal-infos

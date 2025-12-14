@@ -13,12 +13,14 @@ void main() {
       IntegrationTestHelper.setupErrorHandling();
     });
 
-    testWidgets('User can navigate to about app page', (WidgetTester tester) async {
+    testWidgets('User can navigate to about app page', (
+      WidgetTester tester,
+    ) async {
       // Встановлюємо обробник помилок перед запуском додатку
       IntegrationTestHelper.setupErrorHandling();
-      
+
       app.main();
-      
+
       // Ігноруємо overflow помилки під час завантаження
       await tester.pumpAndSettle(const Duration(seconds: 5));
       tester.takeException(); // Очищаємо накопичені помилки
@@ -51,12 +53,14 @@ void main() {
       }
     });
 
-    testWidgets('About app page displays app information', (WidgetTester tester) async {
+    testWidgets('About app page displays app information', (
+      WidgetTester tester,
+    ) async {
       // Встановлюємо обробник помилок перед запуском додатку
       IntegrationTestHelper.setupErrorHandling();
-      
+
       app.main();
-      
+
       // Ігноруємо overflow помилки під час завантаження
       await tester.pumpAndSettle(const Duration(seconds: 5));
       tester.takeException(); // Очищаємо накопичені помилки
@@ -88,4 +92,3 @@ void main() {
     });
   });
 }
-

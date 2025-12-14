@@ -1,5 +1,5 @@
 /// Domain entity для відео
-/// 
+///
 /// Це чиста domain entity без залежностей від data layer
 class Video {
   final String id;
@@ -25,9 +25,9 @@ class Video {
     if (site != 'YouTube' || key.isEmpty) return false;
     // Приймаємо різні варіанти типів трейлерів
     final typeLower = type.toLowerCase();
-    return typeLower == 'trailer' || 
-           typeLower == 'teaser' || 
-           type.isEmpty; // Якщо тип не вказано, але це YouTube - приймаємо
+    return typeLower == 'trailer' ||
+        typeLower == 'teaser' ||
+        type.isEmpty; // Якщо тип не вказано, але це YouTube - приймаємо
   }
 
   /// Перевіряє, чи є відео YouTube (будь-яке)
@@ -42,8 +42,8 @@ class Video {
     final id = idValue is String
         ? idValue
         : idValue is int
-            ? idValue.toString()
-            : '';
+        ? idValue.toString()
+        : '';
 
     final key = json['key'] as String? ?? '';
     final site = json['site'] as String? ?? '';
@@ -62,4 +62,3 @@ class Video {
     );
   }
 }
-

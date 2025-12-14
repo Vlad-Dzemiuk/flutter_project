@@ -23,11 +23,13 @@ void main() {
         email: 'test@example.com',
         displayName: 'Test User',
       );
-      
-      when(() => mockRepository.signIn(
-        email: any(named: 'email'),
-        password: any(named: 'password'),
-      )).thenAnswer((_) async => localUser);
+
+      when(
+        () => mockRepository.signIn(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
+      ).thenAnswer((_) async => localUser);
 
       // Act
       final result = await useCase(
@@ -38,20 +40,24 @@ void main() {
       expect(result, isA<User>());
       expect(result.email, 'test@example.com');
       expect(result.id, 1);
-      verify(() => mockRepository.signIn(
-        email: 'test@example.com',
-        password: 'password123',
-      )).called(1);
+      verify(
+        () => mockRepository.signIn(
+          email: 'test@example.com',
+          password: 'password123',
+        ),
+      ).called(1);
     });
 
     test('should trim email before validation', () async {
       // Arrange
       final localUser = TestDataFactory.createLocalUser();
-      
-      when(() => mockRepository.signIn(
-        email: any(named: 'email'),
-        password: any(named: 'password'),
-      )).thenAnswer((_) async => localUser);
+
+      when(
+        () => mockRepository.signIn(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
+      ).thenAnswer((_) async => localUser);
 
       // Act
       await useCase(
@@ -59,37 +65,45 @@ void main() {
       );
 
       // Assert
-      verify(() => mockRepository.signIn(
-        email: 'test@example.com',
-        password: 'password123',
-      )).called(1);
+      verify(
+        () => mockRepository.signIn(
+          email: 'test@example.com',
+          password: 'password123',
+        ),
+      ).called(1);
     });
 
     test('should throw exception when email is empty', () async {
       // Act & Assert
       expect(
         () => useCase(SignInParams(email: '', password: 'password123')),
-        throwsA(isA<Exception>().having(
-          (e) => e.toString(),
-          'message',
-          contains('Email не може бути порожнім'),
-        )),
+        throwsA(
+          isA<Exception>().having(
+            (e) => e.toString(),
+            'message',
+            contains('Email не може бути порожнім'),
+          ),
+        ),
       );
-      verifyNever(() => mockRepository.signIn(
-        email: any(named: 'email'),
-        password: any(named: 'password'),
-      ));
+      verifyNever(
+        () => mockRepository.signIn(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
+      );
     });
 
     test('should throw exception when email is only whitespace', () async {
       // Act & Assert
       expect(
         () => useCase(SignInParams(email: '   ', password: 'password123')),
-        throwsA(isA<Exception>().having(
-          (e) => e.toString(),
-          'message',
-          contains('Email не може бути порожнім'),
-        )),
+        throwsA(
+          isA<Exception>().having(
+            (e) => e.toString(),
+            'message',
+            contains('Email не може бути порожнім'),
+          ),
+        ),
       );
     });
 
@@ -97,39 +111,48 @@ void main() {
       // Act & Assert
       expect(
         () => useCase(SignInParams(email: 'test@example.com', password: '')),
-        throwsA(isA<Exception>().having(
-          (e) => e.toString(),
-          'message',
-          contains('Пароль не може бути порожнім'),
-        )),
+        throwsA(
+          isA<Exception>().having(
+            (e) => e.toString(),
+            'message',
+            contains('Пароль не може бути порожнім'),
+          ),
+        ),
       );
     });
 
     test('should throw exception when email format is invalid', () async {
       // Act & Assert
       expect(
-        () => useCase(SignInParams(email: 'invalid-email', password: 'password123')),
-        throwsA(isA<Exception>().having(
-          (e) => e.toString(),
-          'message',
-          contains('Невірний формат email'),
-        )),
+        () => useCase(
+          SignInParams(email: 'invalid-email', password: 'password123'),
+        ),
+        throwsA(
+          isA<Exception>().having(
+            (e) => e.toString(),
+            'message',
+            contains('Невірний формат email'),
+          ),
+        ),
       );
     });
 
     test('should throw exception when repository throws error', () async {
       // Arrange
-      when(() => mockRepository.signIn(
-        email: any(named: 'email'),
-        password: any(named: 'password'),
-      )).thenThrow(Exception('Network error'));
+      when(
+        () => mockRepository.signIn(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
+      ).thenThrow(Exception('Network error'));
 
       // Act & Assert
       expect(
-        () => useCase(SignInParams(email: 'test@example.com', password: 'password123')),
+        () => useCase(
+          SignInParams(email: 'test@example.com', password: 'password123'),
+        ),
         throwsA(isA<Exception>()),
       );
     });
   });
 }
-

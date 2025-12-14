@@ -6,14 +6,11 @@ class SearchByNameParams {
   final String query;
   final int page;
 
-  const SearchByNameParams({
-    required this.query,
-    this.page = 1,
-  });
+  const SearchByNameParams({required this.query, this.page = 1});
 }
 
 /// Use case для пошуку медіа за назвою
-/// 
+///
 /// Шукає фільми та серіали за назвою
 class SearchByNameUseCase
     implements UseCase<Map<String, dynamic>, SearchByNameParams> {
@@ -41,5 +38,3 @@ class SearchByNameUseCase
     return result;
   }
 }
-
-

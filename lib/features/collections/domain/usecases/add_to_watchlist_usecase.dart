@@ -22,7 +22,7 @@ class AddToWatchlistResult {
 }
 
 /// Use case для додавання медіа до watchlist
-/// 
+///
 /// Додає медіа елемент до списку для перегляду пізніше
 class AddToWatchlistUseCase
     implements UseCase<AddToWatchlistResult, AddToWatchlistParams> {
@@ -64,5 +64,3 @@ class AddToWatchlistUseCase
     );
   }
 }
-
-

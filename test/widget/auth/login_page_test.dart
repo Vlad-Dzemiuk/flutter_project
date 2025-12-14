@@ -28,7 +28,9 @@ void main() {
       }
     });
 
-    testWidgets('displays login form with email and password fields', (WidgetTester tester) async {
+    testWidgets('displays login form with email and password fields', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         WidgetTestHelper.createTestApp(
           child: const LoginPage(),
@@ -41,7 +43,10 @@ void main() {
       await tester.pump(const Duration(seconds: 1));
 
       expect(find.byType(LoginPage), findsOneWidget);
-      expect(find.byType(TextFormField), findsNWidgets(2)); // Email and password
+      expect(
+        find.byType(TextFormField),
+        findsNWidgets(2),
+      ); // Email and password
     });
 
     testWidgets('displays app name and icon', (WidgetTester tester) async {
@@ -59,7 +64,9 @@ void main() {
       expect(find.byIcon(Icons.movie), findsOneWidget);
     });
 
-    testWidgets('displays toggle button to switch between login and register', (WidgetTester tester) async {
+    testWidgets('displays toggle button to switch between login and register', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         WidgetTestHelper.createTestApp(
           child: const LoginPage(),
@@ -97,7 +104,9 @@ void main() {
       expect(find.byType(Form), findsOneWidget);
     });
 
-    testWidgets('validates password field minimum length', (WidgetTester tester) async {
+    testWidgets('validates password field minimum length', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         WidgetTestHelper.createTestApp(
           child: const LoginPage(),
@@ -111,7 +120,7 @@ void main() {
 
       final passwordFields = find.byType(TextFormField);
       final passwordField = passwordFields.last;
-      
+
       await tester.tap(passwordField);
       await tester.pump();
       await tester.enterText(passwordField, '123');
@@ -138,9 +147,13 @@ void main() {
       expect(find.byType(TextButton), findsWidgets);
     });
 
-    testWidgets('shows loading indicator when auth is loading', (WidgetTester tester) async {
+    testWidgets('shows loading indicator when auth is loading', (
+      WidgetTester tester,
+    ) async {
       final loadingState = AuthLoading();
-      final loadingBloc = WidgetTestHelper.createMockAuthBloc(initialState: loadingState);
+      final loadingBloc = WidgetTestHelper.createMockAuthBloc(
+        initialState: loadingState,
+      );
 
       // Register the loading bloc in GetIt
       if (getIt.isRegistered<AuthBloc>()) {
@@ -160,7 +173,7 @@ void main() {
 
       // LoginPage shows CircularProgressIndicator inside the button when loading
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
-      
+
       // Cleanup
       loadingBloc.close();
       if (getIt.isRegistered<AuthBloc>()) {
@@ -169,7 +182,9 @@ void main() {
       getIt.registerLazySingleton<AuthBloc>(() => authBloc);
     });
 
-    testWidgets('can toggle between login and register mode', (WidgetTester tester) async {
+    testWidgets('can toggle between login and register mode', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         WidgetTestHelper.createTestApp(
           child: const LoginPage(),
@@ -193,4 +208,3 @@ void main() {
     });
   });
 }
-

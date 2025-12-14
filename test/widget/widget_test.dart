@@ -4,8 +4,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:project/core/theme.dart';
 
 void main() {
-  testWidgets('ThemeControllerScope provides controller',
-      (WidgetTester tester) async {
+  testWidgets('ThemeControllerScope provides controller', (
+    WidgetTester tester,
+  ) async {
     final controller = ThemeController(ThemeMode.light);
 
     await tester.pumpWidget(
@@ -13,9 +14,7 @@ void main() {
         controller: controller,
         child: MaterialApp(
           themeMode: controller.mode,
-          home: const Scaffold(
-            body: Text('Hello'),
-          ),
+          home: const Scaffold(body: Text('Hello')),
         ),
       ),
     );

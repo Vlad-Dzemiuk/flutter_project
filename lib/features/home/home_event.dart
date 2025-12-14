@@ -33,4 +33,3 @@ class SearchEvent extends HomeEvent {
 class ClearSearchEvent extends HomeEvent {
   const ClearSearchEvent();
 }
-

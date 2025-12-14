@@ -1,5 +1,5 @@
 /// Базовий клас для всіх use cases
-/// 
+///
 /// [Type] - тип результату, який повертає use case
 /// [Params] - параметри для виконання use case
 abstract class UseCase<Type, Params> {
@@ -15,5 +15,3 @@ abstract class UseCaseNoParams<Type> {
 class NoParams {
   const NoParams();
 }
-
-

@@ -23,12 +23,14 @@ void main() {
       );
 
       when(() => mockRepository.currentUser).thenReturn(currentUser);
-      when(() => mockRepository.updateProfile(
-        displayName: any(named: 'displayName'),
-        clearDisplayName: any(named: 'clearDisplayName'),
-        avatarUrl: any(named: 'avatarUrl'),
-        clearAvatar: any(named: 'clearAvatar'),
-      )).thenAnswer((_) async => updatedUser);
+      when(
+        () => mockRepository.updateProfile(
+          displayName: any(named: 'displayName'),
+          clearDisplayName: any(named: 'clearDisplayName'),
+          avatarUrl: any(named: 'avatarUrl'),
+          clearAvatar: any(named: 'clearAvatar'),
+        ),
+      ).thenAnswer((_) async => updatedUser);
 
       // Act
       final result = await useCase(
@@ -37,12 +39,14 @@ void main() {
 
       // Assert
       expect(result.displayName, 'Updated Name');
-      verify(() => mockRepository.updateProfile(
-        displayName: 'Updated Name',
-        clearDisplayName: false,
-        avatarUrl: null,
-        clearAvatar: false,
-      )).called(1);
+      verify(
+        () => mockRepository.updateProfile(
+          displayName: 'Updated Name',
+          clearDisplayName: false,
+          avatarUrl: null,
+          clearAvatar: false,
+        ),
+      ).called(1);
     });
 
     test('should throw exception when user is not authenticated', () async {
@@ -52,11 +56,13 @@ void main() {
       // Act & Assert
       expect(
         () => useCase(UpdateProfileParams(displayName: 'Test')),
-        throwsA(isA<Exception>().having(
-          (e) => e.toString(),
-          'message',
-          contains('Користувач не авторизований'),
-        )),
+        throwsA(
+          isA<Exception>().having(
+            (e) => e.toString(),
+            'message',
+            contains('Користувач не авторизований'),
+          ),
+        ),
       );
     });
 
@@ -68,11 +74,13 @@ void main() {
       // Act & Assert
       expect(
         () => useCase(UpdateProfileParams(displayName: '   ')),
-        throwsA(isA<Exception>().having(
-          (e) => e.toString(),
-          'message',
-          contains('Ім\'я не може бути порожнім'),
-        )),
+        throwsA(
+          isA<Exception>().having(
+            (e) => e.toString(),
+            'message',
+            contains('Ім\'я не може бути порожнім'),
+          ),
+        ),
       );
     });
 
@@ -85,11 +93,13 @@ void main() {
       // Act & Assert
       expect(
         () => useCase(UpdateProfileParams(displayName: longName)),
-        throwsA(isA<Exception>().having(
-          (e) => e.toString(),
-          'message',
-          contains('Ім\'я не може перевищувати 50 символів'),
-        )),
+        throwsA(
+          isA<Exception>().having(
+            (e) => e.toString(),
+            'message',
+            contains('Ім\'я не може перевищувати 50 символів'),
+          ),
+        ),
       );
     });
 
@@ -98,12 +108,14 @@ void main() {
       final currentUser = TestDataFactory.createLocalUser();
       final updatedUser = TestDataFactory.createLocalUser();
       when(() => mockRepository.currentUser).thenReturn(currentUser);
-      when(() => mockRepository.updateProfile(
-        displayName: any(named: 'displayName'),
-        clearDisplayName: any(named: 'clearDisplayName'),
-        avatarUrl: any(named: 'avatarUrl'),
-        clearAvatar: any(named: 'clearAvatar'),
-      )).thenAnswer((_) async => updatedUser);
+      when(
+        () => mockRepository.updateProfile(
+          displayName: any(named: 'displayName'),
+          clearDisplayName: any(named: 'clearDisplayName'),
+          avatarUrl: any(named: 'avatarUrl'),
+          clearAvatar: any(named: 'clearAvatar'),
+        ),
+      ).thenAnswer((_) async => updatedUser);
 
       // Act
       await useCase(
@@ -111,12 +123,14 @@ void main() {
       );
 
       // Assert
-      verify(() => mockRepository.updateProfile(
-        displayName: null,
-        clearDisplayName: false,
-        avatarUrl: 'https://example.com/avatar.jpg',
-        clearAvatar: false,
-      )).called(1);
+      verify(
+        () => mockRepository.updateProfile(
+          displayName: null,
+          clearDisplayName: false,
+          avatarUrl: 'https://example.com/avatar.jpg',
+          clearAvatar: false,
+        ),
+      ).called(1);
     });
 
     test('should allow local file paths for avatarUrl', () async {
@@ -124,12 +138,14 @@ void main() {
       final currentUser = TestDataFactory.createLocalUser();
       final updatedUser = TestDataFactory.createLocalUser();
       when(() => mockRepository.currentUser).thenReturn(currentUser);
-      when(() => mockRepository.updateProfile(
-        displayName: any(named: 'displayName'),
-        clearDisplayName: any(named: 'clearDisplayName'),
-        avatarUrl: any(named: 'avatarUrl'),
-        clearAvatar: any(named: 'clearAvatar'),
-      )).thenAnswer((_) async => updatedUser);
+      when(
+        () => mockRepository.updateProfile(
+          displayName: any(named: 'displayName'),
+          clearDisplayName: any(named: 'clearDisplayName'),
+          avatarUrl: any(named: 'avatarUrl'),
+          clearAvatar: any(named: 'clearAvatar'),
+        ),
+      ).thenAnswer((_) async => updatedUser);
 
       // Act
       await useCase(
@@ -137,13 +153,14 @@ void main() {
       );
 
       // Assert
-      verify(() => mockRepository.updateProfile(
-        displayName: null,
-        clearDisplayName: false,
-        avatarUrl: '/local/path/to/avatar.jpg',
-        clearAvatar: false,
-      )).called(1);
+      verify(
+        () => mockRepository.updateProfile(
+          displayName: null,
+          clearDisplayName: false,
+          avatarUrl: '/local/path/to/avatar.jpg',
+          clearAvatar: false,
+        ),
+      ).called(1);
     });
   });
 }
-

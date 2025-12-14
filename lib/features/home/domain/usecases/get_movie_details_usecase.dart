@@ -9,7 +9,7 @@ class GetMovieDetailsParams {
 }
 
 /// Use case для отримання детальної інформації про фільм
-/// 
+///
 /// Завантажує деталі фільму, включаючи відео, відгуки та рекомендації
 class GetMovieDetailsUseCase
     implements UseCase<Map<String, dynamic>, GetMovieDetailsParams> {
@@ -30,7 +30,9 @@ class GetMovieDetailsUseCase
     // Завантаження додаткових даних (бізнес-логіка: об'єднання даних)
     final videos = await repository.fetchMovieVideos(params.movieId);
     final reviews = await repository.fetchMovieReviews(params.movieId);
-    final recommendations = await repository.fetchMovieRecommendations(params.movieId);
+    final recommendations = await repository.fetchMovieRecommendations(
+      params.movieId,
+    );
 
     // Об'єднання всіх даних в один результат
     return {
@@ -41,4 +43,3 @@ class GetMovieDetailsUseCase
     };
   }
 }
-

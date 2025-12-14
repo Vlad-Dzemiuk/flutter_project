@@ -36,15 +36,14 @@ class _LoginPageState extends State<LoginPage> {
 
   void _onSuccess(BuildContext context, AuthAuthenticated state) {
     if (!context.mounted) return;
-    
+
     if (widget.redirectRoute != null) {
       Navigator.of(context).pushReplacementNamed(widget.redirectRoute!);
     } else {
       // Якщо немає redirectRoute, переходимо на головну сторінку
-      Navigator.of(context).pushNamedAndRemoveUntil(
-        AppConstants.homeRoute,
-        (route) => false,
-      );
+      Navigator.of(
+        context,
+      ).pushNamedAndRemoveUntil(AppConstants.homeRoute, (route) => false);
     }
   }
 
@@ -54,267 +53,334 @@ class _LoginPageState extends State<LoginPage> {
       child: BlocProvider<AuthBloc>.value(
         value: getIt<AuthBloc>(),
         child: BlocConsumer<AuthBloc, AuthState>(
-        listener: (context, state) {
-          final l10n = AppLocalizations.of(context)!;
-          if (state is AuthAuthenticated) {
-            // Показуємо нотифікацію про успішну авторизацію
-            AppNotification.showSuccess(
-              context,
-              _isLogin ? l10n.successfulLogin : l10n.successfulRegistration,
-            );
-            _onSuccess(context, state);
-          } else if (state is AuthError) {
-            // Показуємо помилку
-            AppNotification.showError(context, state.message);
-          }
-        },
-        builder: (context, state) {
-          final isLoading = state is AuthLoading;
-          final theme = Theme.of(context);
-          final colors = theme.colorScheme;
+          listener: (context, state) {
+            final l10n = AppLocalizations.of(context)!;
+            if (state is AuthAuthenticated) {
+              // Показуємо нотифікацію про успішну авторизацію
+              AppNotification.showSuccess(
+                context,
+                _isLogin ? l10n.successfulLogin : l10n.successfulRegistration,
+              );
+              _onSuccess(context, state);
+            } else if (state is AuthError) {
+              // Показуємо помилку
+              AppNotification.showError(context, state.message);
+            }
+          },
+          builder: (context, state) {
+            final isLoading = state is AuthLoading;
+            final theme = Theme.of(context);
+            final colors = theme.colorScheme;
 
-          return Scaffold(
-            backgroundColor: colors.surface,
-            body: Container(
-              decoration: AppGradients.background(context),
-              child: SafeArea(
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    final isDesktop = Responsive.isDesktop(context);
-                    final isTablet = Responsive.isTablet(context);
-                    final horizontalPadding = Responsive.getHorizontalPadding(context);
-                    final verticalPadding = Responsive.getVerticalPadding(context);
-                    final spacing = Responsive.getSpacing(context);
-                    final maxFormWidth = Responsive.getMaxFormWidth(context);
+            return Scaffold(
+              backgroundColor: colors.surface,
+              body: Container(
+                decoration: AppGradients.background(context),
+                child: SafeArea(
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final isDesktop = Responsive.isDesktop(context);
+                      final isTablet = Responsive.isTablet(context);
+                      final horizontalPadding = Responsive.getHorizontalPadding(
+                        context,
+                      );
+                      final verticalPadding = Responsive.getVerticalPadding(
+                        context,
+                      );
+                      final spacing = Responsive.getSpacing(context);
+                      final maxFormWidth = Responsive.getMaxFormWidth(context);
 
-                    return Center(
-                      child: SingleChildScrollView(
-                        padding: EdgeInsets.fromLTRB(
-                          horizontalPadding.left,
-                          verticalPadding.top,
-                          horizontalPadding.right,
-                          verticalPadding.bottom * 2,
-                        ),
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(
-                            maxWidth: maxFormWidth,
-                            minHeight: constraints.maxHeight - 
-                                (verticalPadding.top + verticalPadding.bottom * 2),
+                      return Center(
+                        child: SingleChildScrollView(
+                          padding: EdgeInsets.fromLTRB(
+                            horizontalPadding.left,
+                            verticalPadding.top,
+                            horizontalPadding.right,
+                            verticalPadding.bottom * 2,
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Row(
-                                mainAxisAlignment: isDesktop || isTablet
-                                    ? MainAxisAlignment.center
-                                    : MainAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    padding: EdgeInsets.all(
-                                      isDesktop ? 14 : 12,
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxWidth: maxFormWidth,
+                              minHeight:
+                                  constraints.maxHeight -
+                                  (verticalPadding.top +
+                                      verticalPadding.bottom * 2),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: isDesktop || isTablet
+                                      ? MainAxisAlignment.center
+                                      : MainAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      padding: EdgeInsets.all(
+                                        isDesktop ? 14 : 12,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: colors.primary.withValues(
+                                          alpha: 0.14,
+                                        ),
+                                        borderRadius: BorderRadius.circular(14),
+                                      ),
+                                      child: Icon(
+                                        Icons.movie,
+                                        color: colors.primary,
+                                        size: isDesktop ? 28 : 24,
+                                      ),
                                     ),
-                                    decoration: BoxDecoration(
-                                      color: colors.primary.withValues(alpha: 0.14),
-                                      borderRadius: BorderRadius.circular(14),
+                                    SizedBox(width: spacing),
+                                    Flexible(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            AppConstants.appName,
+                                            style: TextStyle(
+                                              color: colors.onSurface,
+                                              fontSize: isDesktop ? 24 : 20,
+                                              fontWeight: FontWeight.w800,
+                                            ),
+                                          ),
+                                          SizedBox(height: 4),
+                                          Text(
+                                            _isLogin
+                                                ? AppLocalizations.of(
+                                                    context,
+                                                  )!.returnToStories
+                                                : AppLocalizations.of(
+                                                    context,
+                                                  )!.createAccount,
+                                            style: TextStyle(
+                                              color: colors.onSurface
+                                                  .withValues(alpha: 0.65),
+                                              fontSize: isDesktop ? 16 : 14,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                    child: Icon(
-                                      Icons.movie,
-                                      color: colors.primary,
-                                      size: isDesktop ? 28 : 24,
-                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: spacing * 1.5),
+                                Container(
+                                  padding: EdgeInsets.all(
+                                    isDesktop
+                                        ? 24
+                                        : isTablet
+                                        ? 20
+                                        : 18,
                                   ),
-                                  SizedBox(width: spacing),
-                                  Flexible(
+                                  decoration: BoxDecoration(
+                                    color: theme.cardColor,
+                                    borderRadius: BorderRadius.circular(
+                                      isDesktop ? 20 : 18,
+                                    ),
+                                    border: Border.all(
+                                      color: colors.outlineVariant.withValues(
+                                        alpha: 0.8,
+                                      ),
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withValues(
+                                          alpha:
+                                              theme.brightness ==
+                                                  Brightness.light
+                                              ? 0.08
+                                              : 0.25,
+                                        ),
+                                        blurRadius: isDesktop ? 20 : 16,
+                                        offset: Offset(0, isDesktop ? 12 : 10),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Form(
+                                    key: _formKey,
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.stretch,
                                       children: [
-                                        Text(
-                                          AppConstants.appName,
-                                          style: TextStyle(
-                                            color: colors.onSurface,
-                                            fontSize: isDesktop ? 24 : 20,
-                                            fontWeight: FontWeight.w800,
+                                        SizedBox(height: isDesktop ? 16 : 12),
+                                        _AuthInput(
+                                          controller: _emailController,
+                                          label: AppLocalizations.of(
+                                            context,
+                                          )!.email,
+                                          icon: Icons.alternate_email,
+                                          keyboardType:
+                                              TextInputType.emailAddress,
+                                          validator: (value) {
+                                            final l10n = AppLocalizations.of(
+                                              context,
+                                            )!;
+                                            if (value == null ||
+                                                value.isEmpty) {
+                                              return l10n.enterEmail;
+                                            }
+                                            if (!value.contains('@')) {
+                                              return l10n.invalidEmail;
+                                            }
+                                            return null;
+                                          },
+                                        ),
+                                        SizedBox(height: spacing),
+                                        _AuthInput(
+                                          controller: _passwordController,
+                                          label: AppLocalizations.of(
+                                            context,
+                                          )!.password,
+                                          icon: Icons.lock_outline,
+                                          obscureText: true,
+                                          validator: (value) {
+                                            final l10n = AppLocalizations.of(
+                                              context,
+                                            )!;
+                                            if (value == null ||
+                                                value.isEmpty) {
+                                              return l10n.enterPassword;
+                                            }
+                                            if (value.length < 6) {
+                                              return l10n.minPasswordLength;
+                                            }
+                                            return null;
+                                          },
+                                        ),
+                                        SizedBox(height: spacing * 1.5),
+                                        SizedBox(
+                                          height: isDesktop ? 56 : 52,
+                                          child: ElevatedButton.icon(
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: colors.primary,
+                                              foregroundColor: colors.onPrimary,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(14),
+                                              ),
+                                            ),
+                                            onPressed: isLoading
+                                                ? null
+                                                : () {
+                                                    if (!_formKey.currentState!
+                                                        .validate()) {
+                                                      return;
+                                                    }
+                                                    final email =
+                                                        _emailController.text;
+                                                    final password =
+                                                        _passwordController
+                                                            .text;
+                                                    final bloc = context
+                                                        .read<AuthBloc>();
+                                                    // Перевіряємо, чи BLoC не закритий перед додаванням події
+                                                    if (!bloc.isClosed) {
+                                                      if (_isLogin) {
+                                                        bloc.add(
+                                                          SignInEvent(
+                                                            email: email,
+                                                            password: password,
+                                                          ),
+                                                        );
+                                                      } else {
+                                                        bloc.add(
+                                                          RegisterEvent(
+                                                            email: email,
+                                                            password: password,
+                                                          ),
+                                                        );
+                                                      }
+                                                    }
+                                                  },
+                                            icon: isLoading
+                                                ? const SizedBox(
+                                                    width: 20,
+                                                    height: 20,
+                                                    child: CircularProgressIndicator(
+                                                      strokeWidth: 2,
+                                                      valueColor:
+                                                          AlwaysStoppedAnimation<
+                                                            Color
+                                                          >(Colors.white),
+                                                    ),
+                                                  )
+                                                : const Icon(Icons.login),
+                                            label: Text(
+                                              _isLogin
+                                                  ? AppLocalizations.of(
+                                                      context,
+                                                    )!.signIn
+                                                  : AppLocalizations.of(
+                                                      context,
+                                                    )!.signUp,
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.w800,
+                                              ),
+                                            ),
                                           ),
                                         ),
-                                        SizedBox(height: 4),
-                                        Text(
-                                          _isLogin
-                                              ? AppLocalizations.of(context)!.returnToStories
-                                              : AppLocalizations.of(context)!.createAccount,
-                                          style: TextStyle(
-                                            color: colors.onSurface.withValues(alpha: 0.65),
-                                            fontSize: isDesktop ? 16 : 14,
+                                        SizedBox(height: spacing),
+                                        TextButton(
+                                          onPressed: isLoading
+                                              ? null
+                                              : () {
+                                                  setState(() {
+                                                    _isLogin = !_isLogin;
+                                                  });
+                                                },
+                                          style: TextButton.styleFrom(
+                                            foregroundColor: colors.primary,
+                                          ),
+                                          child: Text(
+                                            _isLogin
+                                                ? AppLocalizations.of(
+                                                    context,
+                                                  )!.noAccount
+                                                : AppLocalizations.of(
+                                                    context,
+                                                  )!.hasAccount,
                                           ),
                                         ),
                                       ],
                                     ),
                                   ),
-                                ],
-                              ),
-                              SizedBox(height: spacing * 1.5),
-                              Container(
-                                padding: EdgeInsets.all(
-                                  isDesktop ? 24 : isTablet ? 20 : 18,
                                 ),
-                                decoration: BoxDecoration(
-                                  color: theme.cardColor,
-                                  borderRadius: BorderRadius.circular(
-                                    isDesktop ? 20 : 18,
-                                  ),
-                                  border: Border.all(
-                                    color: colors.outlineVariant.withValues(alpha: 0.8),
-                                  ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withValues(alpha:
-                                        theme.brightness == Brightness.light ? 0.08 : 0.25,
-                                      ),
-                                      blurRadius: isDesktop ? 20 : 16,
-                                      offset: Offset(0, isDesktop ? 12 : 10),
-                                    ),
-                                  ],
-                                ),
-                                child: Form(
-                                  key: _formKey,
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                                    children: [
-                                      SizedBox(height: isDesktop ? 16 : 12),
-                                      _AuthInput(
-                                        controller: _emailController,
-                                        label: AppLocalizations.of(context)!.email,
-                                        icon: Icons.alternate_email,
-                                        keyboardType: TextInputType.emailAddress,
-                                        validator: (value) {
-                                          final l10n = AppLocalizations.of(context)!;
-                                          if (value == null || value.isEmpty) {
-                                            return l10n.enterEmail;
-                                          }
-                                          if (!value.contains('@')) {
-                                            return l10n.invalidEmail;
-                                          }
-                                          return null;
+                                SizedBox(height: spacing),
+                                TextButton(
+                                  onPressed: isLoading
+                                      ? null
+                                      : () {
+                                          // Завжди переходимо на головну сторінку, щоб уникнути циклу перенаправлень
+                                          // Якщо користувач хоче використати захищені функції, він може авторизуватися пізніше
+                                          Navigator.of(
+                                            context,
+                                          ).pushNamedAndRemoveUntil(
+                                            AppConstants.homeRoute,
+                                            (route) => false,
+                                          );
                                         },
-                                      ),
-                                      SizedBox(height: spacing),
-                                      _AuthInput(
-                                        controller: _passwordController,
-                                        label: AppLocalizations.of(context)!.password,
-                                        icon: Icons.lock_outline,
-                                        obscureText: true,
-                                        validator: (value) {
-                                          final l10n = AppLocalizations.of(context)!;
-                                          if (value == null || value.isEmpty) {
-                                            return l10n.enterPassword;
-                                          }
-                                          if (value.length < 6) {
-                                            return l10n.minPasswordLength;
-                                          }
-                                          return null;
-                                        },
-                                      ),
-                                      SizedBox(height: spacing * 1.5),
-                                      SizedBox(
-                                        height: isDesktop ? 56 : 52,
-                                        child: ElevatedButton.icon(
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: colors.primary,
-                                            foregroundColor: colors.onPrimary,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(14),
-                                            ),
-                                          ),
-                                          onPressed: isLoading
-                                              ? null
-                                              : () {
-                                                  if (!_formKey.currentState!.validate()) {
-                                                    return;
-                                                  }
-                                                  final email = _emailController.text;
-                                                  final password =
-                                                      _passwordController.text;
-                                                  final bloc = context.read<AuthBloc>();
-                                                  // Перевіряємо, чи BLoC не закритий перед додаванням події
-                                                  if (!bloc.isClosed) {
-                                                    if (_isLogin) {
-                                                      bloc.add(SignInEvent(email: email, password: password));
-                                                    } else {
-                                                      bloc.add(RegisterEvent(email: email, password: password));
-                                                    }
-                                                  }
-                                                },
-                                          icon: isLoading
-                                              ? const SizedBox(
-                                                  width: 20,
-                                                  height: 20,
-                                                  child: CircularProgressIndicator(
-                                                    strokeWidth: 2,
-                                                    valueColor:
-                                                        AlwaysStoppedAnimation<Color>(
-                                                      Colors.white,
-                                                    ),
-                                                  ),
-                                                )
-                                              : const Icon(Icons.login),
-                                          label: Text(
-                                            _isLogin ? AppLocalizations.of(context)!.signIn : AppLocalizations.of(context)!.signUp,
-                                            style:
-                                                const TextStyle(fontWeight: FontWeight.w800),
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(height: spacing),
-                                      TextButton(
-                                        onPressed: isLoading
-                                            ? null
-                                            : () {
-                                                setState(() {
-                                                  _isLogin = !_isLogin;
-                                                });
-                                              },
-                                        style: TextButton.styleFrom(
-                                          foregroundColor: colors.primary,
-                                        ),
-                                        child: Text(
-                                          _isLogin
-                                              ? AppLocalizations.of(context)!.noAccount
-                                              : AppLocalizations.of(context)!.hasAccount,
-                                        ),
-                                      ),
-                                    ],
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: colors.onSurface
+                                        .withValues(alpha: 0.6),
+                                  ),
+                                  child: Text(
+                                    AppLocalizations.of(context)!.skip,
                                   ),
                                 ),
-                              ),
-                              SizedBox(height: spacing),
-                              TextButton(
-                                onPressed: isLoading
-                                    ? null
-                                    : () {
-                                        // Завжди переходимо на головну сторінку, щоб уникнути циклу перенаправлень
-                                        // Якщо користувач хоче використати захищені функції, він може авторизуватися пізніше
-                                        Navigator.of(context).pushNamedAndRemoveUntil(
-                                          AppConstants.homeRoute,
-                                          (route) => false,
-                                        );
-                                      },
-                                style: TextButton.styleFrom(
-                                  foregroundColor: colors.onSurface.withValues(alpha: 0.6),
-                                ),
-                                child: Text(AppLocalizations.of(context)!.skip),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
               ),
-            ),
-          );
-        },
-      ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -344,13 +410,13 @@ class _AuthInput extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
       decoration: BoxDecoration(
-        color: colors.surfaceContainerHighest.withValues(alpha:
-          theme.brightness == Brightness.light ? 1 : 0.2,
+        color: colors.surfaceContainerHighest.withValues(
+          alpha: theme.brightness == Brightness.light ? 1 : 0.2,
         ),
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: colors.outlineVariant.withValues(alpha:
-            theme.brightness == Brightness.light ? 1 : 0.4,
+          color: colors.outlineVariant.withValues(
+            alpha: theme.brightness == Brightness.light ? 1 : 0.4,
           ),
         ),
       ),

@@ -14,8 +14,10 @@ import 'package:project/features/collections/media_collections_event.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 /// Provider для відео фільму
-final movieVideosProvider =
-    FutureProvider.family<List<Video>, int>((ref, movieId) async {
+final movieVideosProvider = FutureProvider.family<List<Video>, int>((
+  ref,
+  movieId,
+) async {
   try {
     if (kDebugMode) {
       debugPrint('movieVideosProvider: Завантаження відео для фільму $movieId');
@@ -37,11 +39,7 @@ final movieVideosProvider =
 
 /// Віджет для відтворення трейлерів фільмів/серіалів
 class MovieTrailerPlayer extends ConsumerStatefulWidget {
-  const MovieTrailerPlayer({
-    super.key,
-    required this.movieId,
-    this.mediaItem,
-  });
+  const MovieTrailerPlayer({super.key, required this.movieId, this.mediaItem});
 
   final int movieId;
   final HomeMediaItem? mediaItem;
@@ -56,10 +54,14 @@ class _MovieTrailerPlayerState extends ConsumerState<MovieTrailerPlayer> {
   bool _hasVideoError = false;
   String? _errorMessage; // Повідомлення про помилку для відображення
   StreamSubscription<YoutubePlayerValue>? _playerValueSubscription;
-  final Set<String> _failedVideoKeys = {}; // Список ключів, які не вдалося відтворити
-  bool _isClearingCache = false; // Прапорець для запобігання подвійного очищення
-  bool _watchRecorded = false; // Прапорець для запобігання подвійного додавання до watchlist
-  late final MediaCollectionsBloc _collectionsBloc = di.getIt<MediaCollectionsBloc>();
+  final Set<String> _failedVideoKeys =
+      {}; // Список ключів, які не вдалося відтворити
+  bool _isClearingCache =
+      false; // Прапорець для запобігання подвійного очищення
+  bool _watchRecorded =
+      false; // Прапорець для запобігання подвійного додавання до watchlist
+  late final MediaCollectionsBloc _collectionsBloc = di
+      .getIt<MediaCollectionsBloc>();
 
   @override
   void dispose() {
@@ -90,30 +92,34 @@ class _MovieTrailerPlayerState extends ConsumerState<MovieTrailerPlayer> {
   /// - VIDEO_ID (якщо вже є ID)
   String _extractVideoId(String key) {
     if (key.isEmpty) return key;
-    
+
     // Якщо це вже просто ID (без URL), повертаємо як є
-    if (!key.contains('http') && !key.contains('youtube') && !key.contains('youtu.be')) {
+    if (!key.contains('http') &&
+        !key.contains('youtube') &&
+        !key.contains('youtu.be')) {
       return key;
     }
-    
+
     // Обробка embed URL: https://www.youtube.com/embed/VIDEO_ID
-    final embedMatch = RegExp(r'youtube\.com/embed/([a-zA-Z0-9_-]+)').firstMatch(key);
+    final embedMatch = RegExp(
+      r'youtube\.com/embed/([a-zA-Z0-9_-]+)',
+    ).firstMatch(key);
     if (embedMatch != null) {
       return embedMatch.group(1)!;
     }
-    
+
     // Обробка watch URL: https://www.youtube.com/watch?v=VIDEO_ID
     final watchMatch = RegExp(r'[?&]v=([a-zA-Z0-9_-]+)').firstMatch(key);
     if (watchMatch != null) {
       return watchMatch.group(1)!;
     }
-    
+
     // Обробка youtu.be URL: https://youtu.be/VIDEO_ID
     final shortMatch = RegExp(r'youtu\.be/([a-zA-Z0-9_-]+)').firstMatch(key);
     if (shortMatch != null) {
       return shortMatch.group(1)!;
     }
-    
+
     // Спробуємо використати вбудований метод, якщо він доступний
     try {
       final convertedId = YoutubePlayerController.convertUrlToId(key);
@@ -122,42 +128,52 @@ class _MovieTrailerPlayerState extends ConsumerState<MovieTrailerPlayer> {
       }
     } catch (e) {
       if (kDebugMode) {
-        debugPrint('MovieTrailerPlayer: Помилка конвертації URL через convertUrlToId: $e');
+        debugPrint(
+          'MovieTrailerPlayer: Помилка конвертації URL через convertUrlToId: $e',
+        );
       }
     }
-    
+
     // Якщо нічого не спрацювало, повертаємо оригінальний ключ
     // (можливо це вже ID)
     if (kDebugMode) {
-      debugPrint('MovieTrailerPlayer: Не вдалося витягти video ID з: "$key", використовуємо як є');
+      debugPrint(
+        'MovieTrailerPlayer: Не вдалося витягти video ID з: "$key", використовуємо як є',
+      );
     }
     return key;
   }
 
   void _initializePlayer(String videoKey) {
-    if (_currentVideoKey == videoKey && _controller != null && !_hasVideoError) {
+    if (_currentVideoKey == videoKey &&
+        _controller != null &&
+        !_hasVideoError) {
       return;
     }
 
     if (kDebugMode) {
-      debugPrint('MovieTrailerPlayer: Ініціалізація плеєра з ключем: "$videoKey"');
+      debugPrint(
+        'MovieTrailerPlayer: Ініціалізація плеєра з ключем: "$videoKey"',
+      );
     }
-    
+
     // Витягуємо video ID з ключа (якщо це URL)
     final extractedVideoId = _extractVideoId(videoKey);
-    
+
     if (kDebugMode && extractedVideoId != videoKey) {
-      debugPrint('MovieTrailerPlayer: Витягнуто video ID: "$extractedVideoId" з ключа: "$videoKey"');
+      debugPrint(
+        'MovieTrailerPlayer: Витягнуто video ID: "$extractedVideoId" з ключа: "$videoKey"',
+      );
     }
-    
+
     // Скасовуємо попередню підписку
     _playerValueSubscription?.cancel();
     _controller?.close();
-    
+
     _currentVideoKey = videoKey;
     _hasVideoError = false;
     _errorMessage = null;
-    
+
     try {
       _controller = YoutubePlayerController.fromVideoId(
         videoId: extractedVideoId,
@@ -173,30 +189,34 @@ class _MovieTrailerPlayerState extends ConsumerState<MovieTrailerPlayer> {
           origin: 'https://www.youtube-nocookie.com',
         ),
       );
-      
+
       // Додаємо fallback обробку помилок через listen
       _playerValueSubscription = _controller!.listen((value) {
         // Відстежуємо запуск відео для додавання до watchlist
-        if (!_watchRecorded && 
-            value.playerState == PlayerState.playing && 
+        if (!_watchRecorded &&
+            value.playerState == PlayerState.playing &&
             widget.mediaItem != null) {
           _handleVideoPlaybackStarted();
         }
-        
+
         // Обробляємо помилки (YoutubeError.none - це нормальний стан, не помилка)
         if (value.error != YoutubeError.none) {
           // Визначаємо повідомлення про помилку в залежності від типу помилки
           String errorMsg = _getErrorMessage(context, value.error);
-          
+
           if (kDebugMode) {
-            debugPrint('MovieTrailerPlayer: Помилка відтворення відео - ${value.error}');
-            debugPrint('MovieTrailerPlayer: Повідомлення про помилку: $errorMsg');
+            debugPrint(
+              'MovieTrailerPlayer: Помилка відтворення відео - ${value.error}',
+            );
+            debugPrint(
+              'MovieTrailerPlayer: Повідомлення про помилку: $errorMsg',
+            );
           }
-          
+
           // Додаємо ключ до списку невдалих спроб
           if (videoKey.isNotEmpty && !_failedVideoKeys.contains(videoKey)) {
             _failedVideoKeys.add(videoKey);
-            
+
             // Очищаємо кеш відео при помилці відтворення (відео може бути видалене)
             // Виконуємо з невеликою затримкою, щоб уникнути занадто частих перезавантажень
             if (!_isClearingCache) {
@@ -209,7 +229,7 @@ class _MovieTrailerPlayerState extends ConsumerState<MovieTrailerPlayer> {
               });
             }
           }
-          
+
           // Показуємо повідомлення про недоступність відео
           if (mounted) {
             setState(() {
@@ -227,7 +247,7 @@ class _MovieTrailerPlayerState extends ConsumerState<MovieTrailerPlayer> {
           }
         }
       });
-      
+
       if (mounted) {
         setState(() {});
       }
@@ -236,13 +256,13 @@ class _MovieTrailerPlayerState extends ConsumerState<MovieTrailerPlayer> {
         debugPrint('MovieTrailerPlayer: Помилка ініціалізації плеєра: $e');
         debugPrint('Stack trace: $stackTrace');
       }
-      
+
       // Очищаємо кеш відео при помилці ініціалізації
       if (videoKey.isNotEmpty) {
         _failedVideoKeys.add(videoKey);
       }
       _clearVideoCacheAndInvalidate();
-      
+
       _currentVideoKey = null;
       _controller = null;
       _hasVideoError = true;
@@ -256,22 +276,26 @@ class _MovieTrailerPlayerState extends ConsumerState<MovieTrailerPlayer> {
   /// Обробляє запуск відтворення відео - додає фільм/серіал до watchlist
   void _handleVideoPlaybackStarted() {
     if (_watchRecorded || widget.mediaItem == null) return;
-    
+
     // Перевіряємо чи користувач авторизований
     final currentState = _collectionsBloc.state;
     if (!currentState.authorized) {
       if (kDebugMode) {
-        debugPrint('MovieTrailerPlayer: Користувач не авторизований, пропускаємо додавання до watchlist');
+        debugPrint(
+          'MovieTrailerPlayer: Користувач не авторизований, пропускаємо додавання до watchlist',
+        );
       }
       return;
     }
-    
+
     _watchRecorded = true;
-    
+
     if (kDebugMode) {
-      debugPrint('MovieTrailerPlayer: Відео почало відтворюватися, додаємо до watchlist: ${widget.mediaItem!.title}');
+      debugPrint(
+        'MovieTrailerPlayer: Відео почало відтворюватися, додаємо до watchlist: ${widget.mediaItem!.title}',
+      );
     }
-    
+
     // Додаємо фільм/серіал до watchlist через RecordWatchEvent
     _collectionsBloc.add(RecordWatchEvent(widget.mediaItem!));
   }
@@ -301,9 +325,11 @@ class _MovieTrailerPlayerState extends ConsumerState<MovieTrailerPlayer> {
       final cacheKey = 'movie_videos_${widget.movieId}';
       await LocalCacheDb.instance.deleteJson(cacheKey);
       if (kDebugMode) {
-        debugPrint('MovieTrailerPlayer: Очищено кеш відео для фільму ${widget.movieId}');
+        debugPrint(
+          'MovieTrailerPlayer: Очищено кеш відео для фільму ${widget.movieId}',
+        );
       }
-      
+
       // Інвалідуємо provider, щоб завантажити свіжі дані
       if (mounted) {
         ref.invalidate(movieVideosProvider(widget.movieId));
@@ -339,60 +365,74 @@ class _MovieTrailerPlayerState extends ConsumerState<MovieTrailerPlayer> {
 
         // 1. Шукаємо офіційні Trailer (виключаючи невдалі ключі)
         final officialTrailers = videos.where((video) {
-          return video.site == 'YouTube' && 
-                 video.key.isNotEmpty &&
-                 video.type.toLowerCase().trim() == 'trailer' &&
-                 video.official &&
-                 !_failedVideoKeys.contains(video.key.trim());
+          return video.site == 'YouTube' &&
+              video.key.isNotEmpty &&
+              video.type.toLowerCase().trim() == 'trailer' &&
+              video.official &&
+              !_failedVideoKeys.contains(video.key.trim());
         }).toList();
-        
+
         if (kDebugMode) {
-          debugPrint('MovieTrailerPlayer: Знайдено ${officialTrailers.length} офіційних трейлерів (виключено ${_failedVideoKeys.length} невдалих)');
+          debugPrint(
+            'MovieTrailerPlayer: Знайдено ${officialTrailers.length} офіційних трейлерів (виключено ${_failedVideoKeys.length} невдалих)',
+          );
         }
-        
+
         if (officialTrailers.isNotEmpty) {
           trailer = officialTrailers.first;
         } else {
           // 2. Шукаємо будь-які Trailer (виключаючи невдалі ключі)
-          final anyTrailers = videos.where((video) =>
-            video.site == 'YouTube' &&
-            video.key.isNotEmpty &&
-            video.type.toLowerCase().trim() == 'trailer' &&
-            !_failedVideoKeys.contains(video.key.trim())
-          ).toList();
-          
+          final anyTrailers = videos
+              .where(
+                (video) =>
+                    video.site == 'YouTube' &&
+                    video.key.isNotEmpty &&
+                    video.type.toLowerCase().trim() == 'trailer' &&
+                    !_failedVideoKeys.contains(video.key.trim()),
+              )
+              .toList();
+
           if (anyTrailers.isNotEmpty) {
             trailer = anyTrailers.first;
           } else {
             // 3. Шукаємо офіційні Teaser (виключаючи невдалі ключі)
-            final officialTeasers = videos.where((video) =>
-              video.site == 'YouTube' &&
-              video.key.isNotEmpty &&
-              video.type.toLowerCase().trim() == 'teaser' &&
-              video.official &&
-              !_failedVideoKeys.contains(video.key.trim())
-            ).toList();
-            
+            final officialTeasers = videos
+                .where(
+                  (video) =>
+                      video.site == 'YouTube' &&
+                      video.key.isNotEmpty &&
+                      video.type.toLowerCase().trim() == 'teaser' &&
+                      video.official &&
+                      !_failedVideoKeys.contains(video.key.trim()),
+                )
+                .toList();
+
             if (officialTeasers.isNotEmpty) {
               trailer = officialTeasers.first;
             } else {
               // 4. Шукаємо будь-які Teaser (виключаючи невдалі ключі)
-              final anyTeasers = videos.where((video) =>
-                video.site == 'YouTube' &&
-                video.key.isNotEmpty &&
-                video.type.toLowerCase().trim() == 'teaser' &&
-                !_failedVideoKeys.contains(video.key.trim())
-              ).toList();
-              
+              final anyTeasers = videos
+                  .where(
+                    (video) =>
+                        video.site == 'YouTube' &&
+                        video.key.isNotEmpty &&
+                        video.type.toLowerCase().trim() == 'teaser' &&
+                        !_failedVideoKeys.contains(video.key.trim()),
+                  )
+                  .toList();
+
               if (anyTeasers.isNotEmpty) {
                 trailer = anyTeasers.first;
               } else {
                 // 5. Беремо будь-яке YouTube відео (виключаючи невдалі ключі)
-                final anyYouTube = videos.where((video) =>
-                  video.site == 'YouTube' && 
-                  video.key.isNotEmpty &&
-                  !_failedVideoKeys.contains(video.key.trim())
-                ).toList();
+                final anyYouTube = videos
+                    .where(
+                      (video) =>
+                          video.site == 'YouTube' &&
+                          video.key.isNotEmpty &&
+                          !_failedVideoKeys.contains(video.key.trim()),
+                    )
+                    .toList();
                 if (anyYouTube.isNotEmpty) {
                   trailer = anyYouTube.first;
                 }
@@ -403,23 +443,27 @@ class _MovieTrailerPlayerState extends ConsumerState<MovieTrailerPlayer> {
 
         if (trailer == null || trailer.key.isEmpty) {
           if (kDebugMode) {
-            debugPrint('MovieTrailerPlayer: Немає доступних YouTube відео. Всього відео: ${videos.length}');
+            debugPrint(
+              'MovieTrailerPlayer: Немає доступних YouTube відео. Всього відео: ${videos.length}',
+            );
           }
           return _buildNoTrailerWidget(context);
         }
 
         if (kDebugMode) {
-          debugPrint('MovieTrailerPlayer: Вибрано відео - key: "${trailer.key}", name: "${trailer.name}", type: "${trailer.type}"');
+          debugPrint(
+            'MovieTrailerPlayer: Вибрано відео - key: "${trailer.key}", name: "${trailer.name}", type: "${trailer.type}"',
+          );
         }
 
         // Ініціалізуємо контролер
         final videoKey = trailer.key.trim();
-        
+
         // Перевіряємо валідність ключа
         if (videoKey.isEmpty) {
           return _buildNoTrailerWidget(context);
         }
-        
+
         // Ініціалізуємо або оновлюємо контролер синхронно
         // Якщо ключ змінився - переініціалізуємо
         if (_currentVideoKey != videoKey) {
@@ -444,9 +488,9 @@ class _MovieTrailerPlayerState extends ConsumerState<MovieTrailerPlayer> {
           children: [
             Text(
               AppLocalizations.of(context)!.trailer,
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
             ClipRRect(
@@ -471,19 +515,22 @@ class _MovieTrailerPlayerState extends ConsumerState<MovieTrailerPlayer> {
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                _errorMessage ?? AppLocalizations.of(context)!.videoUnavailable,
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                      color: Colors.grey[600],
-                                    ),
+                                _errorMessage ??
+                                    AppLocalizations.of(
+                                      context,
+                                    )!.videoUnavailable,
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(color: Colors.grey[600]),
                                 textAlign: TextAlign.center,
                               ),
                               if (_failedVideoKeys.isNotEmpty) ...[
                                 const SizedBox(height: 4),
                                 Text(
-                                  AppLocalizations.of(context)!.tryingToFindAnotherVideo,
-                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                        color: Colors.grey[500],
-                                      ),
+                                  AppLocalizations.of(
+                                    context,
+                                  )!.tryingToFindAnotherVideo,
+                                  style: Theme.of(context).textTheme.bodySmall
+                                      ?.copyWith(color: Colors.grey[500]),
                                   textAlign: TextAlign.center,
                                 ),
                               ],
@@ -492,27 +539,25 @@ class _MovieTrailerPlayerState extends ConsumerState<MovieTrailerPlayer> {
                         ),
                       )
                     : _controller != null
-                        ? YoutubePlayer(
-                            controller: _controller!,
-                            aspectRatio: 16 / 9,
-                          )
-                        : Container(
-                            decoration: BoxDecoration(
-                              color: Colors.grey[300],
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: const Center(
-                              child: CircularProgressIndicator(),
-                            ),
-                          ),
+                    ? YoutubePlayer(
+                        controller: _controller!,
+                        aspectRatio: 16 / 9,
+                      )
+                    : Container(
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Center(child: CircularProgressIndicator()),
+                      ),
               ),
             ),
             const SizedBox(height: 8),
             Text(
               trailer.name,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.grey[600],
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
             ),
           ],
         );
@@ -522,9 +567,9 @@ class _MovieTrailerPlayerState extends ConsumerState<MovieTrailerPlayer> {
         children: [
           Text(
             'Трейлер',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
           Container(
@@ -533,9 +578,7 @@ class _MovieTrailerPlayerState extends ConsumerState<MovieTrailerPlayer> {
               color: Colors.grey[300],
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Center(
-              child: CircularProgressIndicator(),
-            ),
+            child: const Center(child: CircularProgressIndicator()),
           ),
         ],
       ),
@@ -555,9 +598,9 @@ class _MovieTrailerPlayerState extends ConsumerState<MovieTrailerPlayer> {
       children: [
         Text(
           'Трейлер',
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 12),
         Container(
@@ -579,9 +622,9 @@ class _MovieTrailerPlayerState extends ConsumerState<MovieTrailerPlayer> {
                 const SizedBox(height: 12),
                 Text(
                   AppLocalizations.of(context)!.trailerUnavailable,
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Colors.grey[600],
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyLarge?.copyWith(color: Colors.grey[600]),
                 ),
               ],
             ),
@@ -591,4 +634,3 @@ class _MovieTrailerPlayerState extends ConsumerState<MovieTrailerPlayer> {
     );
   }
 }
-

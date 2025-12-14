@@ -12,7 +12,9 @@ void main() {
       IntegrationTestHelper.setupErrorHandling();
     });
 
-    testWidgets('User can navigate to search page', (WidgetTester tester) async {
+    testWidgets('User can navigate to search page', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
 
@@ -66,7 +68,9 @@ void main() {
       }
     });
 
-    testWidgets('User can toggle filters visibility', (WidgetTester tester) async {
+    testWidgets('User can toggle filters visibility', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
 
@@ -175,4 +179,3 @@ void main() {
     });
   });
 }
-

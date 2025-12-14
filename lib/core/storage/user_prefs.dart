@@ -8,7 +8,7 @@ class UserPrefs {
 
   static const String _prefsBoxName = 'user_preferences';
   static const String _searchHistoryBoxName = 'search_history';
-  
+
   static const String _themeModeKey = 'theme_mode';
   static const String _languageCodeKey = 'language_code';
 
@@ -63,16 +63,16 @@ class UserPrefs {
   Future<void> addToSearchHistory(Map<String, dynamic> mediaItem) async {
     final mediaId = mediaItem['id'] as int;
     final isMovie = (mediaItem['isMovie'] as bool?) ?? false;
-    
+
     // Створюємо ключ для унікальності (media_id + isMovie)
     final key = '${mediaId}_${isMovie ? 1 : 0}';
-    
+
     // Зберігаємо дані з timestamp
     final entry = {
       'data': mediaItem,
       'added_at': DateTime.now().millisecondsSinceEpoch,
     };
-    
+
     await searchHistoryBox.put(key, jsonEncode(entry));
 
     // Обмежуємо до 50 елементів - видаляємо найстаріші
@@ -93,9 +93,9 @@ class UserPrefs {
           }
         }
       }
-      
+
       entriesWithTimestamps.sort((a, b) => a.value.compareTo(b.value));
-      
+
       // Видаляємо найстаріші записи
       final toDelete = entriesWithTimestamps.length - 50;
       for (var i = 0; i < toDelete; i++) {
@@ -107,7 +107,7 @@ class UserPrefs {
   Future<List<Map<String, dynamic>>> getSearchHistory() async {
     final allKeys = searchHistoryBox.keys.toList();
     final entriesWithTimestamps = <MapEntry<Map<String, dynamic>, int>>[];
-    
+
     for (final key in allKeys) {
       final entryJson = searchHistoryBox.get(key) as String?;
       if (entryJson != null) {
@@ -122,14 +122,11 @@ class UserPrefs {
         }
       }
     }
-    
+
     // Сортуємо за timestamp (найновіші спочатку) та обмежуємо до 50
     entriesWithTimestamps.sort((a, b) => b.value.compareTo(a.value));
-    
-    return entriesWithTimestamps
-        .take(50)
-        .map((entry) => entry.key)
-        .toList();
+
+    return entriesWithTimestamps.take(50).map((entry) => entry.key).toList();
   }
 
   Future<void> clearSearchHistory() async {

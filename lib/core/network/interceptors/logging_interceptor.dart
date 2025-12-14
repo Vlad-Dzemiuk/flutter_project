@@ -52,11 +52,8 @@ class LoggingInterceptor extends Interceptor {
 
     _logger.e('│ Stack Trace: ${err.stackTrace}');
 
-    _logger.e(
-      '└─────────────────────────────────────────────────────────────',
-    );
+    _logger.e('└─────────────────────────────────────────────────────────────');
 
     handler.next(err);
   }
 }
-

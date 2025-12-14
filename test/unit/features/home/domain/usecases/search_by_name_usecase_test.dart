@@ -22,10 +22,9 @@ void main() {
         'hasMore': false,
       };
 
-      when(() => mockRepository.searchByName(
-        any(),
-        page: any(named: 'page'),
-      )).thenAnswer((_) async => result);
+      when(
+        () => mockRepository.searchByName(any(), page: any(named: 'page')),
+      ).thenAnswer((_) async => result);
 
       // Act
       final searchResult = await useCase(
@@ -41,11 +40,13 @@ void main() {
       // Act & Assert
       expect(
         () => useCase(SearchByNameParams(query: '')),
-        throwsA(isA<Exception>().having(
-          (e) => e.toString(),
-          'message',
-          contains('Пошуковий запит не може бути порожнім'),
-        )),
+        throwsA(
+          isA<Exception>().having(
+            (e) => e.toString(),
+            'message',
+            contains('Пошуковий запит не може бути порожнім'),
+          ),
+        ),
       );
     });
 
@@ -61,20 +62,21 @@ void main() {
       // Act & Assert
       expect(
         () => useCase(SearchByNameParams(query: 'test', page: 0)),
-        throwsA(isA<Exception>().having(
-          (e) => e.toString(),
-          'message',
-          contains('Номер сторінки повинен бути більше 0'),
-        )),
+        throwsA(
+          isA<Exception>().having(
+            (e) => e.toString(),
+            'message',
+            contains('Номер сторінки повинен бути більше 0'),
+          ),
+        ),
       );
     });
 
     test('should use default page 1 when not specified', () async {
       // Arrange
-      when(() => mockRepository.searchByName(
-        any(),
-        page: any(named: 'page'),
-      )).thenAnswer((_) async => {});
+      when(
+        () => mockRepository.searchByName(any(), page: any(named: 'page')),
+      ).thenAnswer((_) async => {});
 
       // Act
       await useCase(SearchByNameParams(query: 'test'));
@@ -84,4 +86,3 @@ void main() {
     });
   });
 }
-

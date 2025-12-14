@@ -19,5 +19,3 @@ class MovieMapper {
     return movies.map((movie) => toEntity(movie)).toList();
   }
 }
-
-

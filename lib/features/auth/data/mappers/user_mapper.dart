@@ -14,7 +14,7 @@ class UserMapper {
   }
 
   /// Конвертує User (domain entity) в LocalUser (data model)
-  /// 
+  ///
   /// Використовується для збереження в базу даних
   static LocalUser toDataModel(User user) {
     return LocalUser(
@@ -25,5 +25,3 @@ class UserMapper {
     );
   }
 }
-
-

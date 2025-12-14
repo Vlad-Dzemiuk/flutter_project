@@ -12,7 +12,9 @@ void main() {
       IntegrationTestHelper.setupErrorHandling();
     });
 
-    testWidgets('User can view media details from home', (WidgetTester tester) async {
+    testWidgets('User can view media details from home', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
 
@@ -38,7 +40,9 @@ void main() {
       }
     });
 
-    testWidgets('User can navigate back from media details', (WidgetTester tester) async {
+    testWidgets('User can navigate back from media details', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
 
@@ -73,7 +77,9 @@ void main() {
       }
     });
 
-    testWidgets('User can see favorite button on media items', (WidgetTester tester) async {
+    testWidgets('User can see favorite button on media items', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
 
@@ -93,7 +99,9 @@ void main() {
       }
     });
 
-    testWidgets('User can scroll media detail page', (WidgetTester tester) async {
+    testWidgets('User can scroll media detail page', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
 
@@ -123,7 +131,9 @@ void main() {
       }
     });
 
-    testWidgets('User can view "See More" sections', (WidgetTester tester) async {
+    testWidgets('User can view "See More" sections', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
 
@@ -149,4 +159,3 @@ void main() {
     });
   });
 }
-

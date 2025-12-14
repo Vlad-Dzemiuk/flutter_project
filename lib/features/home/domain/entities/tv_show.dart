@@ -1,5 +1,5 @@
 /// Domain entity для серіалу
-/// 
+///
 /// Це чиста domain entity без залежностей від data layer
 class TvShowEntity {
   final int id;
@@ -29,5 +29,3 @@ class TvShowEntity {
 
   bool get hasPoster => posterPath != null && posterPath!.isNotEmpty;
 }
-
-

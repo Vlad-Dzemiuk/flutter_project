@@ -29,4 +29,3 @@ class SetLanguageEvent extends SettingsEvent {
   @override
   List<Object?> get props => [languageCode];
 }
-

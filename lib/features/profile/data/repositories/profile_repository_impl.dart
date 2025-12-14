@@ -10,8 +10,10 @@ class ProfileRepositoryImpl implements ProfileRepository {
   @override
   Future<UserProfile> getUserProfile(int userId) async {
     final cacheKey = 'user_profile_$userId';
-    final cached =
-        await LocalCacheDb.instance.getJson(cacheKey, maxAge: const Duration(minutes: 15));
+    final cached = await LocalCacheDb.instance.getJson(
+      cacheKey,
+      maxAge: const Duration(minutes: 15),
+    );
 
     if (cached != null) {
       return UserProfile.fromJson(cached);
@@ -32,5 +34,3 @@ class ProfileRepositoryImpl implements ProfileRepository {
     }
   }
 }
-
-

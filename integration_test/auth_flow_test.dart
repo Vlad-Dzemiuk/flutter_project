@@ -69,7 +69,9 @@ void main() {
       }
     });
 
-    testWidgets('User can toggle between login and register', (WidgetTester tester) async {
+    testWidgets('User can toggle between login and register', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
 
@@ -118,4 +120,3 @@ void main() {
     });
   });
 }
-

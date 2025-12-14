@@ -10,7 +10,7 @@ class GetMovieVideosParams {
 }
 
 /// Use case для отримання відео фільму
-/// 
+///
 /// Завантажує список відео (трейлери, тизери тощо) для фільму
 class GetMovieVideosUseCase
     implements UseCase<List<Video>, GetMovieVideosParams> {
@@ -29,17 +29,14 @@ class GetMovieVideosUseCase
     final videosData = await repository.fetchMovieVideos(params.movieId);
 
     // Конвертація в domain entities
-    final videos = videosData
-        .map((videoJson) {
-          try {
-            return Video.fromJson(videoJson as Map<String, dynamic>);
-          } catch (e) {
-            rethrow;
-          }
-        })
-        .toList();
+    final videos = videosData.map((videoJson) {
+      try {
+        return Video.fromJson(videoJson as Map<String, dynamic>);
+      } catch (e) {
+        rethrow;
+      }
+    }).toList();
 
     return videos;
   }
 }
-

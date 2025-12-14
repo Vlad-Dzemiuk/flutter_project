@@ -25,4 +25,3 @@ class LoadingStateService extends ChangeNotifier {
     notifyListeners();
   }
 }
-

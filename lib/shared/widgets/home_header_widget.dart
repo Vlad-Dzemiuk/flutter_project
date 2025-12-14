@@ -122,7 +122,9 @@ class HomeHeaderWidget extends StatelessWidget {
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: colors.primary,
-                          foregroundColor: isDark ? colors.onPrimary : Colors.white,
+                          foregroundColor: isDark
+                              ? colors.onPrimary
+                              : Colors.white,
                           padding: EdgeInsets.symmetric(
                             horizontal: isMobile ? 14 : 18,
                             vertical: isMobile ? 12 : 14,
@@ -131,8 +133,9 @@ class HomeHeaderWidget extends StatelessWidget {
                             borderRadius: BorderRadius.circular(14),
                           ),
                         ),
-                        onPressed: () =>
-                            Navigator.of(context).pushNamed(AppConstants.searchRoute),
+                        onPressed: () => Navigator.of(
+                          context,
+                        ).pushNamed(AppConstants.searchRoute),
                         icon: const Icon(Icons.explore),
                         label: Text(
                           AppLocalizations.of(context)!.explore,
@@ -153,4 +156,3 @@ class HomeHeaderWidget extends StatelessWidget {
     );
   }
 }
-

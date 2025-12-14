@@ -67,7 +67,7 @@ Future<void> init() async {
       // Якщо не вдалося скинути, продовжуємо
     }
   }
-  
+
   // Initialize databases
   // Initialize Drift database for auth
   await AuthDb.instance.database.then((db) => db.ensureInitialized());
@@ -76,12 +76,14 @@ Future<void> init() async {
   // Initialize Hive for user preferences
   await UserPrefs.instance.init();
   // Initialize Drift database for media collections
-  await MediaCollectionsStorage.instance.database.then((db) => db.ensureInitialized());
-  
+  await MediaCollectionsStorage.instance.database.then(
+    (db) => db.ensureInitialized(),
+  );
+
   // Auth Services
   _registerIfNotRegistered<FirebaseAuthService>(() => FirebaseAuthService());
   _registerIfNotRegistered<JwtTokenService>(() => JwtTokenService.instance);
-  
+
   // Determine auth method from environment or use default (local)
   // Можна встановити AUTH_METHOD в .env файлі: local, firebase, jwt
   final authMethodString = dotenv.env['AUTH_METHOD']?.toLowerCase() ?? 'local';
@@ -98,24 +100,24 @@ Future<void> init() async {
       authMethod = AuthMethod.local;
       break;
   }
-  
+
   // Repositories (must be registered before DioClient to pass AuthRepository)
   final authRepository = AuthRepository(
     authMethod: authMethod,
     firebaseAuthService: getIt<FirebaseAuthService>(),
     jwtTokenService: getIt<JwtTokenService>(),
   );
-  
+
   // Ініціалізуємо AuthRepository (перевіряє збережений стан)
   await authRepository.initialize();
-  
+
   _registerIfNotRegistered<AuthRepository>(() => authRepository);
-  
+
   // HTTP Client (with AuthRepository for auth headers)
   _registerIfNotRegistered<DioClient>(
     () => DioClient(authRepository: getIt<AuthRepository>()),
   );
-  
+
   // API Services
   final homeApiService = HomeApiService();
   _registerIfNotRegistered<HomeApiService>(() => homeApiService);
@@ -128,9 +130,7 @@ Future<void> init() async {
   _registerIfNotRegistered<FavoritesRepository>(
     () => FavoritesRepositoryImpl(),
   );
-  _registerIfNotRegistered<ProfileRepository>(
-    () => ProfileRepositoryImpl(),
-  );
+  _registerIfNotRegistered<ProfileRepository>(() => ProfileRepositoryImpl());
   _registerIfNotRegistered<MediaCollectionsRepository>(
     () => MediaCollectionsRepository(MediaCollectionsStorage.instance),
   );
@@ -209,21 +209,13 @@ Future<void> init() async {
     ),
   );
   _registerIfNotRegistered<FavoritesBloc>(
-    () => FavoritesBloc(
-      getFavoritesUseCase: getIt<GetFavoritesUseCase>(),
-    ),
+    () => FavoritesBloc(getFavoritesUseCase: getIt<GetFavoritesUseCase>()),
   );
   getIt.registerFactory<SearchBloc>(
-    () => SearchBloc(
-      searchByFiltersUseCase: getIt<SearchByFiltersUseCase>(),
-    ),
+    () => SearchBloc(searchByFiltersUseCase: getIt<SearchByFiltersUseCase>()),
   );
-  _registerIfNotRegistered<SettingsBloc>(
-    () => SettingsBloc(),
-  );
+  _registerIfNotRegistered<SettingsBloc>(() => SettingsBloc());
   getIt.registerFactory<ProfileBloc>(
-    () => ProfileBloc(
-      getUserProfileUseCase: getIt<GetUserProfileUseCase>(),
-    ),
+    () => ProfileBloc(getUserProfileUseCase: getIt<GetUserProfileUseCase>()),
   );
 }

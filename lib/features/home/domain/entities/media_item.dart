@@ -1,5 +1,5 @@
 /// Domain entity для медіа елемента (універсальний для фільмів та серіалів)
-/// 
+///
 /// Це чиста domain entity без залежностей від data layer
 class MediaItemEntity {
   final int id;
@@ -27,5 +27,3 @@ class MediaItemEntity {
 
   bool get hasPoster => posterPath != null && posterPath!.isNotEmpty;
 }
-
-

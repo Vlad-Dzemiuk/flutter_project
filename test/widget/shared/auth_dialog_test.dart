@@ -78,7 +78,9 @@ void main() {
       expect(find.text('Sign In'), findsOneWidget);
     });
 
-    testWidgets('can close dialog with cancel button', (WidgetTester tester) async {
+    testWidgets('can close dialog with cancel button', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         WidgetTestHelper.createTestApp(
           child: Builder(
@@ -106,4 +108,3 @@ void main() {
     });
   });
 }
-

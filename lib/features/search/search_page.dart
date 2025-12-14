@@ -131,9 +131,8 @@ class _SearchPageState extends State<SearchPage> {
     try {
       // Використання use case з retry механізмом для мережевих помилок
       final result = await RetryHelper.retry(
-        operation: () => _searchMediaUseCase(
-          SearchMediaParams(query: query, page: 1),
-        ),
+        operation: () =>
+            _searchMediaUseCase(SearchMediaParams(query: query, page: 1)),
       );
 
       if (mounted) {
@@ -211,437 +210,506 @@ class _SearchPageState extends State<SearchPage> {
                 child: SafeArea(
                   child: LayoutBuilder(
                     builder: (context, constraints) {
-                      final horizontalPadding = Responsive
-                          .getHorizontalPadding(context);
+                      final horizontalPadding = Responsive.getHorizontalPadding(
+                        context,
+                      );
 
                       return Column(
                         children: [
-                            Padding(
-                              padding: EdgeInsets.fromLTRB(
-                                horizontalPadding.left,
-                                Responsive.isMobile(context) ? 12 : 16,
-                                horizontalPadding.right,
-                                Responsive.getSpacing(context) / 2,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(
+                              horizontalPadding.left,
+                              Responsive.isMobile(context) ? 12 : 16,
+                              horizontalPadding.right,
+                              Responsive.getSpacing(context) / 2,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.search,
+                                      color: colors.primary,
+                                      size: Responsive.isMobile(context)
+                                          ? 24
+                                          : 28,
+                                    ),
+                                    SizedBox(
+                                      width: Responsive.isMobile(context)
+                                          ? 12
+                                          : 16,
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          AppLocalizations.of(context)!.search,
+                                          style: TextStyle(
+                                            fontSize:
+                                                Responsive.isMobile(context)
+                                                ? 20
+                                                : 24,
+                                            fontWeight: FontWeight.w700,
+                                            color: colors.onSurface,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: Responsive.getSpacing(context),
+                                ),
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: Responsive.isMobile(context)
+                                        ? 14
+                                        : 18,
+                                    vertical: Responsive.isMobile(context)
+                                        ? 10
+                                        : 12,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: colors.surfaceContainerHighest
+                                        .withValues(
+                                          alpha:
+                                              theme.brightness ==
+                                                  Brightness.light
+                                              ? 1
+                                              : 0.18,
+                                        ),
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(
+                                      color: colors.outlineVariant.withValues(
+                                        alpha: 0.8,
+                                      ),
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withValues(
+                                          alpha:
+                                              theme.brightness ==
+                                                  Brightness.light
+                                              ? 0.08
+                                              : 0.25,
+                                        ),
+                                        blurRadius: 12,
+                                        offset: const Offset(0, 8),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Row(
                                     children: [
                                       Icon(
                                         Icons.search,
-                                        color: colors.primary,
+                                        color: colors.onSurfaceVariant,
                                         size: Responsive.isMobile(context)
-                                            ? 24
-                                            : 28,
+                                            ? 20
+                                            : 24,
                                       ),
                                       SizedBox(
-                                          width: Responsive.isMobile(context)
-                                              ? 12
-                                              : 16),
-                                      Column(
-                                        crossAxisAlignment: CrossAxisAlignment
-                                            .start,
-                                        children: [
-                                          Text(
-                                            AppLocalizations.of(context)!.search,
-                                            style: TextStyle(
-                                              fontSize: Responsive.isMobile(
-                                                  context) ? 20 : 24,
-                                              fontWeight: FontWeight.w700,
-                                              color: colors.onSurface,
+                                        width: Responsive.isMobile(context)
+                                            ? 10
+                                            : 12,
+                                      ),
+                                      Expanded(
+                                        child: TextField(
+                                          controller: _searchController,
+                                          style: TextStyle(
+                                            color: colors.onSurface,
+                                            fontSize:
+                                                Responsive.isMobile(context)
+                                                ? 16
+                                                : 18,
+                                          ),
+                                          decoration: InputDecoration(
+                                            hintText: AppLocalizations.of(
+                                              context,
+                                            )!.enterTitle,
+                                            hintStyle: TextStyle(
+                                              color: colors.onSurfaceVariant,
+                                              fontSize:
+                                                  Responsive.isMobile(context)
+                                                  ? 16
+                                                  : 18,
+                                            ),
+                                            border: InputBorder.none,
+                                          ),
+                                        ),
+                                      ),
+                                      if (_searchController.text.isNotEmpty)
+                                        IconButton(
+                                          icon: Icon(
+                                            Icons.close,
+                                            color: colors.onSurfaceVariant,
+                                          ),
+                                          onPressed: () {
+                                            _searchController.clear();
+                                            setState(() {
+                                              _searchResults = [];
+                                            });
+                                          },
+                                        ),
+                                      SizedBox(
+                                        width: Responsive.isMobile(context)
+                                            ? 4
+                                            : 8,
+                                      ),
+                                      InkWell(
+                                        onTap: () {
+                                          setState(() {
+                                            _showFilters = !_showFilters;
+                                          });
+                                        },
+                                        borderRadius: BorderRadius.circular(12),
+                                        child: Container(
+                                          padding: EdgeInsets.all(
+                                            Responsive.isMobile(context)
+                                                ? 8
+                                                : 10,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: colors.primary,
+                                            borderRadius: BorderRadius.circular(
+                                              12,
                                             ),
                                           ),
-                                        ],
+                                          child: Icon(
+                                            _showFilters
+                                                ? Icons.tune
+                                                : Icons.tune_rounded,
+                                            color: colors.onPrimary,
+                                            size: Responsive.isMobile(context)
+                                                ? 18
+                                                : 20,
+                                          ),
+                                        ),
                                       ),
                                     ],
                                   ),
-                                  SizedBox(
-                                      height: Responsive.getSpacing(context)),
-                                  Container(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: Responsive.isMobile(context)
-                                          ? 14
-                                          : 18,
-                                      vertical: Responsive.isMobile(context)
-                                          ? 10
-                                          : 12,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: colors.surfaceContainerHighest.withValues(alpha:
-                                        theme.brightness == Brightness.light
-                                            ? 1
-                                            : 0.18,
-                                      ),
-                                      borderRadius: BorderRadius.circular(16),
-                                      border: Border.all(
-                                        color: colors.outlineVariant
-                                            .withValues(alpha: 0.8),
-                                      ),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withValues(alpha:
-                                            theme.brightness == Brightness.light
-                                                ? 0.08
-                                                : 0.25,
-                                          ),
-                                          blurRadius: 12,
-                                          offset: const Offset(0, 8),
-                                        ),
-                                      ],
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Icon(Icons.search,
-                                            color: colors.onSurfaceVariant,
-                                            size: Responsive.isMobile(context)
-                                                ? 20
-                                                : 24),
-                                        SizedBox(
-                                            width: Responsive.isMobile(context)
-                                                ? 10
-                                                : 12),
-                                        Expanded(
-                                          child: TextField(
-                                            controller: _searchController,
-                                            style: TextStyle(
-                                              color: colors.onSurface,
-                                              fontSize: Responsive.isMobile(
-                                                  context) ? 16 : 18,
-                                            ),
-                                            decoration: InputDecoration(
-                                              hintText: AppLocalizations.of(context)!.enterTitle,
-                                              hintStyle: TextStyle(
-                                                color: colors.onSurfaceVariant,
-                                                fontSize: Responsive.isMobile(
-                                                    context) ? 16 : 18,
-                                              ),
-                                              border: InputBorder.none,
-                                            ),
-                                          ),
-                                        ),
-                                        if (_searchController.text.isNotEmpty)
-                                          IconButton(
-                                            icon: Icon(Icons.close,
-                                                color: colors.onSurfaceVariant),
-                                            onPressed: () {
-                                              _searchController.clear();
-                                              setState(() {
-                                                _searchResults = [];
-                                              });
-                                            },
-                                          ),
-                                        SizedBox(
-                                            width: Responsive.isMobile(context)
-                                                ? 4
-                                                : 8),
-                                        InkWell(
-                                          onTap: () {
-                                            setState(() {
-                                              _showFilters = !_showFilters;
-                                            });
-                                          },
-                                          borderRadius: BorderRadius.circular(
-                                              12),
-                                          child: Container(
-                                            padding: EdgeInsets.all(
-                                                Responsive.isMobile(context)
-                                                    ? 8
-                                                    : 10),
-                                            decoration: BoxDecoration(
-                                              color: colors.primary,
-                                              borderRadius: BorderRadius
-                                                  .circular(12),
-                                            ),
-                                            child: Icon(
-                                              _showFilters
-                                                  ? Icons.tune
-                                                  : Icons.tune_rounded,
-                                              color: colors.onPrimary,
-                                              size: Responsive.isMobile(context)
-                                                  ? 18
-                                                  : 20,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            AnimatedCrossFade(
-                              crossFadeState: _showFilters
-                                  ? CrossFadeState.showFirst
-                                  : CrossFadeState.showSecond,
-                              duration: const Duration(milliseconds: 250),
-                              firstChild: Padding(
-                                padding: EdgeInsets.fromLTRB(
-                                  horizontalPadding.left,
-                                  0,
-                                  horizontalPadding.right,
-                                  Responsive.getSpacing(context) / 2,
                                 ),
-                                child: Container(
-                                  width: double.infinity,
-                                  padding: EdgeInsets.all(
-                                      Responsive.isMobile(context) ? 14 : 18),
-                                  decoration: BoxDecoration(
-                                    color: colors.surfaceContainerHighest.withValues(alpha:
-                                      theme.brightness == Brightness.light
-                                          ? 1
-                                          : 0.16,
-                                    ),
-                                    borderRadius: BorderRadius.circular(18),
-                                    border: Border.all(
-                                      color: colors.outlineVariant.withValues(alpha:
-                                          0.8),
+                              ],
+                            ),
+                          ),
+                          AnimatedCrossFade(
+                            crossFadeState: _showFilters
+                                ? CrossFadeState.showFirst
+                                : CrossFadeState.showSecond,
+                            duration: const Duration(milliseconds: 250),
+                            firstChild: Padding(
+                              padding: EdgeInsets.fromLTRB(
+                                horizontalPadding.left,
+                                0,
+                                horizontalPadding.right,
+                                Responsive.getSpacing(context) / 2,
+                              ),
+                              child: Container(
+                                width: double.infinity,
+                                padding: EdgeInsets.all(
+                                  Responsive.isMobile(context) ? 14 : 18,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: colors.surfaceContainerHighest
+                                      .withValues(
+                                        alpha:
+                                            theme.brightness == Brightness.light
+                                            ? 1
+                                            : 0.16,
+                                      ),
+                                  borderRadius: BorderRadius.circular(18),
+                                  border: Border.all(
+                                    color: colors.outlineVariant.withValues(
+                                      alpha: 0.8,
                                     ),
                                   ),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment
-                                        .start,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            child: _InputTile(
-                                              controller: _genreController,
-                                              label:
-                                              AppLocalizations.of(context)!.genreExample,
-                                              icon: Icons.category_outlined,
-                                            ),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: _InputTile(
+                                            controller: _genreController,
+                                            label: AppLocalizations.of(
+                                              context,
+                                            )!.genreExample,
+                                            icon: Icons.category_outlined,
                                           ),
-                                        ],
-                                      ),
-                                      SizedBox(height: Responsive.getSpacing(
-                                          context)),
-                                      Responsive.isMobile(context)
-                                          ? Column(
-                                        children: [
-                                          _InputTile(
-                                            controller: _yearController,
-                                            label: AppLocalizations.of(context)!.year,
-                                            keyboardType: TextInputType.number,
-                                            icon: Icons.calendar_month_outlined,
-                                          ),
-                                          SizedBox(
-                                              height: Responsive.getSpacing(
-                                                  context)),
-                                          Column(
-                                            crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: Responsive.getSpacing(context),
+                                    ),
+                                    Responsive.isMobile(context)
+                                        ? Column(
                                             children: [
-                                              Row(
-                                                mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
+                                              _InputTile(
+                                                controller: _yearController,
+                                                label: AppLocalizations.of(
+                                                  context,
+                                                )!.year,
+                                                keyboardType:
+                                                    TextInputType.number,
+                                                icon: Icons
+                                                    .calendar_month_outlined,
+                                              ),
+                                              SizedBox(
+                                                height: Responsive.getSpacing(
+                                                  context,
+                                                ),
+                                              ),
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
                                                 children: [
-                                                  Text(
-                                                    AppLocalizations.of(context)!.rating,
-                                                    style: TextStyle(
-                                                      color: colors.onSurface,
-                                                      fontWeight: FontWeight
-                                                          .w600,
-                                                      fontSize: 14,
-                                                    ),
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Text(
+                                                        AppLocalizations.of(
+                                                          context,
+                                                        )!.rating,
+                                                        style: TextStyle(
+                                                          color:
+                                                              colors.onSurface,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                          fontSize: 14,
+                                                        ),
+                                                      ),
+                                                      Container(
+                                                        padding:
+                                                            const EdgeInsets.symmetric(
+                                                              horizontal: 10,
+                                                              vertical: 6,
+                                                            ),
+                                                        decoration: BoxDecoration(
+                                                          color: colors
+                                                              .surfaceContainerHighest
+                                                              .withValues(
+                                                                alpha:
+                                                                    theme.brightness ==
+                                                                        Brightness
+                                                                            .light
+                                                                    ? 1
+                                                                    : 0.18,
+                                                              ),
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                12,
+                                                              ),
+                                                        ),
+                                                        child: Text(
+                                                          _rating
+                                                              .toStringAsFixed(
+                                                                1,
+                                                              ),
+                                                          style: TextStyle(
+                                                            color: colors
+                                                                .onSurface,
+                                                            fontWeight:
+                                                                FontWeight.w700,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
-                                                  Container(
-                                                    padding:
-                                                    const EdgeInsets.symmetric(
-                                                      horizontal: 10,
-                                                      vertical: 6,
-                                                    ),
-                                                    decoration: BoxDecoration(
-                                                      color: colors
-                                                          .surfaceContainerHighest
-                                                          .withValues(alpha:
-                                                        theme.brightness ==
-                                                            Brightness.light
-                                                            ? 1
-                                                            : 0.18,
-                                                      ),
-                                                      borderRadius:
-                                                      BorderRadius.circular(12),
-                                                    ),
-                                                    child: Text(
-                                                      _rating.toStringAsFixed(
-                                                          1),
-                                                      style: TextStyle(
-                                                        color: colors.onSurface,
-                                                        fontWeight: FontWeight
-                                                            .w700,
-                                                      ),
-                                                    ),
+                                                  Slider(
+                                                    min: 0,
+                                                    max: 10,
+                                                    divisions: 20,
+                                                    activeColor: colors.primary,
+                                                    value: _rating,
+                                                    onChanged: (val) =>
+                                                        setState(
+                                                          () => _rating = val,
+                                                        ),
                                                   ),
                                                 ],
                                               ),
-                                              Slider(
-                                                min: 0,
-                                                max: 10,
-                                                divisions: 20,
-                                                activeColor: colors.primary,
-                                                value: _rating,
-                                                onChanged: (val) =>
-                                                    setState(
-                                                          () => _rating = val,
-                                                    ),
-                                              ),
                                             ],
-                                          ),
-                                        ],
-                                      )
-                                          : Row(
-                                        children: [
-                                          Expanded(
-                                            child: _InputTile(
-                                              controller: _yearController,
-                                              label: AppLocalizations.of(context)!.year,
-                                              keyboardType: TextInputType
-                                                  .number,
-                                              icon: Icons
-                                                  .calendar_month_outlined,
-                                            ),
-                                          ),
-                                          SizedBox(width: Responsive.getSpacing(
-                                              context)),
-                                          Expanded(
-                                            flex: 2,
-                                            child: Column(
-                                              crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                              children: [
-                                                Row(
-                                                  mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
+                                          )
+                                        : Row(
+                                            children: [
+                                              Expanded(
+                                                child: _InputTile(
+                                                  controller: _yearController,
+                                                  label: AppLocalizations.of(
+                                                    context,
+                                                  )!.year,
+                                                  keyboardType:
+                                                      TextInputType.number,
+                                                  icon: Icons
+                                                      .calendar_month_outlined,
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                width: Responsive.getSpacing(
+                                                  context,
+                                                ),
+                                              ),
+                                              Expanded(
+                                                flex: 2,
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
                                                   children: [
-                                                    Text(
-                                                      'Рейтинг',
-                                                      style: TextStyle(
-                                                        color: colors.onSurface,
-                                                        fontWeight: FontWeight
-                                                            .w600,
-                                                      ),
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        Text(
+                                                          'Рейтинг',
+                                                          style: TextStyle(
+                                                            color: colors
+                                                                .onSurface,
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                          ),
+                                                        ),
+                                                        Container(
+                                                          padding:
+                                                              const EdgeInsets.symmetric(
+                                                                horizontal: 10,
+                                                                vertical: 6,
+                                                              ),
+                                                          decoration: BoxDecoration(
+                                                            color: colors
+                                                                .surfaceContainerHighest
+                                                                .withValues(
+                                                                  alpha:
+                                                                      theme.brightness ==
+                                                                          Brightness
+                                                                              .light
+                                                                      ? 1
+                                                                      : 0.18,
+                                                                ),
+                                                            borderRadius:
+                                                                BorderRadius.circular(
+                                                                  12,
+                                                                ),
+                                                          ),
+                                                          child: Text(
+                                                            _rating
+                                                                .toStringAsFixed(
+                                                                  1,
+                                                                ),
+                                                            style: TextStyle(
+                                                              color: colors
+                                                                  .onSurface,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w700,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
                                                     ),
-                                                    Container(
-                                                      padding:
-                                                      const EdgeInsets
-                                                          .symmetric(
-                                                        horizontal: 10,
-                                                        vertical: 6,
-                                                      ),
-                                                      decoration: BoxDecoration(
-                                                        color: colors
-                                                            .surfaceContainerHighest
-                                                            .withValues(alpha:
-                                                          theme.brightness ==
-                                                              Brightness.light
-                                                              ? 1
-                                                              : 0.18,
-                                                        ),
-                                                        borderRadius:
-                                                        BorderRadius.circular(
-                                                            12),
-                                                      ),
-                                                      child: Text(
-                                                        _rating.toStringAsFixed(
-                                                            1),
-                                                        style: TextStyle(
-                                                          color: colors
-                                                              .onSurface,
-                                                          fontWeight: FontWeight
-                                                              .w700,
-                                                        ),
-                                                      ),
+                                                    Slider(
+                                                      min: 0,
+                                                      max: 10,
+                                                      divisions: 20,
+                                                      activeColor:
+                                                          colors.primary,
+                                                      value: _rating,
+                                                      onChanged: (val) =>
+                                                          setState(
+                                                            () => _rating = val,
+                                                          ),
                                                     ),
                                                   ],
                                                 ),
-                                                Slider(
-                                                  min: 0,
-                                                  max: 10,
-                                                  divisions: 20,
-                                                  activeColor: colors.primary,
-                                                  value: _rating,
-                                                  onChanged: (val) =>
-                                                      setState(
-                                                            () => _rating = val,
-                                                      ),
-                                                ),
-                                              ],
-                                            ),
+                                              ),
+                                            ],
                                           ),
-                                        ],
-                                      ),
-                                      SizedBox(height: Responsive.getSpacing(
-                                          context)),
-                                      SizedBox(
-                                        width: double.infinity,
-                                        child: ElevatedButton.icon(
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: colors.primary,
-                                            foregroundColor: theme.brightness ==
-                                                Brightness.light
-                                                ? Colors.white
-                                                : colors.onPrimary,
-                                            padding: EdgeInsets.symmetric(
-                                              vertical: Responsive.isMobile(
-                                                  context) ? 14 : 16,
-                                            ),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius
-                                                  .circular(14),
-                                            ),
+                                    SizedBox(
+                                      height: Responsive.getSpacing(context),
+                                    ),
+                                    SizedBox(
+                                      width: double.infinity,
+                                      child: ElevatedButton.icon(
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: colors.primary,
+                                          foregroundColor:
+                                              theme.brightness ==
+                                                  Brightness.light
+                                              ? Colors.white
+                                              : colors.onPrimary,
+                                          padding: EdgeInsets.symmetric(
+                                            vertical:
+                                                Responsive.isMobile(context)
+                                                ? 14
+                                                : 16,
                                           ),
-                                          onPressed: _searchByFilters,
-                                          icon: const Icon(Icons.search),
-                                          label: Text(
-                                            AppLocalizations.of(context)!.searchWithFilters,
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w700,
-                                              fontSize: Responsive.isMobile(
-                                                  context) ? 14 : 16,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              14,
                                             ),
                                           ),
                                         ),
+                                        onPressed: _searchByFilters,
+                                        icon: const Icon(Icons.search),
+                                        label: Text(
+                                          AppLocalizations.of(
+                                            context,
+                                          )!.searchWithFilters,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w700,
+                                            fontSize:
+                                                Responsive.isMobile(context)
+                                                ? 14
+                                                : 16,
+                                          ),
+                                        ),
                                       ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              secondChild: const SizedBox.shrink(),
-                            ),
-                            Expanded(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: colors.surfaceContainerHighest.withValues(alpha:
-                                    theme.brightness == Brightness.light
-                                        ? 0.4
-                                        : 0.08,
-                                  ),
-                                  borderRadius: const BorderRadius.vertical(
-                                    top: Radius.circular(24),
-                                  ),
-                                  border: Border.all(
-                                    color: colors.outlineVariant.withValues(alpha:
-                                        0.8),
-                                  ),
-                                ),
-                                child: _searchController.text
-                                    .trim()
-                                    .isNotEmpty ||
-                                    _searchResults.isNotEmpty
-                                    ? _buildSearchResults(
-                                  collectionsState,
-                                  canModify,
-                                  collectionsBloc,
-                                )
-                                    : _buildRecentSearches(
-                                  collectionsState,
-                                  canModify,
-                                  collectionsBloc,
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
+                            secondChild: const SizedBox.shrink(),
+                          ),
+                          Expanded(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: colors.surfaceContainerHighest
+                                    .withValues(
+                                      alpha:
+                                          theme.brightness == Brightness.light
+                                          ? 0.4
+                                          : 0.08,
+                                    ),
+                                borderRadius: const BorderRadius.vertical(
+                                  top: Radius.circular(24),
+                                ),
+                                border: Border.all(
+                                  color: colors.outlineVariant.withValues(
+                                    alpha: 0.8,
+                                  ),
+                                ),
+                              ),
+                              child:
+                                  _searchController.text.trim().isNotEmpty ||
+                                      _searchResults.isNotEmpty
+                                  ? _buildSearchResults(
+                                      collectionsState,
+                                      canModify,
+                                      collectionsBloc,
+                                    )
+                                  : _buildRecentSearches(
+                                      collectionsState,
+                                      canModify,
+                                      collectionsBloc,
+                                    ),
+                            ),
+                          ),
                         ],
                       );
                     },
@@ -655,639 +723,693 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
-  Widget _buildSearchResults(MediaCollectionsState collectionsState,
-      bool canModify,
-      MediaCollectionsBloc collectionsBloc,) {
-  final theme = Theme.of(context);
-  final colors = theme.colorScheme;
-  final isMobile = Responsive.isMobile(context);
-  final horizontalPadding = Responsive.getHorizontalPadding(context);
+  Widget _buildSearchResults(
+    MediaCollectionsState collectionsState,
+    bool canModify,
+    MediaCollectionsBloc collectionsBloc,
+  ) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final isMobile = Responsive.isMobile(context);
+    final horizontalPadding = Responsive.getHorizontalPadding(context);
 
-  if (_loading) {
-    return AnimatedLoadingWidget(message: AppLocalizations.of(context)!.loading);
+    if (_loading) {
+      return AnimatedLoadingWidget(
+        message: AppLocalizations.of(context)!.loading,
+      );
+    }
+
+    if (_searchResults.isEmpty && !_searching) {
+      return Center(
+        child: Padding(
+          padding: horizontalPadding,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.search_off_outlined,
+                size: Responsive.isMobile(context) ? 64 : 80,
+                color: colors.onSurfaceVariant.withValues(alpha: 0.6),
+              ),
+              SizedBox(height: Responsive.getSpacing(context)),
+              Text(
+                'Нічого не знайдено',
+                style: TextStyle(
+                  fontSize: Responsive.isMobile(context) ? 18 : 22,
+                  fontWeight: FontWeight.w600,
+                  color: colors.onSurface,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return isMobile
+        ? _buildSearchResultsList(
+            collectionsState,
+            canModify,
+            collectionsBloc,
+            horizontalPadding,
+          )
+        : _buildSearchResultsGrid(
+            collectionsState,
+            canModify,
+            collectionsBloc,
+            horizontalPadding,
+          );
   }
 
-  if (_searchResults.isEmpty && !_searching) {
-    return Center(
-      child: Padding(
-        padding: horizontalPadding,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.search_off_outlined,
-              size: Responsive.isMobile(context) ? 64 : 80,
-              color: colors.onSurfaceVariant.withValues(alpha: 0.6),
+  Widget _buildSearchResultsList(
+    MediaCollectionsState collectionsState,
+    bool canModify,
+    MediaCollectionsBloc collectionsBloc,
+    EdgeInsets horizontalPadding,
+  ) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
+    return ListView.builder(
+      padding: EdgeInsets.fromLTRB(
+        horizontalPadding.left,
+        Responsive.getSpacing(context) / 2,
+        horizontalPadding.right,
+        20,
+      ),
+      itemCount: _searchResults.length,
+      itemBuilder: (context, index) {
+        final item = _searchResults[index];
+        final isFavorite = canModify && collectionsState.isFavorite(item);
+
+        return Container(
+          margin: EdgeInsets.only(bottom: Responsive.getSpacing(context)),
+          decoration: BoxDecoration(
+            color: theme.cardColor,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: colors.outlineVariant.withValues(alpha: 0.8),
             ),
-            SizedBox(height: Responsive.getSpacing(context)),
-            Text(
-              'Нічого не знайдено',
-              style: TextStyle(
-                fontSize: Responsive.isMobile(context) ? 18 : 22,
-                fontWeight: FontWeight.w600,
-                color: colors.onSurface,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(
+                  alpha: theme.brightness == Brightness.light ? 0.08 : 0.25,
+                ),
+                blurRadius: 12,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(18),
+            onTap: () async {
+              // Зберігаємо в історію тільки для авторизованих користувачів
+              if (canModify) {
+                await _addToHistory(item);
+              }
+              if (!mounted) return;
+              Navigator.of(
+                context,
+              ).push(DetailPageRoute(child: MediaDetailPage(item: item)));
+            },
+            child: Padding(
+              padding: EdgeInsets.all(Responsive.isMobile(context) ? 12 : 16),
+              child: Row(
+                children: [
+                  Hero(
+                    tag: 'poster_${item.id}_${item.isMovie ? 'movie' : 'tv'}',
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(14),
+                      child: SizedBox(
+                        height: Responsive.isMobile(context) ? 120 : 140,
+                        width: Responsive.isMobile(context) ? 90 : 105,
+                        child:
+                            item.posterPath != null &&
+                                item.posterPath!.isNotEmpty
+                            ? CachedNetworkImage(
+                                imageUrl:
+                                    'https://image.tmdb.org/t/p/w300${item.posterPath}',
+                                fit: BoxFit.cover,
+                                memCacheWidth: 300,
+                                memCacheHeight: 450,
+                                placeholder: (context, url) => Container(
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: [
+                                        Colors.blueGrey.shade900,
+                                        Colors.blueGrey.shade700,
+                                      ],
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white.withValues(
+                                        alpha: 0.7,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                errorWidget: (context, url, error) => Container(
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: [
+                                        Colors.blueGrey.shade900,
+                                        Colors.blueGrey.shade700,
+                                      ],
+                                    ),
+                                  ),
+                                  child: Icon(
+                                    Icons.movie,
+                                    color: colors.onSurfaceVariant.withValues(
+                                      alpha: 0.7,
+                                    ),
+                                    size: 32,
+                                  ),
+                                ),
+                              )
+                            : Container(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                    colors: [
+                                      Colors.blueGrey.shade900,
+                                      Colors.blueGrey.shade700,
+                                    ],
+                                  ),
+                                ),
+                                child: Icon(
+                                  Icons.movie,
+                                  color: colors.onSurfaceVariant.withValues(
+                                    alpha: 0.7,
+                                  ),
+                                  size: 32,
+                                ),
+                              ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: Responsive.isMobile(context) ? 14 : 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          item.title,
+                          style: TextStyle(
+                            fontSize: Responsive.isMobile(context) ? 16 : 18,
+                            fontWeight: FontWeight.w700,
+                            color: colors.onSurface,
+                          ),
+                        ),
+                        SizedBox(height: Responsive.isMobile(context) ? 6 : 8),
+                        Text(
+                          item.overview,
+                          maxLines: Responsive.isMobile(context) ? 3 : 4,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: colors.onSurfaceVariant.withValues(
+                              alpha: 0.7,
+                            ),
+                            fontSize: Responsive.isMobile(context) ? 14 : 15,
+                            height: 1.4,
+                          ),
+                        ),
+                        SizedBox(
+                          height: Responsive.isMobile(context) ? 12 : 14,
+                        ),
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: colors.surfaceContainerHighest
+                                    .withValues(
+                                      alpha:
+                                          theme.brightness == Brightness.light
+                                          ? 0.7
+                                          : 0.25,
+                                    ),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: colors.outlineVariant.withValues(
+                                    alpha: 0.8,
+                                  ),
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.star,
+                                    size: 16,
+                                    color: Colors.amber,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    item.rating.toStringAsFixed(1),
+                                    style: TextStyle(
+                                      color: colors.onSurface,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const Spacer(),
+                            IconButton(
+                              onPressed: canModify
+                                  ? () {
+                                      collectionsBloc.add(
+                                        ToggleFavoriteEvent(item),
+                                      );
+                                    }
+                                  : () {
+                                      final l10n = AppLocalizations.of(
+                                        context,
+                                      )!;
+                                      AuthDialog.show(
+                                        context,
+                                        title: l10n.authorizationRequired,
+                                        message: l10n.loginToAddToFavorites,
+                                        icon: Icons.favorite_border,
+                                      );
+                                    },
+                              icon: Icon(
+                                isFavorite
+                                    ? Icons.favorite
+                                    : Icons.favorite_border_rounded,
+                                color: isFavorite
+                                    ? const Color(0xFFFF6B6B)
+                                    : colors.onSurfaceVariant.withValues(
+                                        alpha: 0.7,
+                                      ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
-  return isMobile
-      ? _buildSearchResultsList(
-      collectionsState, canModify, collectionsBloc, horizontalPadding)
-      : _buildSearchResultsGrid(
-      collectionsState, canModify, collectionsBloc, horizontalPadding);
-}
+  Widget _buildSearchResultsGrid(
+    MediaCollectionsState collectionsState,
+    bool canModify,
+    MediaCollectionsBloc collectionsBloc,
+    EdgeInsets horizontalPadding,
+  ) {
+    final columns = Responsive.getGridColumnCount(context);
+    final spacing = Responsive.getSpacing(context);
+    final aspectRatio = Responsive.getMediaCardAspectRatio(context);
 
-  Widget _buildSearchResultsList(MediaCollectionsState collectionsState,
-      bool canModify,
-      MediaCollectionsBloc collectionsBloc,
-      EdgeInsets horizontalPadding,) {
-  final theme = Theme.of(context);
-  final colors = theme.colorScheme;
+    return GridView.builder(
+      padding: EdgeInsets.symmetric(
+        horizontal: horizontalPadding.left,
+        vertical: Responsive.getSpacing(context) / 2,
+      ),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: columns,
+        crossAxisSpacing: spacing,
+        mainAxisSpacing: spacing,
+        childAspectRatio: aspectRatio,
+      ),
+      itemCount: _searchResults.length,
+      itemBuilder: (context, index) {
+        final item = _searchResults[index];
+        final isFavorite = canModify && collectionsState.isFavorite(item);
 
-  return ListView.builder(
-    padding: EdgeInsets.fromLTRB(
-      horizontalPadding.left,
-      Responsive.getSpacing(context) / 2,
-      horizontalPadding.right,
-      20,
-    ),
-    itemCount: _searchResults.length,
-    itemBuilder: (context, index) {
-      final item = _searchResults[index];
-      final isFavorite = canModify && collectionsState.isFavorite(item);
-
-      return Container(
-        margin: EdgeInsets.only(bottom: Responsive.getSpacing(context)),
-        decoration: BoxDecoration(
-          color: theme.cardColor,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(
-            color: colors.outlineVariant.withValues(alpha: 0.8),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha:
-                theme.brightness == Brightness.light ? 0.08 : 0.25,
-              ),
-              blurRadius: 12,
-              offset: const Offset(0, 8),
-            ),
-          ],
-        ),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(18),
+        return MediaPosterCard(
+          item: item,
+          isFavorite: isFavorite,
+          onFavoriteToggle: canModify
+              ? () => collectionsBloc.add(ToggleFavoriteEvent(item))
+              : () {
+                  final l10n = AppLocalizations.of(context)!;
+                  AuthDialog.show(
+                    context,
+                    title: l10n.authorizationRequired,
+                    message: l10n.loginToAddToFavorites,
+                    icon: Icons.favorite_border,
+                  );
+                },
           onTap: () async {
-            // Зберігаємо в історію тільки для авторизованих користувачів
             if (canModify) {
               await _addToHistory(item);
             }
             if (!mounted) return;
-            Navigator.of(context).push(
-              DetailPageRoute(child: MediaDetailPage(item: item)),
-            );
+            Navigator.of(
+              context,
+            ).push(DetailPageRoute(child: MediaDetailPage(item: item)));
           },
-          child: Padding(
-            padding: EdgeInsets.all(Responsive.isMobile(context) ? 12 : 16),
-            child: Row(
-              children: [
-                Hero(
-                  tag: 'poster_${item.id}_${item.isMovie ? 'movie' : 'tv'}',
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(14),
-                    child: SizedBox(
-                      height: Responsive.isMobile(context) ? 120 : 140,
-                      width: Responsive.isMobile(context) ? 90 : 105,
-                      child: item.posterPath != null &&
-                          item.posterPath!.isNotEmpty
-                          ? CachedNetworkImage(
-                        imageUrl: 'https://image.tmdb.org/t/p/w300${item.posterPath}',
-                        fit: BoxFit.cover,
-                        memCacheWidth: 300,
-                        memCacheHeight: 450,
-                        placeholder: (context, url) => Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                Colors.blueGrey.shade900,
-                                Colors.blueGrey.shade700,
-                              ],
-                            ),
-                          ),
-                          child: Center(
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white.withValues(alpha: 0.7),
-                            ),
-                          ),
-                        ),
-                        errorWidget: (context, url, error) => Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                Colors.blueGrey.shade900,
-                                Colors.blueGrey.shade700,
-                              ],
-                            ),
-                          ),
-                          child: Icon(
-                            Icons.movie,
-                            color: colors.onSurfaceVariant.withValues(alpha: 0.7),
-                            size: 32,
-                          ),
-                        ),
-                      )
-                          : Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              Colors.blueGrey.shade900,
-                              Colors.blueGrey.shade700,
-                            ],
-                          ),
-                        ),
-                        child: Icon(
-                          Icons.movie,
-                          color: colors.onSurfaceVariant.withValues(alpha: 0.7),
-                          size: 32,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(width: Responsive.isMobile(context) ? 14 : 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        item.title,
-                        style: TextStyle(
-                          fontSize: Responsive.isMobile(context) ? 16 : 18,
-                          fontWeight: FontWeight.w700,
-                          color: colors.onSurface,
-                        ),
-                      ),
-                      SizedBox(height: Responsive.isMobile(context) ? 6 : 8),
-                      Text(
-                        item.overview,
-                        maxLines: Responsive.isMobile(context) ? 3 : 4,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: colors.onSurfaceVariant.withValues(alpha: 0.7),
-                          fontSize: Responsive.isMobile(context) ? 14 : 15,
-                          height: 1.4,
-                        ),
-                      ),
-                      SizedBox(height: Responsive.isMobile(context) ? 12 : 14),
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 6,
-                            ),
-                            decoration: BoxDecoration(
-                              color: colors.surfaceContainerHighest.withValues(alpha:
-                                theme.brightness == Brightness.light
-                                    ? 0.7
-                                    : 0.25,
-                              ),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: colors.outlineVariant.withValues(alpha: 0.8),
-                              ),
-                            ),
-                            child: Row(
-                              children: [
-                                const Icon(
-                                  Icons.star,
-                                  size: 16,
-                                  color: Colors.amber,
-                                ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  item.rating.toStringAsFixed(1),
-                                  style: TextStyle(
-                                    color: colors.onSurface,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const Spacer(),
-                          IconButton(
-                            onPressed: canModify
-                                ? () {
-                              collectionsBloc.add(ToggleFavoriteEvent(item));
-                            }
-                                : () {
-                              final l10n = AppLocalizations.of(context)!;
-                              AuthDialog.show(
-                                context,
-                                title: l10n.authorizationRequired,
-                                message: l10n.loginToAddToFavorites,
-                                icon: Icons.favorite_border,
-                              );
-                            },
-                            icon: Icon(
-                              isFavorite
-                                  ? Icons.favorite
-                                  : Icons.favorite_border_rounded,
-                              color: isFavorite
-                                  ? const Color(0xFFFF6B6B)
-                                  : colors.onSurfaceVariant.withValues(alpha: 0.7),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    },
-  );
-}
-
-  Widget _buildSearchResultsGrid(MediaCollectionsState collectionsState,
-      bool canModify,
-      MediaCollectionsBloc collectionsBloc,
-      EdgeInsets horizontalPadding,) {
-  final columns = Responsive.getGridColumnCount(context);
-  final spacing = Responsive.getSpacing(context);
-  final aspectRatio = Responsive.getMediaCardAspectRatio(context);
-
-  return GridView.builder(
-    padding: EdgeInsets.symmetric(
-      horizontal: horizontalPadding.left,
-      vertical: Responsive.getSpacing(context) / 2,
-    ),
-    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-      crossAxisCount: columns,
-      crossAxisSpacing: spacing,
-      mainAxisSpacing: spacing,
-      childAspectRatio: aspectRatio,
-    ),
-    itemCount: _searchResults.length,
-    itemBuilder: (context, index) {
-      final item = _searchResults[index];
-      final isFavorite = canModify && collectionsState.isFavorite(item);
-
-      return MediaPosterCard(
-        item: item,
-        isFavorite: isFavorite,
-        onFavoriteToggle: canModify
-            ? () => collectionsBloc.add(ToggleFavoriteEvent(item))
-            : () {
-          final l10n = AppLocalizations.of(context)!;
-          AuthDialog.show(
-            context,
-            title: l10n.authorizationRequired,
-            message: l10n.loginToAddToFavorites,
-            icon: Icons.favorite_border,
-          );
-        },
-        onTap: () async {
-          if (canModify) {
-            await _addToHistory(item);
-          }
-          if (!mounted) return;
-          Navigator.of(context).push(
-            DetailPageRoute(child: MediaDetailPage(item: item)),
-          );
-        },
-      );
-    },
-  );
-}
-
-  Widget _buildRecentSearches(MediaCollectionsState collectionsState,
-      bool canModify,
-      MediaCollectionsBloc collectionsBloc,) {
-  final theme = Theme.of(context);
-  final colors = theme.colorScheme;
-
-  // Показуємо історію тільки для авторизованих користувачів
-  if (!canModify) {
-    return Container(
-      decoration: AppGradients.background(context),
-      child: _UnauthorizedMessage(
-        onLogin: () {
-          Navigator.of(context).pushReplacementNamed(AppConstants.loginRoute);
-        },
-      ),
+        );
+      },
     );
   }
 
-  final horizontalPadding = Responsive.getHorizontalPadding(context);
-  final isMobile = Responsive.isMobile(context);
+  Widget _buildRecentSearches(
+    MediaCollectionsState collectionsState,
+    bool canModify,
+    MediaCollectionsBloc collectionsBloc,
+  ) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
 
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Padding(
-        padding: EdgeInsets.all(horizontalPadding.left),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              AppLocalizations.of(context)!.searchHistory,
-              style: Theme
-                  .of(context)
-                  .textTheme
-                  .titleLarge
-                  ?.copyWith(
-                fontSize: Responsive.isMobile(context) ? 20 : 24,
-              ),
-            ),
-            if (_searchHistory.isNotEmpty)
-              TextButton(
-                onPressed: () async {
-                  await UserPrefs.instance.clearSearchHistory();
-                  await _loadSearchHistory();
-                },
-                child: Text(AppLocalizations.of(context)!.clear),
-              ),
-          ],
-        ),
-      ),
-      Expanded(
-        child: _searchHistory.isEmpty
-            ? Center(
-          child: Padding(
-            padding: horizontalPadding,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.history_outlined,
-                  size: Responsive.isMobile(context) ? 64 : 80,
-                  color: colors.onSurfaceVariant.withValues(alpha: 0.6),
-                ),
-                SizedBox(height: Responsive.getSpacing(context)),
-                Text(
-                  AppLocalizations.of(context)!.searchHistoryEmpty,
-                  style: TextStyle(
-                    fontSize: Responsive.isMobile(context) ? 18 : 22,
-                    fontWeight: FontWeight.w600,
-                    color: colors.onSurface,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        )
-            : isMobile
-            ? _buildRecentSearchesList(
-            collectionsState, collectionsBloc, horizontalPadding)
-            : _buildRecentSearchesGrid(
-            collectionsState, collectionsBloc, horizontalPadding),
-      ),
-    ],
-  );
-}
-
-  Widget _buildRecentSearchesList(MediaCollectionsState collectionsState,
-      MediaCollectionsBloc collectionsBloc,
-      EdgeInsets horizontalPadding,) {
-  final theme = Theme.of(context);
-  final colors = theme.colorScheme;
-
-  return ListView.builder(
-    padding: EdgeInsets.fromLTRB(
-      horizontalPadding.left,
-      0,
-      horizontalPadding.right,
-      20,
-    ),
-    itemCount: _searchHistory.length,
-    itemBuilder: (context, index) {
-      final itemMap = _searchHistory[index];
-      final item = HomeMediaItem(
-        id: itemMap['id'] as int,
-        title: itemMap['title'] as String,
-        overview: itemMap['overview'] as String,
-        posterPath: itemMap['posterPath'] as String?,
-        rating: (itemMap['rating'] as num).toDouble(),
-        isMovie: itemMap['isMovie'] as bool,
-      );
-      final isFavorite = collectionsState.isFavorite(item);
-
+    // Показуємо історію тільки для авторизованих користувачів
+    if (!canModify) {
       return Container(
-        margin: EdgeInsets.only(bottom: Responsive.getSpacing(context)),
-        decoration: BoxDecoration(
-          color: theme.cardColor,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(
-            color: colors.outlineVariant.withValues(alpha: 0.8),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha:
-                theme.brightness == Brightness.light
-                    ? 0.08
-                    : 0.25,
-              ),
-              blurRadius: 12,
-              offset: const Offset(0, 8),
-            ),
-          ],
-        ),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(18),
-          onTap: () {
-            Navigator.of(context).push(
-              DetailPageRoute(child: MediaDetailPage(item: item)),
-            );
+        decoration: AppGradients.background(context),
+        child: _UnauthorizedMessage(
+          onLogin: () {
+            Navigator.of(context).pushReplacementNamed(AppConstants.loginRoute);
           },
-          child: Padding(
-            padding: EdgeInsets.all(Responsive.isMobile(context) ? 12 : 16),
-            child: Row(
-              children: [
-                Hero(
-                  tag: 'poster_${item.id}_${item.isMovie ? 'movie' : 'tv'}',
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(14),
-                    child: SizedBox(
-                      height: Responsive.isMobile(context) ? 120 : 140,
-                      width: Responsive.isMobile(context) ? 90 : 105,
-                      child: item.posterPath != null &&
-                          item.posterPath!.isNotEmpty
-                          ? CachedNetworkImage(
-                        imageUrl: 'https://image.tmdb.org/t/p/w300${item.posterPath}',
-                        fit: BoxFit.cover,
-                        memCacheWidth: 300,
-                        memCacheHeight: 450,
-                        placeholder: (context, url) => Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                Colors.blueGrey.shade900,
-                                Colors.blueGrey.shade700,
-                              ],
-                            ),
-                          ),
-                          child: Center(
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white.withValues(alpha: 0.7),
-                            ),
+        ),
+      );
+    }
+
+    final horizontalPadding = Responsive.getHorizontalPadding(context);
+    final isMobile = Responsive.isMobile(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.all(horizontalPadding.left),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                AppLocalizations.of(context)!.searchHistory,
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontSize: Responsive.isMobile(context) ? 20 : 24,
+                ),
+              ),
+              if (_searchHistory.isNotEmpty)
+                TextButton(
+                  onPressed: () async {
+                    await UserPrefs.instance.clearSearchHistory();
+                    await _loadSearchHistory();
+                  },
+                  child: Text(AppLocalizations.of(context)!.clear),
+                ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: _searchHistory.isEmpty
+              ? Center(
+                  child: Padding(
+                    padding: horizontalPadding,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.history_outlined,
+                          size: Responsive.isMobile(context) ? 64 : 80,
+                          color: colors.onSurfaceVariant.withValues(alpha: 0.6),
+                        ),
+                        SizedBox(height: Responsive.getSpacing(context)),
+                        Text(
+                          AppLocalizations.of(context)!.searchHistoryEmpty,
+                          style: TextStyle(
+                            fontSize: Responsive.isMobile(context) ? 18 : 22,
+                            fontWeight: FontWeight.w600,
+                            color: colors.onSurface,
                           ),
                         ),
-                        errorWidget: (context, url, error) => Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                Colors.blueGrey.shade900,
-                                Colors.blueGrey.shade700,
-                              ],
-                            ),
-                          ),
-                          child: Icon(
-                            Icons.movie,
-                            color: colors.onSurfaceVariant
-                                .withValues(alpha: 0.7),
-                            size: 32,
-                          ),
-                        ),
-                      )
-                          : Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              Colors.blueGrey.shade900,
-                              Colors.blueGrey.shade700,
-                            ],
-                          ),
-                        ),
-                        child: Icon(
-                          Icons.movie,
-                          color: colors.onSurfaceVariant
-                              .withValues(alpha: 0.7),
-                          size: 32,
-                        ),
+                      ],
+                    ),
+                  ),
+                )
+              : isMobile
+              ? _buildRecentSearchesList(
+                  collectionsState,
+                  collectionsBloc,
+                  horizontalPadding,
+                )
+              : _buildRecentSearchesGrid(
+                  collectionsState,
+                  collectionsBloc,
+                  horizontalPadding,
+                ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRecentSearchesList(
+    MediaCollectionsState collectionsState,
+    MediaCollectionsBloc collectionsBloc,
+    EdgeInsets horizontalPadding,
+  ) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
+    return ListView.builder(
+      padding: EdgeInsets.fromLTRB(
+        horizontalPadding.left,
+        0,
+        horizontalPadding.right,
+        20,
+      ),
+      itemCount: _searchHistory.length,
+      itemBuilder: (context, index) {
+        final itemMap = _searchHistory[index];
+        final item = HomeMediaItem(
+          id: itemMap['id'] as int,
+          title: itemMap['title'] as String,
+          overview: itemMap['overview'] as String,
+          posterPath: itemMap['posterPath'] as String?,
+          rating: (itemMap['rating'] as num).toDouble(),
+          isMovie: itemMap['isMovie'] as bool,
+        );
+        final isFavorite = collectionsState.isFavorite(item);
+
+        return Container(
+          margin: EdgeInsets.only(bottom: Responsive.getSpacing(context)),
+          decoration: BoxDecoration(
+            color: theme.cardColor,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: colors.outlineVariant.withValues(alpha: 0.8),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(
+                  alpha: theme.brightness == Brightness.light ? 0.08 : 0.25,
+                ),
+                blurRadius: 12,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(18),
+            onTap: () {
+              Navigator.of(
+                context,
+              ).push(DetailPageRoute(child: MediaDetailPage(item: item)));
+            },
+            child: Padding(
+              padding: EdgeInsets.all(Responsive.isMobile(context) ? 12 : 16),
+              child: Row(
+                children: [
+                  Hero(
+                    tag: 'poster_${item.id}_${item.isMovie ? 'movie' : 'tv'}',
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(14),
+                      child: SizedBox(
+                        height: Responsive.isMobile(context) ? 120 : 140,
+                        width: Responsive.isMobile(context) ? 90 : 105,
+                        child:
+                            item.posterPath != null &&
+                                item.posterPath!.isNotEmpty
+                            ? CachedNetworkImage(
+                                imageUrl:
+                                    'https://image.tmdb.org/t/p/w300${item.posterPath}',
+                                fit: BoxFit.cover,
+                                memCacheWidth: 300,
+                                memCacheHeight: 450,
+                                placeholder: (context, url) => Container(
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: [
+                                        Colors.blueGrey.shade900,
+                                        Colors.blueGrey.shade700,
+                                      ],
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white.withValues(
+                                        alpha: 0.7,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                errorWidget: (context, url, error) => Container(
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: [
+                                        Colors.blueGrey.shade900,
+                                        Colors.blueGrey.shade700,
+                                      ],
+                                    ),
+                                  ),
+                                  child: Icon(
+                                    Icons.movie,
+                                    color: colors.onSurfaceVariant.withValues(
+                                      alpha: 0.7,
+                                    ),
+                                    size: 32,
+                                  ),
+                                ),
+                              )
+                            : Container(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                    colors: [
+                                      Colors.blueGrey.shade900,
+                                      Colors.blueGrey.shade700,
+                                    ],
+                                  ),
+                                ),
+                                child: Icon(
+                                  Icons.movie,
+                                  color: colors.onSurfaceVariant.withValues(
+                                    alpha: 0.7,
+                                  ),
+                                  size: 32,
+                                ),
+                              ),
                       ),
                     ),
                   ),
-                ),
-                SizedBox(width: Responsive.isMobile(context) ? 14 : 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        item.title,
-                        style: TextStyle(
-                          fontSize: Responsive.isMobile(context) ? 16 : 18,
-                          fontWeight: FontWeight.w700,
-                          color: colors.onSurface,
+                  SizedBox(width: Responsive.isMobile(context) ? 14 : 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          item.title,
+                          style: TextStyle(
+                            fontSize: Responsive.isMobile(context) ? 16 : 18,
+                            fontWeight: FontWeight.w700,
+                            color: colors.onSurface,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: Responsive.isMobile(context) ? 6 : 8),
-                      Text(
-                        item.overview,
-                        maxLines: Responsive.isMobile(context) ? 3 : 4,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: colors.onSurfaceVariant
-                              .withValues(alpha: 0.7),
-                          fontSize: Responsive.isMobile(context) ? 14 : 15,
-                          height: 1.4,
+                        SizedBox(height: Responsive.isMobile(context) ? 6 : 8),
+                        Text(
+                          item.overview,
+                          maxLines: Responsive.isMobile(context) ? 3 : 4,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: colors.onSurfaceVariant.withValues(
+                              alpha: 0.7,
+                            ),
+                            fontSize: Responsive.isMobile(context) ? 14 : 15,
+                            height: 1.4,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: Responsive.isMobile(context) ? 12 : 14),
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 6,
-                            ),
-                            decoration: BoxDecoration(
-                              color: colors.surfaceContainerHighest
-                                  .withValues(alpha:
-                                theme.brightness ==
-                                    Brightness.light
-                                    ? 0.7
-                                    : 0.25,
+                        SizedBox(
+                          height: Responsive.isMobile(context) ? 12 : 14,
+                        ),
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 6,
                               ),
-                              borderRadius:
-                              BorderRadius.circular(12),
-                              border: Border.all(
-                                color: colors.outlineVariant
-                                    .withValues(alpha: 0.8),
-                              ),
-                            ),
-                            child: Row(
-                              children: [
-                                const Icon(
-                                  Icons.star,
-                                  size: 16,
-                                  color: Colors.amber,
-                                ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  item.rating.toStringAsFixed(1),
-                                  style: TextStyle(
-                                    color: colors.onSurface,
-                                    fontWeight: FontWeight.w700,
+                              decoration: BoxDecoration(
+                                color: colors.surfaceContainerHighest
+                                    .withValues(
+                                      alpha:
+                                          theme.brightness == Brightness.light
+                                          ? 0.7
+                                          : 0.25,
+                                    ),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: colors.outlineVariant.withValues(
+                                    alpha: 0.8,
                                   ),
                                 ),
-                              ],
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.star,
+                                    size: 16,
+                                    color: Colors.amber,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    item.rating.toStringAsFixed(1),
+                                    style: TextStyle(
+                                      color: colors.onSurface,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                          const Spacer(),
-                          IconButton(
-                            onPressed: () {
-                              collectionsBloc.add(ToggleFavoriteEvent(item));
-                            },
-                            icon: Icon(
-                              isFavorite
-                                  ? Icons.favorite
-                                  : Icons.favorite_border_rounded,
-                              color: isFavorite
-                                  ? const Color(0xFFFF6B6B)
-                                  : colors.onSurfaceVariant
-                                  .withValues(alpha: 0.7),
+                            const Spacer(),
+                            IconButton(
+                              onPressed: () {
+                                collectionsBloc.add(ToggleFavoriteEvent(item));
+                              },
+                              icon: Icon(
+                                isFavorite
+                                    ? Icons.favorite
+                                    : Icons.favorite_border_rounded,
+                                color: isFavorite
+                                    ? const Color(0xFFFF6B6B)
+                                    : colors.onSurfaceVariant.withValues(
+                                        alpha: 0.7,
+                                      ),
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
-      );
-    },
-  );
-}
+        );
+      },
+    );
+  }
 
-  Widget _buildRecentSearchesGrid(MediaCollectionsState collectionsState,
-      MediaCollectionsBloc collectionsBloc,
-      EdgeInsets horizontalPadding,) {
+  Widget _buildRecentSearchesGrid(
+    MediaCollectionsState collectionsState,
+    MediaCollectionsBloc collectionsBloc,
+    EdgeInsets horizontalPadding,
+  ) {
     final columns = Responsive.getGridColumnCount(context);
     final spacing = Responsive.getSpacing(context);
     final aspectRatio = Responsive.getMediaCardAspectRatio(context);
@@ -1319,11 +1441,12 @@ class _SearchPageState extends State<SearchPage> {
         return MediaPosterCard(
           item: item,
           isFavorite: isFavorite,
-          onFavoriteToggle: () => collectionsBloc.add(ToggleFavoriteEvent(item)),
+          onFavoriteToggle: () =>
+              collectionsBloc.add(ToggleFavoriteEvent(item)),
           onTap: () {
-            Navigator.of(context).push(
-              DetailPageRoute(child: MediaDetailPage(item: item)),
-            );
+            Navigator.of(
+              context,
+            ).push(DetailPageRoute(child: MediaDetailPage(item: item)));
           },
         );
       },
@@ -1356,19 +1479,15 @@ class _InputTile extends StatelessWidget {
         vertical: isMobile ? 10 : 12,
       ),
       decoration: BoxDecoration(
-        color: colors.surfaceContainerHighest.withValues(alpha:
-          theme.brightness == Brightness.light ? 1 : 0.18,
+        color: colors.surfaceContainerHighest.withValues(
+          alpha: theme.brightness == Brightness.light ? 1 : 0.18,
         ),
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: colors.outlineVariant.withValues(alpha: 0.8)),
       ),
       child: Row(
         children: [
-          Icon(
-            icon,
-            color: colors.onSurfaceVariant,
-            size: isMobile ? 20 : 24,
-          ),
+          Icon(icon, color: colors.onSurfaceVariant, size: isMobile ? 20 : 24),
           SizedBox(width: isMobile ? 10 : 12),
           Expanded(
             child: TextField(

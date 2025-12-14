@@ -25,33 +25,42 @@ void main() {
       expect(tvShow.genreIds, [1, 2, 3]);
     });
 
-    test('fullPosterUrl should return correct URL when posterPath is provided', () {
-      // Arrange
-      final tvShow = TvShowEntity(
-        id: 1,
-        name: 'Test TV Show',
-        overview: 'Test overview',
-        posterPath: '/poster.jpg',
-        voteAverage: 8.5,
-      );
+    test(
+      'fullPosterUrl should return correct URL when posterPath is provided',
+      () {
+        // Arrange
+        final tvShow = TvShowEntity(
+          id: 1,
+          name: 'Test TV Show',
+          overview: 'Test overview',
+          posterPath: '/poster.jpg',
+          voteAverage: 8.5,
+        );
 
-      // Act & Assert
-      expect(tvShow.fullPosterUrl, 'https://image.tmdb.org/t/p/w500/poster.jpg');
-    });
+        // Act & Assert
+        expect(
+          tvShow.fullPosterUrl,
+          'https://image.tmdb.org/t/p/w500/poster.jpg',
+        );
+      },
+    );
 
-    test('fullPosterUrl should return empty string when posterPath is null', () {
-      // Arrange
-      final tvShow = TvShowEntity(
-        id: 1,
-        name: 'Test TV Show',
-        overview: 'Test overview',
-        posterPath: null,
-        voteAverage: 8.5,
-      );
+    test(
+      'fullPosterUrl should return empty string when posterPath is null',
+      () {
+        // Arrange
+        final tvShow = TvShowEntity(
+          id: 1,
+          name: 'Test TV Show',
+          overview: 'Test overview',
+          posterPath: null,
+          voteAverage: 8.5,
+        );
 
-      // Act & Assert
-      expect(tvShow.fullPosterUrl, '');
-    });
+        // Act & Assert
+        expect(tvShow.fullPosterUrl, '');
+      },
+    );
 
     test('hasPoster should return true when posterPath is provided', () {
       // Arrange
@@ -82,4 +91,3 @@ void main() {
     });
   });
 }
-

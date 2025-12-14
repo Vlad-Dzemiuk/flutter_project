@@ -29,4 +29,3 @@ class RecordWatchEvent extends MediaCollectionsEvent {
   @override
   List<Object?> get props => [item];
 }
-

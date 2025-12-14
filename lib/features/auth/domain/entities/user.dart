@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 /// Domain entity для користувача
-/// 
+///
 /// Це чиста domain entity без залежностей від data layer
 class User extends Equatable {
   final int id;
@@ -35,5 +35,3 @@ class User extends Equatable {
     );
   }
 }
-
-

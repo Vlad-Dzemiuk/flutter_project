@@ -12,11 +12,7 @@ class ProfileState extends Equatable {
 
   const ProfileState({this.loading = false, this.error = '', this.user});
 
-  ProfileState copyWith({
-    bool? loading,
-    String? error,
-    UserProfile? user,
-  }) {
+  ProfileState copyWith({bool? loading, String? error, UserProfile? user}) {
     return ProfileState(
       loading: loading ?? this.loading,
       error: error ?? this.error,
@@ -31,7 +27,8 @@ class ProfileState extends Equatable {
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final GetUserProfileUseCase getUserProfileUseCase;
 
-  ProfileBloc({required this.getUserProfileUseCase}) : super(const ProfileState()) {
+  ProfileBloc({required this.getUserProfileUseCase})
+    : super(const ProfileState()) {
     on<LoadProfileEvent>(_onLoadProfile);
     add(const LoadProfileEvent());
   }
@@ -44,9 +41,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     try {
       // Використання use case з retry механізмом для мережевих помилок
       final user = await RetryHelper.retry(
-        operation: () => getUserProfileUseCase(
-          const GetUserProfileParams(userId: 1),
-        ),
+        operation: () =>
+            getUserProfileUseCase(const GetUserProfileParams(userId: 1)),
       );
       emit(state.copyWith(loading: false, user: user, error: ''));
     } catch (e) {
@@ -57,29 +53,30 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
   String _getUserFriendlyError(dynamic error) {
     final errorString = error.toString().toLowerCase();
-    
-    if (errorString.contains('socketexception') || 
+
+    if (errorString.contains('socketexception') ||
         errorString.contains('failed host lookup') ||
         errorString.contains('no address associated with hostname')) {
       return 'Немає інтернет-з\'єднання. Перевірте підключення до мережі.';
     }
-    
+
     if (errorString.contains('timeout') || errorString.contains('timed out')) {
       return 'Час очікування вичерпано. Перевірте інтернет-з\'єднання.';
     }
-    
+
     if (errorString.contains('connection') || errorString.contains('network')) {
       return 'Помилка підключення до сервера. Спробуйте пізніше.';
     }
-    
-    if (errorString.contains('unauthorized') || errorString.contains('permission')) {
+
+    if (errorString.contains('unauthorized') ||
+        errorString.contains('permission')) {
       return 'Недостатньо прав доступу. Увійдіть в акаунт.';
     }
-    
+
     if (errorString.contains('not found') || errorString.contains('404')) {
       return 'Профіль користувача не знайдено.';
     }
-    
+
     // Для інших помилок повертаємо загальне повідомлення
     return 'Не вдалося завантажити профіль. Спробуйте пізніше.';
   }

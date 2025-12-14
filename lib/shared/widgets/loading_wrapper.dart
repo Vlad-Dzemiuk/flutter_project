@@ -8,10 +8,7 @@ import 'package:project/shared/widgets/animated_loading_widget.dart';
 class LoadingWrapper extends StatefulWidget {
   final Widget child;
 
-  const LoadingWrapper({
-    super.key,
-    required this.child,
-  });
+  const LoadingWrapper({super.key, required this.child});
 
   @override
   State<LoadingWrapper> createState() => _LoadingWrapperState();
@@ -45,7 +42,7 @@ class _LoadingWrapperState extends State<LoadingWrapper> {
     final route = ModalRoute.of(context);
     final routeName = route?.settings.name;
     final isAuthPage = routeName == AppConstants.loginRoute;
-    
+
     // Якщо це не сторінка авторизації і головна сторінка ще не завантажена, показуємо завантаження
     if (!isAuthPage && !_loadingStateService.isHomePageLoaded) {
       return const AnimatedLoadingWidget(message: 'Завантаження...');
@@ -54,4 +51,3 @@ class _LoadingWrapperState extends State<LoadingWrapper> {
     return widget.child;
   }
 }
-

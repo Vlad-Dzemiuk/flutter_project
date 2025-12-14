@@ -19,11 +19,10 @@ class UpdateProfileParams {
 }
 
 /// Use case для оновлення профілю користувача
-/// 
+///
 /// Валідує дані та оновлює профіль користувача
 /// Повертає domain entity (User), а не data model
-class UpdateProfileUseCase
-    implements UseCase<User, UpdateProfileParams> {
+class UpdateProfileUseCase implements UseCase<User, UpdateProfileParams> {
   final AuthRepository repository;
 
   UpdateProfileUseCase(this.repository);
@@ -31,7 +30,7 @@ class UpdateProfileUseCase
   @override
   Future<User> call(UpdateProfileParams params) async {
     // Бізнес-логіка: валідація та оновлення профілю
-    
+
     // Перевірка, чи користувач авторизований
     if (repository.currentUser == null) {
       throw Exception('Користувач не авторизований');
@@ -50,9 +49,10 @@ class UpdateProfileUseCase
     // Валідація URL аватара (тільки для URL, не для локальних файлів)
     // Якщо avatarUrl вказано і це не локальний файл (починається з http/https),
     // то валідуємо формат URL
-    if (params.avatarUrl != null && 
+    if (params.avatarUrl != null &&
         params.avatarUrl!.isNotEmpty &&
-        (params.avatarUrl!.startsWith('http://') || params.avatarUrl!.startsWith('https://'))) {
+        (params.avatarUrl!.startsWith('http://') ||
+            params.avatarUrl!.startsWith('https://'))) {
       // Додаткова валідація URL (опціонально)
       try {
         Uri.parse(params.avatarUrl!);
@@ -75,4 +75,3 @@ class UpdateProfileUseCase
     return UserMapper.toEntity(updatedLocalUser);
   }
 }
-

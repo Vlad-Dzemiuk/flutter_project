@@ -23,18 +23,17 @@ void main() {
     mockGetPopularContentUseCase = MockGetPopularContentUseCase();
     mockSearchMediaUseCase = MockSearchMediaUseCase();
     // Mock the use cases to return default values to prevent errors during initialization
-    when(() => mockGetPopularContentUseCase(any()))
-        .thenAnswer((_) async => const PopularContentResult(
-          popularMovies: [],
-          popularTvShows: [],
-          allMovies: [],
-          allTvShows: [],
-        ));
-    when(() => mockSearchMediaUseCase(any()))
-        .thenAnswer((_) async => const SearchMediaResult(
-          results: [],
-          hasMore: false,
-        ));
+    when(() => mockGetPopularContentUseCase(any())).thenAnswer(
+      (_) async => const PopularContentResult(
+        popularMovies: [],
+        popularTvShows: [],
+        allMovies: [],
+        allTvShows: [],
+      ),
+    );
+    when(() => mockSearchMediaUseCase(any())).thenAnswer(
+      (_) async => const SearchMediaResult(results: [], hasMore: false),
+    );
     homeBloc = HomeBloc(
       getPopularContentUseCase: mockGetPopularContentUseCase,
       searchMediaUseCase: mockSearchMediaUseCase,
@@ -55,15 +54,19 @@ void main() {
           allMovies: [],
           allTvShows: [],
         );
-        when(() => mockGetPopularContentUseCase(any()))
-            .thenAnswer((_) async => result);
+        when(
+          () => mockGetPopularContentUseCase(any()),
+        ).thenAnswer((_) async => result);
         return HomeBloc(
           getPopularContentUseCase: mockGetPopularContentUseCase,
           searchMediaUseCase: mockSearchMediaUseCase,
         );
       },
-      wait: const Duration(milliseconds: 200), // Wait for initial LoadContentEvent to complete
-      skip: 2, // Skip initial LoadContentEvent states (loading: true, loading: false)
+      wait: const Duration(
+        milliseconds: 200,
+      ), // Wait for initial LoadContentEvent to complete
+      skip:
+          2, // Skip initial LoadContentEvent states (loading: true, loading: false)
       act: (bloc) => bloc.add(const LoadContentEvent()),
       expect: () => [
         isA<HomeState>().having((s) => s.loading, 'loading', true),
@@ -74,27 +77,24 @@ void main() {
     blocTest<HomeBloc, HomeState>(
       'emits error state when LoadContentEvent fails',
       build: () {
-        when(() => mockGetPopularContentUseCase(any()))
-            .thenThrow(Exception('Network error'));
+        when(
+          () => mockGetPopularContentUseCase(any()),
+        ).thenThrow(Exception('Network error'));
         return HomeBloc(
           getPopularContentUseCase: mockGetPopularContentUseCase,
           searchMediaUseCase: mockSearchMediaUseCase,
         );
       },
-      wait: const Duration(milliseconds: 200), // Wait for initial LoadContentEvent to complete
+      wait: const Duration(
+        milliseconds: 200,
+      ), // Wait for initial LoadContentEvent to complete
       skip: 2, // Skip initial LoadContentEvent states
       act: (bloc) => bloc.add(const LoadContentEvent()),
       expect: () => [
         isA<HomeState>().having((s) => s.loading, 'loading', true),
-        isA<HomeState>().having(
-          (s) => s.loading,
-          'loading',
-          false,
-        ).having(
-          (s) => s.error,
-          'error',
-          isNotEmpty,
-        ),
+        isA<HomeState>()
+            .having((s) => s.loading, 'loading', false)
+            .having((s) => s.error, 'error', isNotEmpty),
       ],
     );
 
@@ -108,29 +108,24 @@ void main() {
           ],
           hasMore: false,
         );
-        when(() => mockSearchMediaUseCase(any()))
-            .thenAnswer((_) async => result);
+        when(
+          () => mockSearchMediaUseCase(any()),
+        ).thenAnswer((_) async => result);
         return HomeBloc(
           getPopularContentUseCase: mockGetPopularContentUseCase,
           searchMediaUseCase: mockSearchMediaUseCase,
         );
       },
-      wait: const Duration(milliseconds: 200), // Wait for initial LoadContentEvent to complete
+      wait: const Duration(
+        milliseconds: 200,
+      ), // Wait for initial LoadContentEvent to complete
       skip: 2, // Skip initial LoadContentEvent states
-      act: (bloc) => bloc.add(
-        const SearchEvent(query: 'test'),
-      ),
+      act: (bloc) => bloc.add(const SearchEvent(query: 'test')),
       expect: () => [
         isA<HomeState>().having((s) => s.searching, 'searching', true),
-        isA<HomeState>().having(
-          (s) => s.searching,
-          'searching',
-          false,
-        ).having(
-          (s) => s.searchResults.length,
-          'searchResults.length',
-          2,
-        ),
+        isA<HomeState>()
+            .having((s) => s.searching, 'searching', false)
+            .having((s) => s.searchResults.length, 'searchResults.length', 2),
       ],
     );
 
@@ -142,12 +137,12 @@ void main() {
           searchMediaUseCase: mockSearchMediaUseCase,
         );
       },
-      wait: const Duration(milliseconds: 200), // Wait for initial LoadContentEvent to complete
+      wait: const Duration(
+        milliseconds: 200,
+      ), // Wait for initial LoadContentEvent to complete
       skip: 2, // Skip initial LoadContentEvent states
       seed: () => HomeState(
-        searchResults: [
-          TestDataFactory.createHomeMediaItem(id: 1),
-        ],
+        searchResults: [TestDataFactory.createHomeMediaItem(id: 1)],
         searchQuery: 'test',
       ),
       act: (bloc) => bloc.add(const ClearSearchEvent()),
@@ -162,5 +157,5 @@ void main() {
 
 class MockGetPopularContentUseCase extends Mock
     implements GetPopularContentUseCase {}
-class MockSearchMediaUseCase extends Mock implements SearchMediaUseCase {}
 
+class MockSearchMediaUseCase extends Mock implements SearchMediaUseCase {}

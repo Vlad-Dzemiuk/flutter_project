@@ -14,7 +14,9 @@ void main() {
       IntegrationTestHelper.setupErrorHandling();
     });
 
-    testWidgets('User can navigate to settings page', (WidgetTester tester) async {
+    testWidgets('User can navigate to settings page', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
       tester.takeException(); // Очищаємо overflow помилки
@@ -48,7 +50,9 @@ void main() {
       }
     });
 
-    testWidgets('User can change theme in settings', (WidgetTester tester) async {
+    testWidgets('User can change theme in settings', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
       tester.takeException(); // Очищаємо overflow помилки
@@ -90,7 +94,9 @@ void main() {
       }
     });
 
-    testWidgets('User can change language in settings', (WidgetTester tester) async {
+    testWidgets('User can change language in settings', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
       tester.takeException(); // Очищаємо overflow помилки
@@ -132,7 +138,9 @@ void main() {
       }
     });
 
-    testWidgets('User can navigate back from settings', (WidgetTester tester) async {
+    testWidgets('User can navigate back from settings', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
       tester.takeException(); // Очищаємо overflow помилки
@@ -171,4 +179,3 @@ void main() {
     });
   });
 }
-

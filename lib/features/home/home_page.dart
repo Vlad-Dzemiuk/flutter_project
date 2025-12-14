@@ -54,24 +54,24 @@ class _HomePageState extends State<HomePage> {
     final genreName = _genreController.text.trim();
     final year = int.tryParse(_yearController.text);
 
-    bloc.add(SearchEvent(
-      query: query.isEmpty ? null : query,
-      genreName: genreName.isEmpty ? null : genreName,
-      year: year,
-      rating: _rating,
-      loadMore: loadMore,
-    ));
+    bloc.add(
+      SearchEvent(
+        query: query.isEmpty ? null : query,
+        genreName: genreName.isEmpty ? null : genreName,
+        year: year,
+        rating: _rating,
+        loadMore: loadMore,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final loadingStateService = getIt<LoadingStateService>();
-    
+
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (_) => getIt<HomeBloc>(),
-        ),
+        BlocProvider(create: (_) => getIt<HomeBloc>()),
         BlocProvider.value(value: getIt<MediaCollectionsBloc>()),
       ],
       child: BlocBuilder<HomeBloc, HomeState>(
@@ -91,10 +91,12 @@ class _HomePageState extends State<HomePage> {
           // Завантаження вважається завершеним, коли:
           // 1. Не завантажується (loading = false)
           // 2. Не в режимі пошуку (searchResults.isEmpty)
-          final isLoadingComplete = !state.loading && state.searchResults.isEmpty;
-          
+          final isLoadingComplete =
+              !state.loading && state.searchResults.isEmpty;
+
           // Всі категорії мають дані
-          final allMediaLoaded = isLoadingComplete &&
+          final allMediaLoaded =
+              isLoadingComplete &&
               state.popularMovies.isNotEmpty &&
               state.popularTvShows.isNotEmpty &&
               state.allMovies.isNotEmpty &&
@@ -114,7 +116,7 @@ class _HomePageState extends State<HomePage> {
           if (state.loading && state.searchResults.isEmpty) {
             return AnimatedLoadingWidget(message: l10n.loading);
           }
-          
+
           // Якщо завантаження завершено, але не всі дані завантажені, показуємо завантаження
           if (isLoadingComplete && !allMediaLoaded && state.error.isEmpty) {
             return AnimatedLoadingWidget(message: l10n.loading);
@@ -150,79 +152,96 @@ class _HomePageState extends State<HomePage> {
                         : state.error.isNotEmpty
                         ? _buildErrorWidget(context, state.error)
                         : RefreshIndicator(
-                      onRefresh: () async {
-                        context.read<HomeBloc>().add(const LoadContentEvent());
-                      },
-                      edgeOffset: 80,
-                      child: LayoutBuilder(
-                        builder: (context, constraints) {
-                          final horizontalPadding = Responsive
-                              .getHorizontalPadding(context);
-                          return ListView(
-                            physics: const BouncingScrollPhysics(),
-                            padding: EdgeInsets.only(
-                              left: horizontalPadding.left,
-                              right: horizontalPadding.right,
-                              bottom: 24,
-                              top: 0,
+                            onRefresh: () async {
+                              context.read<HomeBloc>().add(
+                                const LoadContentEvent(),
+                              );
+                            },
+                            edgeOffset: 80,
+                            child: LayoutBuilder(
+                              builder: (context, constraints) {
+                                final horizontalPadding =
+                                    Responsive.getHorizontalPadding(context);
+                                return ListView(
+                                  physics: const BouncingScrollPhysics(),
+                                  padding: EdgeInsets.only(
+                                    left: horizontalPadding.left,
+                                    right: horizontalPadding.right,
+                                    bottom: 24,
+                                    top: 0,
+                                  ),
+                                  children: [
+                                    const HomeHeaderWidget(),
+                                    SizedBox(
+                                      height: Responsive.getSpacing(context),
+                                    ),
+                                    MediaSliderSection(
+                                      title: AppLocalizations.of(
+                                        context,
+                                      )!.popularMovies,
+                                      items: state.popularMovies
+                                          .take(10)
+                                          .toList(),
+                                      onSeeMore: () => _openMediaList(
+                                        context,
+                                        MediaListCategory.popularMovies,
+                                        AppLocalizations.of(
+                                          context,
+                                        )!.popularMovies,
+                                      ),
+                                      onAuthRequired: () =>
+                                          _showAuthRequiredDialog(context),
+                                    ),
+                                    MediaSliderSection(
+                                      title: AppLocalizations.of(
+                                        context,
+                                      )!.popularTvShows,
+                                      items: state.popularTvShows
+                                          .take(10)
+                                          .toList(),
+                                      onSeeMore: () => _openMediaList(
+                                        context,
+                                        MediaListCategory.popularTv,
+                                        AppLocalizations.of(
+                                          context,
+                                        )!.popularTvShows,
+                                      ),
+                                      onAuthRequired: () =>
+                                          _showAuthRequiredDialog(context),
+                                    ),
+                                    MediaSliderSection(
+                                      title: AppLocalizations.of(
+                                        context,
+                                      )!.allMovies,
+                                      items: state.allMovies.take(10).toList(),
+                                      onSeeMore: () => _openMediaList(
+                                        context,
+                                        MediaListCategory.allMovies,
+                                        AppLocalizations.of(context)!.allMovies,
+                                      ),
+                                      onAuthRequired: () =>
+                                          _showAuthRequiredDialog(context),
+                                    ),
+                                    MediaSliderSection(
+                                      title: AppLocalizations.of(
+                                        context,
+                                      )!.allTvShows,
+                                      items: state.allTvShows.take(10).toList(),
+                                      onSeeMore: () => _openMediaList(
+                                        context,
+                                        MediaListCategory.allTv,
+                                        AppLocalizations.of(
+                                          context,
+                                        )!.allTvShows,
+                                      ),
+                                      onAuthRequired: () =>
+                                          _showAuthRequiredDialog(context),
+                                    ),
+                                  ],
+                                );
+                              },
                             ),
-                            children: [
-                              const HomeHeaderWidget(),
-                              SizedBox(height: Responsive.getSpacing(context)),
-                              MediaSliderSection(
-                                title: AppLocalizations.of(context)!.popularMovies,
-                                items: state.popularMovies.take(10).toList(),
-                                onSeeMore: () =>
-                                    _openMediaList(
-                                      context,
-                                      MediaListCategory.popularMovies,
-                                      AppLocalizations.of(context)!.popularMovies,
-                                    ),
-                                onAuthRequired: () =>
-                                    _showAuthRequiredDialog(context),
-                              ),
-                              MediaSliderSection(
-                                title: AppLocalizations.of(context)!.popularTvShows,
-                                items:
-                                state.popularTvShows.take(10).toList(),
-                                onSeeMore: () =>
-                                    _openMediaList(
-                                      context,
-                                      MediaListCategory.popularTv,
-                                      AppLocalizations.of(context)!.popularTvShows,
-                                    ),
-                                onAuthRequired: () =>
-                                    _showAuthRequiredDialog(context),
-                              ),
-                              MediaSliderSection(
-                                title: AppLocalizations.of(context)!.allMovies,
-                                items: state.allMovies.take(10).toList(),
-                                onSeeMore: () =>
-                                    _openMediaList(
-                                      context,
-                                      MediaListCategory.allMovies,
-                                      AppLocalizations.of(context)!.allMovies,
-                                    ),
-                                onAuthRequired: () =>
-                                    _showAuthRequiredDialog(context),
-                              ),
-                              MediaSliderSection(
-                                title: AppLocalizations.of(context)!.allTvShows,
-                                items: state.allTvShows.take(10).toList(),
-                                onSeeMore: () =>
-                                    _openMediaList(
-                                      context,
-                                      MediaListCategory.allTv,
-                                      AppLocalizations.of(context)!.allTvShows,
-                                    ),
-                                onAuthRequired: () =>
-                                    _showAuthRequiredDialog(context),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-                    ),
+                          ),
                   ],
                 ),
               ),
@@ -267,19 +286,16 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     Flexible(
                       child: Text(
-                        'Результати пошуку (${state.searchResults.length}${state
-                            .hasMoreResults ? '+' : ''})',
-                        style: Theme
-                            .of(
-                          context,
-                        )
-                            .textTheme
-                            .titleLarge
-                            ?.copyWith(fontWeight: FontWeight.w700),
+                        'Результати пошуку (${state.searchResults.length}${state.hasMoreResults ? '+' : ''})',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
                     TextButton(
-                      onPressed: () => context.read<HomeBloc>().add(const ClearSearchEvent()),
+                      onPressed: () => context.read<HomeBloc>().add(
+                        const ClearSearchEvent(),
+                      ),
                       child: Text(AppLocalizations.of(context)!.clear),
                     ),
                   ],
@@ -288,11 +304,19 @@ class _HomePageState extends State<HomePage> {
               Expanded(
                 child: isMobile
                     ? _buildSearchResultsList(
-                    context, state, horizontalPadding, canModifyCollections,
-                    collectionsBloc)
+                        context,
+                        state,
+                        horizontalPadding,
+                        canModifyCollections,
+                        collectionsBloc,
+                      )
                     : _buildSearchResultsGrid(
-                    context, state, horizontalPadding, canModifyCollections,
-                    collectionsBloc),
+                        context,
+                        state,
+                        horizontalPadding,
+                        canModifyCollections,
+                        collectionsBloc,
+                      ),
               ),
             ],
           );
@@ -301,11 +325,13 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildSearchResultsList(BuildContext context,
-      HomeState state,
-      EdgeInsets horizontalPadding,
-      bool canModifyCollections,
-      MediaCollectionsBloc collectionsBloc,) {
+  Widget _buildSearchResultsList(
+    BuildContext context,
+    HomeState state,
+    EdgeInsets horizontalPadding,
+    bool canModifyCollections,
+    MediaCollectionsBloc collectionsBloc,
+  ) {
     final collectionsState = collectionsBloc.state;
 
     return ListView.separated(
@@ -318,25 +344,19 @@ class _HomePageState extends State<HomePage> {
               child: state.loadingMore
                   ? const Center(child: CircularProgressIndicator())
                   : ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme
-                      .of(
-                    context,
-                  )
-                      .colorScheme
-                      .primary,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                ),
-                onPressed: () =>
-                    _performSearch(
-                      context.read<HomeBloc>(),
-                      loadMore: true,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                      onPressed: () => _performSearch(
+                        context.read<HomeBloc>(),
+                        loadMore: true,
+                      ),
+                      child: Text(AppLocalizations.of(context)!.loadMore),
                     ),
-                child: Text(AppLocalizations.of(context)!.loadMore),
-              ),
             );
           }
           return const SizedBox.shrink();
@@ -357,8 +377,8 @@ class _HomePageState extends State<HomePage> {
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha:
-                  theme.brightness == Brightness.light ? 0.08 : 0.25,
+                color: Colors.black.withValues(
+                  alpha: theme.brightness == Brightness.light ? 0.08 : 0.25,
                 ),
                 blurRadius: 12,
                 offset: const Offset(0, 8),
@@ -369,9 +389,7 @@ class _HomePageState extends State<HomePage> {
             borderRadius: BorderRadius.circular(18),
             onTap: () {
               Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => MediaDetailPage(item: item),
-                ),
+                MaterialPageRoute(builder: (_) => MediaDetailPage(item: item)),
               );
             },
             child: Padding(
@@ -383,68 +401,71 @@ class _HomePageState extends State<HomePage> {
                     child: SizedBox(
                       height: 120,
                       width: 90,
-                      child: item.posterPath != null &&
-                          item.posterPath!.isNotEmpty
+                      child:
+                          item.posterPath != null && item.posterPath!.isNotEmpty
                           ? CachedNetworkImage(
-                        imageUrl: 'https://image.tmdb.org/t/p/w300${item.posterPath}',
-                        fit: BoxFit.cover,
-                        memCacheWidth: 300,
-                        memCacheHeight: 450,
-                        placeholder: (context, url) => Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                Colors.blueGrey.shade900,
-                                Colors.blueGrey.shade700,
-                              ],
-                            ),
-                          ),
-                          child: Center(
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white.withValues(alpha: 0.7),
-                            ),
-                          ),
-                        ),
-                        errorWidget: (context, url, error) => Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                Colors.blueGrey.shade900,
-                                Colors.blueGrey.shade700,
-                              ],
-                            ),
-                          ),
-                          child: Icon(
-                            Icons.movie,
-                            color: colors.onSurfaceVariant
-                                .withValues(alpha: 0.7),
-                            size: 32,
-                          ),
-                        ),
-                      )
+                              imageUrl:
+                                  'https://image.tmdb.org/t/p/w300${item.posterPath}',
+                              fit: BoxFit.cover,
+                              memCacheWidth: 300,
+                              memCacheHeight: 450,
+                              placeholder: (context, url) => Container(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                    colors: [
+                                      Colors.blueGrey.shade900,
+                                      Colors.blueGrey.shade700,
+                                    ],
+                                  ),
+                                ),
+                                child: Center(
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white.withValues(alpha: 0.7),
+                                  ),
+                                ),
+                              ),
+                              errorWidget: (context, url, error) => Container(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                    colors: [
+                                      Colors.blueGrey.shade900,
+                                      Colors.blueGrey.shade700,
+                                    ],
+                                  ),
+                                ),
+                                child: Icon(
+                                  Icons.movie,
+                                  color: colors.onSurfaceVariant.withValues(
+                                    alpha: 0.7,
+                                  ),
+                                  size: 32,
+                                ),
+                              ),
+                            )
                           : Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              Colors.blueGrey.shade900,
-                              Colors.blueGrey.shade700,
-                            ],
-                          ),
-                        ),
-                        child: Icon(
-                          Icons.movie,
-                          color: colors.onSurfaceVariant
-                              .withValues(alpha: 0.7),
-                          size: 32,
-                        ),
-                      ),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [
+                                    Colors.blueGrey.shade900,
+                                    Colors.blueGrey.shade700,
+                                  ],
+                                ),
+                              ),
+                              child: Icon(
+                                Icons.movie,
+                                color: colors.onSurfaceVariant.withValues(
+                                  alpha: 0.7,
+                                ),
+                                size: 32,
+                              ),
+                            ),
                     ),
                   ),
                   const SizedBox(width: 14),
@@ -466,8 +487,8 @@ class _HomePageState extends State<HomePage> {
                           maxLines: 3,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            color: colors.onSurfaceVariant.withValues(alpha:
-                              0.7,
+                            color: colors.onSurfaceVariant.withValues(
+                              alpha: 0.7,
                             ),
                             height: 1.4,
                           ),
@@ -481,15 +502,18 @@ class _HomePageState extends State<HomePage> {
                                 vertical: 6,
                               ),
                               decoration: BoxDecoration(
-                                color: colors.surfaceContainerHighest.withValues(alpha:
-                                  theme.brightness == Brightness.light
-                                      ? 0.7
-                                      : 0.25,
-                                ),
+                                color: colors.surfaceContainerHighest
+                                    .withValues(
+                                      alpha:
+                                          theme.brightness == Brightness.light
+                                          ? 0.7
+                                          : 0.25,
+                                    ),
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
-                                  color: colors.outlineVariant
-                                      .withValues(alpha: 0.8),
+                                  color: colors.outlineVariant.withValues(
+                                    alpha: 0.8,
+                                  ),
                                 ),
                               ),
                               child: Row(
@@ -513,21 +537,19 @@ class _HomePageState extends State<HomePage> {
                             const Spacer(),
                             IconButton(
                               onPressed: canModifyCollections
-                                  ? () =>
-                                  collectionsBloc.add(ToggleFavoriteEvent(
-                                    item,
-                                  ))
-                                  : () =>
-                                  _showAuthRequiredDialog(context),
+                                  ? () => collectionsBloc.add(
+                                      ToggleFavoriteEvent(item),
+                                    )
+                                  : () => _showAuthRequiredDialog(context),
                               icon: Icon(
                                 isFavorite
                                     ? Icons.favorite
                                     : Icons.favorite_border_rounded,
                                 color: isFavorite
                                     ? const Color(0xFFFF6B6B)
-                                    : colors.onSurfaceVariant.withValues(alpha:
-                                  0.7,
-                                ),
+                                    : colors.onSurfaceVariant.withValues(
+                                        alpha: 0.7,
+                                      ),
                               ),
                             ),
                           ],
@@ -543,16 +565,17 @@ class _HomePageState extends State<HomePage> {
       },
       separatorBuilder: (_, index) =>
           SizedBox(height: Responsive.getSpacing(context)),
-      itemCount:
-      state.searchResults.length + (state.hasMoreResults ? 1 : 0),
+      itemCount: state.searchResults.length + (state.hasMoreResults ? 1 : 0),
     );
   }
 
-  Widget _buildSearchResultsGrid(BuildContext context,
-      HomeState state,
-      EdgeInsets horizontalPadding,
-      bool canModifyCollections,
-      MediaCollectionsBloc collectionsBloc,) {
+  Widget _buildSearchResultsGrid(
+    BuildContext context,
+    HomeState state,
+    EdgeInsets horizontalPadding,
+    bool canModifyCollections,
+    MediaCollectionsBloc collectionsBloc,
+  ) {
     final collectionsState = collectionsBloc.state;
     final columns = Responsive.getGridColumnCount(context);
     final spacing = Responsive.getSpacing(context);
@@ -576,31 +599,27 @@ class _HomePageState extends State<HomePage> {
               child: state.loadingMore
                   ? const Center(child: CircularProgressIndicator())
                   : ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme
-                      .of(context)
-                      .colorScheme
-                      .primary,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                ),
-                onPressed: () =>
-                    _performSearch(
-                      context.read<HomeBloc>(),
-                      loadMore: true,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                      onPressed: () => _performSearch(
+                        context.read<HomeBloc>(),
+                        loadMore: true,
+                      ),
+                      child: Text(AppLocalizations.of(context)!.loadMore),
                     ),
-                child: Text(AppLocalizations.of(context)!.loadMore),
-              ),
             );
           }
           return const SizedBox.shrink();
         }
 
         final item = state.searchResults[index];
-        final isFavorite = canModifyCollections &&
-            collectionsState.isFavorite(item);
+        final isFavorite =
+            canModifyCollections && collectionsState.isFavorite(item);
 
         return RepaintBoundary(
           child: MediaPosterCard(
@@ -611,9 +630,7 @@ class _HomePageState extends State<HomePage> {
                 : () => _showAuthRequiredDialog(context),
             onTap: () {
               Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => MediaDetailPage(item: item),
-                ),
+                MaterialPageRoute(builder: (_) => MediaDetailPage(item: item)),
               );
             },
           ),
@@ -623,9 +640,11 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _openMediaList(BuildContext context,
-      MediaListCategory category,
-      String title,) {
+  void _openMediaList(
+    BuildContext context,
+    MediaListCategory category,
+    String title,
+  ) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => MediaListPage(category: category, title: title),
@@ -660,7 +679,8 @@ class _HomePageState extends State<HomePage> {
             ),
             const SizedBox(height: 24),
             FilledButton.icon(
-              onPressed: () => context.read<HomeBloc>().add(const LoadContentEvent()),
+              onPressed: () =>
+                  context.read<HomeBloc>().add(const LoadContentEvent()),
               icon: const Icon(Icons.refresh),
               label: const Text('Спробувати знову'),
               style: FilledButton.styleFrom(
@@ -715,7 +735,9 @@ class MediaSliderSection extends StatelessWidget {
             decoration: BoxDecoration(
               color: theme.cardColor,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: colors.outlineVariant.withValues(alpha: 0.8)),
+              border: Border.all(
+                color: colors.outlineVariant.withValues(alpha: 0.8),
+              ),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -733,11 +755,7 @@ class MediaSliderSection extends StatelessWidget {
                     ),
                     Text(
                       title,
-                      style: Theme
-                          .of(context)
-                          .textTheme
-                          .titleLarge
-                          ?.copyWith(
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -755,23 +773,33 @@ class MediaSliderSection extends StatelessWidget {
               ? Center(child: Text(AppLocalizations.of(context)!.noData))
               : isMobile
               ? _buildHorizontalList(
-              context, collectionsBloc, collectionsState, canModifyCollections)
-              : _buildGrid(context, collectionsBloc, collectionsState,
-              canModifyCollections),
+                  context,
+                  collectionsBloc,
+                  collectionsState,
+                  canModifyCollections,
+                )
+              : _buildGrid(
+                  context,
+                  collectionsBloc,
+                  collectionsState,
+                  canModifyCollections,
+                ),
         ],
       ),
     );
   }
 
-  Widget _buildHorizontalList(BuildContext context,
-      MediaCollectionsBloc collectionsBloc,
-      dynamic collectionsState,
-      bool canModifyCollections,) {
+  Widget _buildHorizontalList(
+    BuildContext context,
+    MediaCollectionsBloc collectionsBloc,
+    dynamic collectionsState,
+    bool canModifyCollections,
+  ) {
     // Розраховуємо ширину картки для горизонтального списку
     // Використовуємо aspect ratio 2/3 для постерів
     final cardHeight = 280.0;
     final cardWidth = cardHeight * (2 / 3);
-    
+
     return SizedBox(
       height: cardHeight,
       child: ListView.separated(
@@ -807,10 +835,12 @@ class MediaSliderSection extends StatelessWidget {
     );
   }
 
-  Widget _buildGrid(BuildContext context,
-      MediaCollectionsBloc collectionsBloc,
-      dynamic collectionsState,
-      bool canModifyCollections,) {
+  Widget _buildGrid(
+    BuildContext context,
+    MediaCollectionsBloc collectionsBloc,
+    dynamic collectionsState,
+    bool canModifyCollections,
+  ) {
     final columns = Responsive.getGridColumnCount(context);
     final spacing = Responsive.getSpacing(context);
 
@@ -837,9 +867,7 @@ class MediaSliderSection extends StatelessWidget {
                 : onAuthRequired,
             onTap: () {
               Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => MediaDetailPage(item: item),
-                ),
+                MaterialPageRoute(builder: (_) => MediaDetailPage(item: item)),
               );
             },
           ),
@@ -879,10 +907,10 @@ class MediaPosterCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(18),
       child: cardWidth != null
           ? SizedBox(
-        width: cardWidth,
-        height: cardHeight,
-        child: _buildCardContent(context),
-      )
+              width: cardWidth,
+              height: cardHeight,
+              child: _buildCardContent(context),
+            )
           : _buildCardContent(context),
     );
   }
@@ -893,12 +921,17 @@ class MediaPosterCard extends StatelessWidget {
         // Розраховуємо доступну висоту для тексту (загальна висота мінус постер і відступи)
         final cardWidth = width;
         final cardHeight = height;
-        final posterHeight = cardWidth != null ? cardWidth * 1.5 : constraints.maxWidth * 1.5;
+        final posterHeight = cardWidth != null
+            ? cardWidth * 1.5
+            : constraints.maxWidth * 1.5;
         final totalHeight = cardHeight ?? constraints.maxHeight;
-        final availableHeight = totalHeight > 0 
-            ? totalHeight - posterHeight - 8 - 4 // poster + spacing + title spacing
+        final availableHeight = totalHeight > 0
+            ? totalHeight -
+                  posterHeight -
+                  8 -
+                  4 // poster + spacing + title spacing
             : null;
-        
+
         return Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -911,34 +944,50 @@ class MediaPosterCard extends StatelessWidget {
                 child: Stack(
                   children: [
                     Positioned.fill(
-                      child: item.posterPath != null &&
-                          item.posterPath!.isNotEmpty
+                      child:
+                          item.posterPath != null && item.posterPath!.isNotEmpty
                           ? CachedNetworkImage(
-                          imageUrl: 'https://image.tmdb.org/t/p/w500${item.posterPath}',
-                          fit: BoxFit.cover,
-                          memCacheWidth: 500,
-                          memCacheHeight: 750,
-                          fadeInDuration: const Duration(milliseconds: 300),
-                          placeholder: (context, url) => Container(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [
-                                  Colors.blueGrey.shade900,
-                                  Colors.blueGrey.shade700,
-                                ],
+                              imageUrl:
+                                  'https://image.tmdb.org/t/p/w500${item.posterPath}',
+                              fit: BoxFit.cover,
+                              memCacheWidth: 500,
+                              memCacheHeight: 750,
+                              fadeInDuration: const Duration(milliseconds: 300),
+                              placeholder: (context, url) => Container(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                    colors: [
+                                      Colors.blueGrey.shade900,
+                                      Colors.blueGrey.shade700,
+                                    ],
+                                  ),
+                                ),
+                                child: const Center(
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white70,
+                                  ),
+                                ),
                               ),
-                            ),
-                            child: const Center(
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white70,
-                              ),
-                            ),
-                          ),
-                          errorWidget: (context, url, error) {
-                            return Container(
+                              errorWidget: (context, url, error) {
+                                return Container(
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: [
+                                        Colors.blueGrey.shade900,
+                                        Colors.blueGrey.shade700,
+                                      ],
+                                    ),
+                                  ),
+                                  child: const Icon(Icons.movie, size: 48),
+                                );
+                              },
+                            )
+                          : Container(
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
                                   begin: Alignment.topLeft,
@@ -950,22 +999,7 @@ class MediaPosterCard extends StatelessWidget {
                                 ),
                               ),
                               child: const Icon(Icons.movie, size: 48),
-                            );
-                          },
-                        )
-                          : Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              Colors.blueGrey.shade900,
-                              Colors.blueGrey.shade700,
-                            ],
-                          ),
-                        ),
-                        child: const Icon(Icons.movie, size: 48),
-                      ),
+                            ),
                     ),
                     Positioned.fill(
                       child: DecoratedBox(
@@ -1008,7 +1042,9 @@ class MediaPosterCard extends StatelessWidget {
                       bottom: 10,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 6),
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.black.withValues(alpha: 0.65),
                           borderRadius: BorderRadius.circular(14),
@@ -1016,15 +1052,15 @@ class MediaPosterCard extends StatelessWidget {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.star,
-                                size: 16, color: Colors.amber),
+                            const Icon(
+                              Icons.star,
+                              size: 16,
+                              color: Colors.amber,
+                            ),
                             const SizedBox(width: 6),
                             Text(
                               item.rating.toStringAsFixed(1),
-                              style: Theme
-                                  .of(context)
-                                  .textTheme
-                                  .bodySmall
+                              style: Theme.of(context).textTheme.bodySmall
                                   ?.copyWith(fontWeight: FontWeight.w700),
                             ),
                           ],
@@ -1043,11 +1079,9 @@ class MediaPosterCard extends StatelessWidget {
               item.title,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: Theme
-                  .of(context)
-                  .textTheme
-                  .titleSmall
-                  ?.copyWith(fontWeight: FontWeight.w700),
+              style: Theme.of(
+                context,
+              ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
             ),
 
             const SizedBox(height: 4),
@@ -1055,21 +1089,18 @@ class MediaPosterCard extends StatelessWidget {
             // ===== DESCRIPTION =====
             availableHeight != null && availableHeight > 0
                 ? SizedBox(
-                    height: availableHeight.clamp(0.0, 40.0), // Обмежуємо максимальну висоту
+                    height: availableHeight.clamp(
+                      0.0,
+                      40.0,
+                    ), // Обмежуємо максимальну висоту
                     child: Text(
                       item.overview,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: Theme
-                          .of(context)
-                          .textTheme
-                          .bodySmall
-                          ?.copyWith(
-                        color: Theme
-                            .of(context)
-                            .colorScheme
-                            .onSurfaceVariant
-                            .withValues(alpha: 0.7),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                         height: 1.3,
                       ),
                     ),
@@ -1078,16 +1109,10 @@ class MediaPosterCard extends StatelessWidget {
                     item.overview,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: Theme
-                        .of(context)
-                        .textTheme
-                        .bodySmall
-                        ?.copyWith(
-                      color: Theme
-                          .of(context)
-                          .colorScheme
-                          .onSurfaceVariant
-                          .withValues(alpha: 0.7),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                       height: 1.3,
                     ),
                   ),

@@ -12,7 +12,9 @@ void main() {
       IntegrationTestHelper.setupErrorHandling();
     });
 
-    testWidgets('User can navigate to profile page', (WidgetTester tester) async {
+    testWidgets('User can navigate to profile page', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
       tester.takeException(); // Очищаємо overflow помилки
@@ -29,7 +31,9 @@ void main() {
       }
     });
 
-    testWidgets('Profile page shows login form when not authenticated', (WidgetTester tester) async {
+    testWidgets('Profile page shows login form when not authenticated', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
       tester.takeException(); // Очищаємо overflow помилки
@@ -49,7 +53,9 @@ void main() {
       }
     });
 
-    testWidgets('User can navigate to settings from profile', (WidgetTester tester) async {
+    testWidgets('User can navigate to settings from profile', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
       tester.takeException(); // Очищаємо overflow помилки
@@ -83,7 +89,9 @@ void main() {
       }
     });
 
-    testWidgets('User can navigate to watchlist from profile', (WidgetTester tester) async {
+    testWidgets('User can navigate to watchlist from profile', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
       tester.takeException(); // Очищаємо overflow помилки
@@ -117,7 +125,9 @@ void main() {
       }
     });
 
-    testWidgets('User can navigate to edit profile', (WidgetTester tester) async {
+    testWidgets('User can navigate to edit profile', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
       tester.takeException(); // Очищаємо overflow помилки
@@ -152,4 +162,3 @@ void main() {
     });
   });
 }
-

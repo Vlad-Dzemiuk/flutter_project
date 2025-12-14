@@ -7,9 +7,7 @@ void main() {
   group('AboutAppPage', () {
     testWidgets('displays about app page', (WidgetTester tester) async {
       await tester.pumpWidget(
-        WidgetTestHelper.createTestApp(
-          child: const AboutAppPage(),
-        ),
+        WidgetTestHelper.createTestApp(child: const AboutAppPage()),
       );
 
       await tester.pumpAndSettle();
@@ -19,9 +17,7 @@ void main() {
 
     testWidgets('displays app information', (WidgetTester tester) async {
       await tester.pumpWidget(
-        WidgetTestHelper.createTestApp(
-          child: const AboutAppPage(),
-        ),
+        WidgetTestHelper.createTestApp(child: const AboutAppPage()),
       );
 
       await tester.pumpAndSettle();
@@ -32,9 +28,7 @@ void main() {
 
     testWidgets('displays app icon', (WidgetTester tester) async {
       await tester.pumpWidget(
-        WidgetTestHelper.createTestApp(
-          child: const AboutAppPage(),
-        ),
+        WidgetTestHelper.createTestApp(child: const AboutAppPage()),
       );
 
       await tester.pumpAndSettle();
@@ -43,4 +37,3 @@ void main() {
     });
   });
 }
-

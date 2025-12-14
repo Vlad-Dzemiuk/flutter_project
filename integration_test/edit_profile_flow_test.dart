@@ -12,7 +12,9 @@ void main() {
       IntegrationTestHelper.setupErrorHandling();
     });
 
-    testWidgets('User can navigate to edit profile page', (WidgetTester tester) async {
+    testWidgets('User can navigate to edit profile page', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
 
@@ -79,7 +81,9 @@ void main() {
       }
     });
 
-    testWidgets('User can navigate back from edit profile', (WidgetTester tester) async {
+    testWidgets('User can navigate back from edit profile', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
 
@@ -114,4 +118,3 @@ void main() {
     });
   });
 }
-

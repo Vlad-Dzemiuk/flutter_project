@@ -9,7 +9,7 @@ class GetUserProfileParams {
 }
 
 /// Use case для отримання профілю користувача
-/// 
+///
 /// Валідує userId та завантажує профіль користувача
 class GetUserProfileUseCase
     implements UseCase<UserProfile, GetUserProfileParams> {
@@ -30,5 +30,3 @@ class GetUserProfileUseCase
     return profile;
   }
 }
-
-

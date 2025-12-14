@@ -21,35 +21,37 @@ void main() {
   });
 
   group('AddToWatchlistUseCase', () {
-    test('should add item to watchlist when not already in watchlist', () async {
-      // Arrange
-      final item = TestDataFactory.createHomeMediaItem(id: 1, isMovie: true);
-      final emptyWatchlist = <MediaCollectionEntry>[];
-      final updatedWatchlist = [
-        TestDataFactory.createMediaCollectionEntry(
-          key: 'movie_1',
-          mediaId: 1,
-          isMovie: true,
-        ),
-      ];
+    test(
+      'should add item to watchlist when not already in watchlist',
+      () async {
+        // Arrange
+        final item = TestDataFactory.createHomeMediaItem(id: 1, isMovie: true);
+        final emptyWatchlist = <MediaCollectionEntry>[];
+        final updatedWatchlist = [
+          TestDataFactory.createMediaCollectionEntry(
+            key: 'movie_1',
+            mediaId: 1,
+            isMovie: true,
+          ),
+        ];
 
-      var fetchCallCount = 0;
-      when(() => mockRepository.fetchWatchlist())
-          .thenAnswer((_) async {
-            fetchCallCount++;
-            return fetchCallCount == 1 ? emptyWatchlist : updatedWatchlist;
-          });
-      when(() => mockRepository.addToWatchlist(any()))
-          .thenAnswer((_) async {});
+        var fetchCallCount = 0;
+        when(() => mockRepository.fetchWatchlist()).thenAnswer((_) async {
+          fetchCallCount++;
+          return fetchCallCount == 1 ? emptyWatchlist : updatedWatchlist;
+        });
+        when(
+          () => mockRepository.addToWatchlist(any()),
+        ).thenAnswer((_) async {});
 
-      // Act
-      final result = await useCase(AddToWatchlistParams(item: item));
+        // Act
+        final result = await useCase(AddToWatchlistParams(item: item));
 
-      // Assert
-      expect(result.watchlist.length, 1);
-      expect(result.watchlistKeys.contains('movie_1'), true);
-      verify(() => mockRepository.addToWatchlist(item)).called(1);
-    });
+        // Assert
+        expect(result.watchlist.length, 1);
+        expect(result.watchlistKeys.contains('movie_1'), true);
+        verify(() => mockRepository.addToWatchlist(item)).called(1);
+      },
+    );
   });
 }
-

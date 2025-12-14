@@ -19,5 +19,3 @@ class TvShowMapper {
     return tvShows.map((tvShow) => toEntity(tvShow)).toList();
   }
 }
-
-

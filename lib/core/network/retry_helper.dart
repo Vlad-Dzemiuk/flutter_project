@@ -4,19 +4,19 @@ import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 
 /// Утиліта для повторних спроб мережевих операцій
-/// 
+///
 /// Надає механізм автоматичного повтору операцій при мережевих помилках
 /// з експоненційним backoff
 class RetryHelper {
   static final Logger _logger = Logger();
 
   /// Виконує операцію з повторними спробами при мережевих помилках
-  /// 
+  ///
   /// [operation] - функція, яку потрібно виконати
   /// [maxRetries] - максимальна кількість спроб (за замовчуванням 3)
   /// [initialDelay] - початкова затримка між спробами (за замовчуванням 1 секунда)
   /// [maxDelay] - максимальна затримка між спробами (за замовчуванням 10 секунд)
-  /// 
+  ///
   /// Повертає результат операції або кидає останню помилку
   static Future<T> retry<T>({
     required Future<T> Function() operation,
@@ -32,7 +32,7 @@ class RetryHelper {
         return await operation();
       } catch (e) {
         lastException = e is Exception ? e : Exception(e.toString());
-        
+
         // Перевіряємо, чи це мережева помилка, яку можна повторити
         if (!_isRetryableError(e)) {
           _logger.w('Non-retryable error: $e');
@@ -40,7 +40,7 @@ class RetryHelper {
         }
 
         attempt++;
-        
+
         // Якщо це остання спроба, кидаємо помилку
         if (attempt >= maxRetries) {
           _logger.e('Max retries ($maxRetries) reached. Last error: $e');
@@ -113,8 +113,7 @@ class RetryHelper {
         errorString.contains('connection refused') ||
         errorString.contains('connection reset') ||
         errorString.contains('connection timed out') ||
-        (errorString.contains('timeout') && 
-         !errorString.contains('authentication'));
+        (errorString.contains('timeout') &&
+            !errorString.contains('authentication'));
   }
 }
-

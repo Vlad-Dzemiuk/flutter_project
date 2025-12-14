@@ -12,7 +12,9 @@ void main() {
       IntegrationTestHelper.setupErrorHandling();
     });
 
-    testWidgets('User can navigate to favorites page', (WidgetTester tester) async {
+    testWidgets('User can navigate to favorites page', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
 
@@ -37,7 +39,9 @@ void main() {
       }
     });
 
-    testWidgets('Favorites page shows empty state when not authenticated', (WidgetTester tester) async {
+    testWidgets('Favorites page shows empty state when not authenticated', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
       tester.takeException(); // Очищаємо overflow помилки
@@ -57,7 +61,9 @@ void main() {
       }
     });
 
-    testWidgets('User can view favorites list when authenticated', (WidgetTester tester) async {
+    testWidgets('User can view favorites list when authenticated', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
 
@@ -80,7 +86,7 @@ void main() {
         // Check for list or grid view
         final listView = find.byType(ListView);
         final gridView = find.byType(GridView);
-        
+
         if (listView.evaluate().isNotEmpty || gridView.evaluate().isNotEmpty) {
           expect(find.byType(Scaffold), findsWidgets);
         }
@@ -118,4 +124,3 @@ void main() {
     });
   });
 }
-

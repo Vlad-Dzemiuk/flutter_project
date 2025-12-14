@@ -28,10 +28,7 @@ class SearchMediaResult {
   final List<HomeMediaItem> results;
   final bool hasMore;
 
-  const SearchMediaResult({
-    required this.results,
-    required this.hasMore,
-  });
+  const SearchMediaResult({required this.results, required this.hasMore});
 }
 
 /// Use case для пошуку медіа контенту
@@ -93,10 +90,6 @@ class SearchMediaUseCase
       hasMore = moviesHasMore || tvHasMore;
     }
 
-    return SearchMediaResult(
-      results: newResults,
-      hasMore: hasMore,
-    );
+    return SearchMediaResult(results: newResults, hasMore: hasMore);
   }
 }
-

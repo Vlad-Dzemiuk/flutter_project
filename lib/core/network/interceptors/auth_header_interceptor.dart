@@ -8,10 +8,13 @@ class AuthHeaderInterceptor extends Interceptor {
   final AuthRepository? _authRepository;
 
   AuthHeaderInterceptor({AuthRepository? authRepository})
-      : _authRepository = authRepository;
+    : _authRepository = authRepository;
 
   @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
+  void onRequest(
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) async {
     try {
       // Додаємо авторизаційний токен, якщо користувач авторизований
       if (_authRepository != null) {
@@ -28,7 +31,7 @@ class AuthHeaderInterceptor extends Interceptor {
     } catch (e) {
       _logger.w('Failed to add auth headers: $e');
     }
-    
+
     handler.next(options);
   }
 
@@ -41,4 +44,3 @@ class AuthHeaderInterceptor extends Interceptor {
     handler.next(err);
   }
 }
-

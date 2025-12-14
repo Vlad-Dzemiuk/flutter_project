@@ -14,6 +14,7 @@ class IntegrationTestHelper {
       FlutterError.presentError(details);
     };
   }
+
   /// Waits for app to fully load
   static Future<void> waitForAppLoad(WidgetTester tester) async {
     await tester.pumpAndSettle(const Duration(seconds: 5));
@@ -88,7 +89,10 @@ class IntegrationTestHelper {
   }
 
   /// Waits for async operations
-  static Future<void> waitForAsync(WidgetTester tester, {int seconds = 2}) async {
+  static Future<void> waitForAsync(
+    WidgetTester tester, {
+    int seconds = 2,
+  }) async {
     await tester.pumpAndSettle(Duration(seconds: seconds));
     tester.takeException(); // Очищаємо overflow помилки
   }
@@ -147,7 +151,7 @@ class IntegrationTestHelper {
     if (signInButton.evaluate().isNotEmpty) {
       await tester.tap(signInButton.first);
       await waitForAsync(tester, seconds: 3);
-      
+
       // Перевіряємо, чи авторизація успішна
       final loginFieldsAfter = find.byType(TextFormField);
       if (loginFieldsAfter.evaluate().isEmpty) {
@@ -162,31 +166,33 @@ class IntegrationTestHelper {
       if (toggleButtons.evaluate().isNotEmpty) {
         await tester.tap(toggleButtons.first);
         await waitForAsync(tester);
-        
+
         // Заповнюємо поля знову
         final newTextFields = find.byType(TextFormField);
         if (newTextFields.evaluate().length >= 2) {
           await tester.tap(newTextFields.first);
           await tester.enterText(newTextFields.first, email);
           await tester.pump();
-          
+
           await tester.tap(newTextFields.at(1));
           await tester.enterText(newTextFields.at(1), password);
           await tester.pump();
           tester.takeException();
         }
-        
+
         // Шукаємо кнопку Sign Up або Register
         final signUpButton = find.text('Sign Up');
         final registerButton = find.text('Register');
-        final signUpBtn = signUpButton.evaluate().isNotEmpty 
-            ? signUpButton.first 
-            : (registerButton.evaluate().isNotEmpty ? registerButton.first : null);
-        
+        final signUpBtn = signUpButton.evaluate().isNotEmpty
+            ? signUpButton.first
+            : (registerButton.evaluate().isNotEmpty
+                  ? registerButton.first
+                  : null);
+
         if (signUpBtn != null) {
           await tester.tap(signUpBtn);
           await waitForAsync(tester, seconds: 3);
-          
+
           // Перевіряємо, чи реєстрація успішна
           final loginFieldsAfterReg = find.byType(TextFormField);
           if (loginFieldsAfterReg.evaluate().isEmpty) {
@@ -199,6 +205,3 @@ class IntegrationTestHelper {
     return false;
   }
 }
-
-
-

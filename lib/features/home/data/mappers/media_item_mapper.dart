@@ -34,9 +34,9 @@ class MediaItemMapper {
   }
 
   /// Конвертує список TvShowEntity в список MediaItemEntity
-  static List<MediaItemEntity> fromTvShowEntityList(List<TvShowEntity> tvShows) {
+  static List<MediaItemEntity> fromTvShowEntityList(
+    List<TvShowEntity> tvShows,
+  ) {
     return tvShows.map((tvShow) => fromTvShowEntity(tvShow)).toList();
   }
 }
-
-

@@ -60,17 +60,18 @@ class MediaCollectionsState extends Equatable {
 
   @override
   List<Object?> get props => [
-        loading,
-        authorized,
-        error,
-        favorites,
-        watchlist,
-        favoriteKeys,
-        watchlistKeys,
-      ];
+    loading,
+    authorized,
+    error,
+    favorites,
+    watchlist,
+    favoriteKeys,
+    watchlistKeys,
+  ];
 }
 
-class MediaCollectionsBloc extends Bloc<MediaCollectionsEvent, MediaCollectionsState> {
+class MediaCollectionsBloc
+    extends Bloc<MediaCollectionsEvent, MediaCollectionsState> {
   MediaCollectionsBloc({
     required GetMediaCollectionsUseCase getMediaCollectionsUseCase,
     required ToggleFavoriteUseCase toggleFavoriteUseCase,
@@ -80,23 +81,23 @@ class MediaCollectionsBloc extends Bloc<MediaCollectionsEvent, MediaCollectionsS
        _toggleFavoriteUseCase = toggleFavoriteUseCase,
        _addToWatchlistUseCase = addToWatchlistUseCase,
        _authRepository = authRepository,
-       super(authRepository.currentUser != null 
-         ? const MediaCollectionsState(loading: true)
-         : const MediaCollectionsState(loading: false, authorized: false)) {
+       super(
+         authRepository.currentUser != null
+             ? const MediaCollectionsState(loading: true)
+             : const MediaCollectionsState(loading: false, authorized: false),
+       ) {
     on<LoadCollectionsEvent>(_onLoadCollections);
     on<ToggleFavoriteEvent>(_onToggleFavorite);
     on<RecordWatchEvent>(_onRecordWatch);
-    
-    _authSubscription = _authRepository.authStateChanges().listen(
-      (user) {
-        if (user == null) {
-          add(const LoadCollectionsEvent());
-        } else {
-          add(const LoadCollectionsEvent());
-        }
-      },
-    );
-    
+
+    _authSubscription = _authRepository.authStateChanges().listen((user) {
+      if (user == null) {
+        add(const LoadCollectionsEvent());
+      } else {
+        add(const LoadCollectionsEvent());
+      }
+    });
+
     // Завантажуємо колекції при ініціалізації
     if (_authRepository.currentUser != null) {
       add(const LoadCollectionsEvent());
@@ -118,14 +119,13 @@ class MediaCollectionsBloc extends Bloc<MediaCollectionsEvent, MediaCollectionsS
       emit(const MediaCollectionsState(loading: false, authorized: false));
       return;
     }
-    
+
     emit(state.copyWith(loading: true, authorized: true, error: ''));
     try {
       // Використання use case з retry механізмом для мережевих помилок
       final result = await RetryHelper.retry(
-        operation: () => _getMediaCollectionsUseCase(
-          const GetMediaCollectionsParams(),
-        ),
+        operation: () =>
+            _getMediaCollectionsUseCase(const GetMediaCollectionsParams()),
       );
       emit(
         state.copyWith(
@@ -140,11 +140,9 @@ class MediaCollectionsBloc extends Bloc<MediaCollectionsEvent, MediaCollectionsS
       );
     } catch (e) {
       final errorMessage = _getUserFriendlyError(e);
-      emit(state.copyWith(
-        loading: false, 
-        authorized: false,
-        error: errorMessage,
-      ));
+      emit(
+        state.copyWith(loading: false, authorized: false, error: errorMessage),
+      );
     }
   }
 
@@ -157,9 +155,8 @@ class MediaCollectionsBloc extends Bloc<MediaCollectionsEvent, MediaCollectionsS
     try {
       // Використання use case з retry механізмом для мережевих помилок
       final result = await RetryHelper.retry(
-        operation: () => _toggleFavoriteUseCase(
-          ToggleFavoriteParams(item: event.item),
-        ),
+        operation: () =>
+            _toggleFavoriteUseCase(ToggleFavoriteParams(item: event.item)),
       );
       emit(
         state.copyWith(
@@ -183,9 +180,8 @@ class MediaCollectionsBloc extends Bloc<MediaCollectionsEvent, MediaCollectionsS
     try {
       // Використання use case з retry механізмом для мережевих помилок
       final result = await RetryHelper.retry(
-        operation: () => _addToWatchlistUseCase(
-          AddToWatchlistParams(item: event.item),
-        ),
+        operation: () =>
+            _addToWatchlistUseCase(AddToWatchlistParams(item: event.item)),
       );
       emit(
         state.copyWith(
@@ -202,25 +198,26 @@ class MediaCollectionsBloc extends Bloc<MediaCollectionsEvent, MediaCollectionsS
 
   String _getUserFriendlyError(dynamic error) {
     final errorString = error.toString().toLowerCase();
-    
-    if (errorString.contains('socketexception') || 
+
+    if (errorString.contains('socketexception') ||
         errorString.contains('failed host lookup') ||
         errorString.contains('no address associated with hostname')) {
       return 'Немає інтернет-з\'єднання. Перевірте підключення до мережі.';
     }
-    
+
     if (errorString.contains('timeout') || errorString.contains('timed out')) {
       return 'Час очікування вичерпано. Перевірте інтернет-з\'єднання.';
     }
-    
+
     if (errorString.contains('connection') || errorString.contains('network')) {
       return 'Помилка підключення до сервера. Спробуйте пізніше.';
     }
-    
-    if (errorString.contains('unauthorized') || errorString.contains('permission')) {
+
+    if (errorString.contains('unauthorized') ||
+        errorString.contains('permission')) {
       return 'Недостатньо прав доступу. Увійдіть в акаунт.';
     }
-    
+
     // Для інших помилок повертаємо загальне повідомлення
     return 'Не вдалося виконати операцію. Спробуйте пізніше.';
   }
@@ -231,4 +228,3 @@ class MediaCollectionsBloc extends Bloc<MediaCollectionsEvent, MediaCollectionsS
     return super.close();
   }
 }
-

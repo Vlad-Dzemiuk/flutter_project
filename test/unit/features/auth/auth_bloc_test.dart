@@ -18,8 +18,12 @@ void main() {
   late MockRegisterUseCase mockRegisterUseCase;
 
   setUpAll(() {
-    registerFallbackValue(const SignInParams(email: 'test@example.com', password: 'password'));
-    registerFallbackValue(const RegisterParams(email: 'test@example.com', password: 'password'));
+    registerFallbackValue(
+      const SignInParams(email: 'test@example.com', password: 'password'),
+    );
+    registerFallbackValue(
+      const RegisterParams(email: 'test@example.com', password: 'password'),
+    );
   });
 
   setUp(() {
@@ -69,17 +73,15 @@ void main() {
     blocTest<AuthBloc, AuthState>(
       'emits [AuthLoading, AuthError] when SignInEvent fails',
       build: () {
-        when(() => mockSignInUseCase(any()))
-            .thenThrow(Exception('Invalid credentials'));
+        when(
+          () => mockSignInUseCase(any()),
+        ).thenThrow(Exception('Invalid credentials'));
         return authBloc;
       },
       act: (bloc) => bloc.add(
         const SignInEvent(email: 'test@example.com', password: 'wrong'),
       ),
-      expect: () => [
-        isA<AuthLoading>(),
-        isA<AuthError>(),
-      ],
+      expect: () => [isA<AuthLoading>(), isA<AuthError>()],
     );
 
     blocTest<AuthBloc, AuthState>(
@@ -96,10 +98,7 @@ void main() {
       act: (bloc) => bloc.add(
         const RegisterEvent(email: 'test@example.com', password: 'password123'),
       ),
-      expect: () => [
-        isA<AuthLoading>(),
-        isA<AuthAuthenticated>(),
-      ],
+      expect: () => [isA<AuthLoading>(), isA<AuthAuthenticated>()],
     );
 
     blocTest<AuthBloc, AuthState>(
@@ -109,22 +108,19 @@ void main() {
         return authBloc;
       },
       act: (bloc) => bloc.add(const SignOutEvent()),
-      expect: () => [
-        isA<AuthInitial>(),
-      ],
+      expect: () => [isA<AuthInitial>()],
     );
 
     blocTest<AuthBloc, AuthState>(
       'emits [AuthError] when SignOutEvent fails',
       build: () {
-        when(() => mockRepository.signOut())
-            .thenThrow(Exception('Sign out failed'));
+        when(
+          () => mockRepository.signOut(),
+        ).thenThrow(Exception('Sign out failed'));
         return authBloc;
       },
       act: (bloc) => bloc.add(const SignOutEvent()),
-      expect: () => [
-        isA<AuthError>(),
-      ],
+      expect: () => [isA<AuthError>()],
     );
 
     test('currentUser returns User when repository has currentUser', () {
@@ -154,5 +150,5 @@ void main() {
 }
 
 class MockSignInUseCase extends Mock implements SignInUseCase {}
-class MockRegisterUseCase extends Mock implements RegisterUseCase {}
 
+class MockRegisterUseCase extends Mock implements RegisterUseCase {}

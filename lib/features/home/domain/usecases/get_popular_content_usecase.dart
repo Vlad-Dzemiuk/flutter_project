@@ -36,20 +36,26 @@ class GetPopularContentUseCase
   @override
   Future<PopularContentResult> call(GetPopularContentParams params) async {
     // Бізнес-логіка: завантаження та обробка популярного контенту
-    final popularMovies = await repository.fetchPopularMovies(page: params.page);
+    final popularMovies = await repository.fetchPopularMovies(
+      page: params.page,
+    );
     final popularTv = await repository.fetchPopularTvShows(page: params.page);
     final catalogMovies = await repository.fetchAllMovies(page: params.page);
     final catalogTv = await repository.fetchAllTvShows(page: params.page);
 
     // Трансформація моделей даних в presentation models
-    final List<HomeMediaItem> popularMoviesItems =
-        popularMovies.map((m) => HomeMediaItem.fromMovie(m)).toList();
-    final List<HomeMediaItem> popularTvItems =
-        popularTv.map((t) => HomeMediaItem.fromTvShow(t)).toList();
-    final List<HomeMediaItem> allMoviesItems =
-        catalogMovies.map((m) => HomeMediaItem.fromMovie(m)).toList();
-    final List<HomeMediaItem> allTvItems =
-        catalogTv.map((t) => HomeMediaItem.fromTvShow(t)).toList();
+    final List<HomeMediaItem> popularMoviesItems = popularMovies
+        .map((m) => HomeMediaItem.fromMovie(m))
+        .toList();
+    final List<HomeMediaItem> popularTvItems = popularTv
+        .map((t) => HomeMediaItem.fromTvShow(t))
+        .toList();
+    final List<HomeMediaItem> allMoviesItems = catalogMovies
+        .map((m) => HomeMediaItem.fromMovie(m))
+        .toList();
+    final List<HomeMediaItem> allTvItems = catalogTv
+        .map((t) => HomeMediaItem.fromTvShow(t))
+        .toList();
 
     return PopularContentResult(
       popularMovies: popularMoviesItems,
@@ -59,4 +65,3 @@ class GetPopularContentUseCase
     );
   }
 }
-

@@ -10,7 +10,9 @@ void main() {
   setUp(() {
     // Initialize GetIt for LoadingStateService before each test
     if (!getIt.isRegistered<LoadingStateService>()) {
-      getIt.registerLazySingleton<LoadingStateService>(() => LoadingStateService());
+      getIt.registerLazySingleton<LoadingStateService>(
+        () => LoadingStateService(),
+      );
     }
   });
 
@@ -20,14 +22,14 @@ void main() {
   });
 
   group('LoadingWrapper', () {
-    testWidgets('displays child when home page is loaded', (WidgetTester tester) async {
+    testWidgets('displays child when home page is loaded', (
+      WidgetTester tester,
+    ) async {
       const childText = 'Test Content';
 
       await tester.pumpWidget(
         WidgetTestHelper.createTestApp(
-          child: const LoadingWrapper(
-            child: Text(childText),
-          ),
+          child: const LoadingWrapper(child: Text(childText)),
           setHomePageLoaded: true,
         ),
       );
@@ -35,14 +37,14 @@ void main() {
       expect(find.text(childText), findsOneWidget);
     });
 
-    testWidgets('displays loading when home page is not loaded', (WidgetTester tester) async {
+    testWidgets('displays loading when home page is not loaded', (
+      WidgetTester tester,
+    ) async {
       const childText = 'Test Content';
 
       await tester.pumpWidget(
         WidgetTestHelper.createTestApp(
-          child: const LoadingWrapper(
-            child: Text(childText),
-          ),
+          child: const LoadingWrapper(child: Text(childText)),
           setHomePageLoaded: false,
         ),
       );
@@ -52,12 +54,16 @@ void main() {
       expect(find.text('Завантаження...'), findsOneWidget);
     });
 
-    testWidgets('shows child for auth page even when not loaded', (WidgetTester tester) async {
+    testWidgets('shows child for auth page even when not loaded', (
+      WidgetTester tester,
+    ) async {
       const childText = 'Login Page';
 
       // Initialize GetIt for this test
       if (!getIt.isRegistered<LoadingStateService>()) {
-        getIt.registerLazySingleton<LoadingStateService>(() => LoadingStateService());
+        getIt.registerLazySingleton<LoadingStateService>(
+          () => LoadingStateService(),
+        );
       }
       getIt<LoadingStateService>().reset(); // Ensure not loaded
 
@@ -65,9 +71,8 @@ void main() {
         MaterialApp(
           initialRoute: AppConstants.loginRoute,
           routes: {
-            AppConstants.loginRoute: (context) => const LoadingWrapper(
-              child: Text(childText),
-            ),
+            AppConstants.loginRoute: (context) =>
+                const LoadingWrapper(child: Text(childText)),
           },
         ),
       );
@@ -80,4 +85,3 @@ void main() {
     });
   });
 }
-

@@ -8,14 +8,11 @@ class RegisterParams {
   final String email;
   final String password;
 
-  const RegisterParams({
-    required this.email,
-    required this.password,
-  });
+  const RegisterParams({required this.email, required this.password});
 }
 
 /// Use case для реєстрації нового користувача
-/// 
+///
 /// Валідує дані та створює нового користувача
 /// Повертає domain entity (User), а не data model
 class RegisterUseCase implements UseCase<User, RegisterParams> {
@@ -27,11 +24,11 @@ class RegisterUseCase implements UseCase<User, RegisterParams> {
   Future<User> call(RegisterParams params) async {
     // Бізнес-логіка: валідація та реєстрація
     final trimmedEmail = params.email.trim();
-    
+
     if (trimmedEmail.isEmpty) {
       throw Exception('Email не може бути порожнім');
     }
-    
+
     if (params.password.isEmpty) {
       throw Exception('Пароль не може бути порожнім');
     }
@@ -56,4 +53,3 @@ class RegisterUseCase implements UseCase<User, RegisterParams> {
     return UserMapper.toEntity(localUser);
   }
 }
-

@@ -11,8 +11,10 @@ class HomeApiService {
   // Метод для отримання популярних фільмів
   Future<List<Movie>> fetchPopularMovies({int page = 1}) async {
     final cacheKey = 'popular_movies_page_$page';
-    final cached =
-        await LocalCacheDb.instance.getJson(cacheKey, maxAge: const Duration(minutes: 30));
+    final cached = await LocalCacheDb.instance.getJson(
+      cacheKey,
+      maxAge: const Duration(minutes: 30),
+    );
 
     if (cached != null) {
       final results = cached['results'] as List<dynamic>;
@@ -48,33 +50,38 @@ class HomeApiService {
 
   Future<List<Movie>> fetchAllMovies({int page = 1}) async {
     final cacheKey = 'all_movies_page_$page';
-    final cached =
-        await LocalCacheDb.instance.getJson(cacheKey, maxAge: const Duration(minutes: 30));
+    final cached = await LocalCacheDb.instance.getJson(
+      cacheKey,
+      maxAge: const Duration(minutes: 30),
+    );
 
     if (cached != null) {
       final results = cached['results'] as List<dynamic>;
-      return results.map<Movie>((json) => Movie.fromJson(json as Map<String, dynamic>)).toList();
+      return results
+          .map<Movie>((json) => Movie.fromJson(json as Map<String, dynamic>))
+          .toList();
     }
 
     try {
       final response = await _dio.get(
         '/discover/movie',
-        queryParameters: {
-          'sort_by': 'popularity.desc',
-          'page': page,
-        },
+        queryParameters: {'sort_by': 'popularity.desc', 'page': page},
       );
 
       final data = response.data as Map<String, dynamic>;
       await LocalCacheDb.instance.putJson(cacheKey, data);
       final results = data['results'] as List<dynamic>;
-      return results.map<Movie>((json) => Movie.fromJson(json as Map<String, dynamic>)).toList();
+      return results
+          .map<Movie>((json) => Movie.fromJson(json as Map<String, dynamic>))
+          .toList();
     } on DioException catch (e) {
       // Offline-first: спробувати отримати застарілі дані з кешу
       final staleCached = await LocalCacheDb.instance.getJsonStale(cacheKey);
       if (staleCached != null) {
         final results = staleCached['results'] as List<dynamic>;
-        return results.map<Movie>((json) => Movie.fromJson(json as Map<String, dynamic>)).toList();
+        return results
+            .map<Movie>((json) => Movie.fromJson(json as Map<String, dynamic>))
+            .toList();
       }
       throw Exception('Failed to fetch movies catalog: ${e.message}');
     }
@@ -82,12 +89,16 @@ class HomeApiService {
 
   Future<List<TvShow>> fetchPopularTvShows({int page = 1}) async {
     final cacheKey = 'popular_tv_shows_page_$page';
-    final cached =
-        await LocalCacheDb.instance.getJson(cacheKey, maxAge: const Duration(minutes: 30));
+    final cached = await LocalCacheDb.instance.getJson(
+      cacheKey,
+      maxAge: const Duration(minutes: 30),
+    );
 
     if (cached != null) {
       final results = cached['results'] as List<dynamic>;
-      return results.map<TvShow>((json) => TvShow.fromJson(json as Map<String, dynamic>)).toList();
+      return results
+          .map<TvShow>((json) => TvShow.fromJson(json as Map<String, dynamic>))
+          .toList();
     }
 
     try {
@@ -99,13 +110,19 @@ class HomeApiService {
       final data = response.data as Map<String, dynamic>;
       await LocalCacheDb.instance.putJson(cacheKey, data);
       final results = data['results'] as List<dynamic>;
-      return results.map<TvShow>((json) => TvShow.fromJson(json as Map<String, dynamic>)).toList();
+      return results
+          .map<TvShow>((json) => TvShow.fromJson(json as Map<String, dynamic>))
+          .toList();
     } on DioException catch (e) {
       // Offline-first: спробувати отримати застарілі дані з кешу
       final staleCached = await LocalCacheDb.instance.getJsonStale(cacheKey);
       if (staleCached != null) {
         final results = staleCached['results'] as List<dynamic>;
-        return results.map<TvShow>((json) => TvShow.fromJson(json as Map<String, dynamic>)).toList();
+        return results
+            .map<TvShow>(
+              (json) => TvShow.fromJson(json as Map<String, dynamic>),
+            )
+            .toList();
       }
       throw Exception('Failed to fetch tv shows: ${e.message}');
     }
@@ -113,45 +130,53 @@ class HomeApiService {
 
   Future<List<TvShow>> fetchAllTvShows({int page = 1}) async {
     final cacheKey = 'all_tv_shows_page_$page';
-    final cached =
-        await LocalCacheDb.instance.getJson(cacheKey, maxAge: const Duration(minutes: 30));
+    final cached = await LocalCacheDb.instance.getJson(
+      cacheKey,
+      maxAge: const Duration(minutes: 30),
+    );
 
     if (cached != null) {
       final results = cached['results'] as List<dynamic>;
-      return results.map<TvShow>((json) => TvShow.fromJson(json as Map<String, dynamic>)).toList();
+      return results
+          .map<TvShow>((json) => TvShow.fromJson(json as Map<String, dynamic>))
+          .toList();
     }
 
     try {
       final response = await _dio.get(
         '/discover/tv',
-        queryParameters: {
-          'sort_by': 'popularity.desc',
-          'page': page,
-        },
+        queryParameters: {'sort_by': 'popularity.desc', 'page': page},
       );
 
       final data = response.data as Map<String, dynamic>;
       await LocalCacheDb.instance.putJson(cacheKey, data);
       final results = data['results'] as List<dynamic>;
-      return results.map<TvShow>((json) => TvShow.fromJson(json as Map<String, dynamic>)).toList();
+      return results
+          .map<TvShow>((json) => TvShow.fromJson(json as Map<String, dynamic>))
+          .toList();
     } on DioException catch (e) {
       // Offline-first: спробувати отримати застарілі дані з кешу
       final staleCached = await LocalCacheDb.instance.getJsonStale(cacheKey);
       if (staleCached != null) {
         final results = staleCached['results'] as List<dynamic>;
-        return results.map<TvShow>((json) => TvShow.fromJson(json as Map<String, dynamic>)).toList();
+        return results
+            .map<TvShow>(
+              (json) => TvShow.fromJson(json as Map<String, dynamic>),
+            )
+            .toList();
       }
       throw Exception('Failed to fetch tv catalog: ${e.message}');
     }
   }
 
-
   // ===== Деталі фільму / серіалу, відео, відгуки, рекомендації =====
 
   Future<Map<String, dynamic>> fetchMovieDetails(int movieId) async {
     final cacheKey = 'movie_details_$movieId';
-    final cached =
-        await LocalCacheDb.instance.getJson(cacheKey, maxAge: const Duration(hours: 24));
+    final cached = await LocalCacheDb.instance.getJson(
+      cacheKey,
+      maxAge: const Duration(hours: 24),
+    );
 
     if (cached != null) {
       return cached;
@@ -174,8 +199,10 @@ class HomeApiService {
 
   Future<Map<String, dynamic>> fetchTvDetails(int tvId) async {
     final cacheKey = 'tv_details_$tvId';
-    final cached =
-        await LocalCacheDb.instance.getJson(cacheKey, maxAge: const Duration(hours: 24));
+    final cached = await LocalCacheDb.instance.getJson(
+      cacheKey,
+      maxAge: const Duration(hours: 24),
+    );
 
     if (cached != null) {
       return cached;
@@ -199,8 +226,10 @@ class HomeApiService {
   Future<List<dynamic>> fetchMovieVideos(int movieId) async {
     final cacheKey = 'movie_videos_$movieId';
     // Зменшено час кешування з 12 годин до 2 годин для уникнення застарілих відео
-    final cached =
-        await LocalCacheDb.instance.getJson(cacheKey, maxAge: const Duration(hours: 2));
+    final cached = await LocalCacheDb.instance.getJson(
+      cacheKey,
+      maxAge: const Duration(hours: 2),
+    );
 
     if (cached != null) {
       return (cached['results'] as List<dynamic>);
@@ -209,9 +238,7 @@ class HomeApiService {
     try {
       final response = await _dio.get(
         '/movie/$movieId/videos',
-        queryParameters: {
-          'include_video_language': 'en,null,uk,ru',
-        },
+        queryParameters: {'include_video_language': 'en,null,uk,ru'},
       );
 
       final data = response.data as Map<String, dynamic>;
@@ -230,8 +257,10 @@ class HomeApiService {
   Future<List<dynamic>> fetchTvVideos(int tvId) async {
     final cacheKey = 'tv_videos_$tvId';
     // Зменшено час кешування з 12 годин до 2 годин для уникнення застарілих відео
-    final cached =
-        await LocalCacheDb.instance.getJson(cacheKey, maxAge: const Duration(hours: 2));
+    final cached = await LocalCacheDb.instance.getJson(
+      cacheKey,
+      maxAge: const Duration(hours: 2),
+    );
 
     if (cached != null) {
       return (cached['results'] as List<dynamic>);
@@ -240,9 +269,7 @@ class HomeApiService {
     try {
       final response = await _dio.get(
         '/tv/$tvId/videos',
-        queryParameters: {
-          'include_video_language': 'en,null,uk,ru',
-        },
+        queryParameters: {'include_video_language': 'en,null,uk,ru'},
       );
 
       final data = response.data as Map<String, dynamic>;
@@ -260,8 +287,10 @@ class HomeApiService {
 
   Future<List<dynamic>> fetchMovieReviews(int movieId) async {
     final cacheKey = 'movie_reviews_$movieId';
-    final cached =
-        await LocalCacheDb.instance.getJson(cacheKey, maxAge: const Duration(hours: 6));
+    final cached = await LocalCacheDb.instance.getJson(
+      cacheKey,
+      maxAge: const Duration(hours: 6),
+    );
 
     if (cached != null) {
       return (cached['results'] as List<dynamic>);
@@ -284,8 +313,10 @@ class HomeApiService {
 
   Future<List<dynamic>> fetchTvReviews(int tvId) async {
     final cacheKey = 'tv_reviews_$tvId';
-    final cached =
-        await LocalCacheDb.instance.getJson(cacheKey, maxAge: const Duration(hours: 6));
+    final cached = await LocalCacheDb.instance.getJson(
+      cacheKey,
+      maxAge: const Duration(hours: 6),
+    );
 
     if (cached != null) {
       return (cached['results'] as List<dynamic>);
@@ -308,12 +339,16 @@ class HomeApiService {
 
   Future<List<Movie>> fetchMovieRecommendations(int movieId) async {
     final cacheKey = 'movie_recommendations_$movieId';
-    final cached =
-        await LocalCacheDb.instance.getJson(cacheKey, maxAge: const Duration(hours: 12));
+    final cached = await LocalCacheDb.instance.getJson(
+      cacheKey,
+      maxAge: const Duration(hours: 12),
+    );
 
     if (cached != null) {
       final results = cached['results'] as List<dynamic>;
-      return results.map<Movie>((json) => Movie.fromJson(json as Map<String, dynamic>)).toList();
+      return results
+          .map<Movie>((json) => Movie.fromJson(json as Map<String, dynamic>))
+          .toList();
     }
 
     try {
@@ -321,13 +356,17 @@ class HomeApiService {
       final data = response.data as Map<String, dynamic>;
       await LocalCacheDb.instance.putJson(cacheKey, data);
       final results = data['results'] as List<dynamic>;
-      return results.map<Movie>((json) => Movie.fromJson(json as Map<String, dynamic>)).toList();
+      return results
+          .map<Movie>((json) => Movie.fromJson(json as Map<String, dynamic>))
+          .toList();
     } on DioException catch (e) {
       // Offline-first: спробувати отримати застарілі дані з кешу
       final staleCached = await LocalCacheDb.instance.getJsonStale(cacheKey);
       if (staleCached != null) {
         final results = staleCached['results'] as List<dynamic>;
-        return results.map<Movie>((json) => Movie.fromJson(json as Map<String, dynamic>)).toList();
+        return results
+            .map<Movie>((json) => Movie.fromJson(json as Map<String, dynamic>))
+            .toList();
       }
       throw Exception('Failed to fetch movie recommendations: ${e.message}');
     }
@@ -335,12 +374,16 @@ class HomeApiService {
 
   Future<List<TvShow>> fetchTvRecommendations(int tvId) async {
     final cacheKey = 'tv_recommendations_$tvId';
-    final cached =
-        await LocalCacheDb.instance.getJson(cacheKey, maxAge: const Duration(hours: 12));
+    final cached = await LocalCacheDb.instance.getJson(
+      cacheKey,
+      maxAge: const Duration(hours: 12),
+    );
 
     if (cached != null) {
       final results = cached['results'] as List<dynamic>;
-      return results.map<TvShow>((json) => TvShow.fromJson(json as Map<String, dynamic>)).toList();
+      return results
+          .map<TvShow>((json) => TvShow.fromJson(json as Map<String, dynamic>))
+          .toList();
     }
 
     try {
@@ -348,13 +391,19 @@ class HomeApiService {
       final data = response.data as Map<String, dynamic>;
       await LocalCacheDb.instance.putJson(cacheKey, data);
       final results = data['results'] as List<dynamic>;
-      return results.map<TvShow>((json) => TvShow.fromJson(json as Map<String, dynamic>)).toList();
+      return results
+          .map<TvShow>((json) => TvShow.fromJson(json as Map<String, dynamic>))
+          .toList();
     } on DioException catch (e) {
       // Offline-first: спробувати отримати застарілі дані з кешу
       final staleCached = await LocalCacheDb.instance.getJsonStale(cacheKey);
       if (staleCached != null) {
         final results = staleCached['results'] as List<dynamic>;
-        return results.map<TvShow>((json) => TvShow.fromJson(json as Map<String, dynamic>)).toList();
+        return results
+            .map<TvShow>(
+              (json) => TvShow.fromJson(json as Map<String, dynamic>),
+            )
+            .toList();
       }
       throw Exception('Failed to fetch tv recommendations: ${e.message}');
     }
@@ -363,12 +412,16 @@ class HomeApiService {
   // Метод для отримання списку жанрів фільмів
   Future<List<Genre>> fetchMovieGenres() async {
     const cacheKey = 'movie_genres';
-    final cached =
-        await LocalCacheDb.instance.getJson(cacheKey, maxAge: const Duration(days: 7));
+    final cached = await LocalCacheDb.instance.getJson(
+      cacheKey,
+      maxAge: const Duration(days: 7),
+    );
 
     if (cached != null) {
       final results = cached['genres'] as List<dynamic>;
-      return results.map<Genre>((json) => Genre.fromJson(json as Map<String, dynamic>)).toList();
+      return results
+          .map<Genre>((json) => Genre.fromJson(json as Map<String, dynamic>))
+          .toList();
     }
 
     try {
@@ -376,13 +429,17 @@ class HomeApiService {
       final data = response.data as Map<String, dynamic>;
       await LocalCacheDb.instance.putJson(cacheKey, data);
       final results = data['genres'] as List<dynamic>;
-      return results.map<Genre>((json) => Genre.fromJson(json as Map<String, dynamic>)).toList();
+      return results
+          .map<Genre>((json) => Genre.fromJson(json as Map<String, dynamic>))
+          .toList();
     } on DioException catch (e) {
       // Offline-first: спробувати отримати застарілі дані з кешу
       final staleCached = await LocalCacheDb.instance.getJsonStale(cacheKey);
       if (staleCached != null) {
         final results = staleCached['genres'] as List<dynamic>;
-        return results.map<Genre>((json) => Genre.fromJson(json as Map<String, dynamic>)).toList();
+        return results
+            .map<Genre>((json) => Genre.fromJson(json as Map<String, dynamic>))
+            .toList();
       }
       throw Exception('Failed to fetch movie genres: ${e.message}');
     }
@@ -391,12 +448,16 @@ class HomeApiService {
   // Метод для отримання списку жанрів серіалів
   Future<List<Genre>> fetchTvGenres() async {
     const cacheKey = 'tv_genres';
-    final cached =
-        await LocalCacheDb.instance.getJson(cacheKey, maxAge: const Duration(days: 7));
+    final cached = await LocalCacheDb.instance.getJson(
+      cacheKey,
+      maxAge: const Duration(days: 7),
+    );
 
     if (cached != null) {
       final results = cached['genres'] as List<dynamic>;
-      return results.map<Genre>((json) => Genre.fromJson(json as Map<String, dynamic>)).toList();
+      return results
+          .map<Genre>((json) => Genre.fromJson(json as Map<String, dynamic>))
+          .toList();
     }
 
     try {
@@ -404,31 +465,40 @@ class HomeApiService {
       final data = response.data as Map<String, dynamic>;
       await LocalCacheDb.instance.putJson(cacheKey, data);
       final results = data['genres'] as List<dynamic>;
-      return results.map<Genre>((json) => Genre.fromJson(json as Map<String, dynamic>)).toList();
+      return results
+          .map<Genre>((json) => Genre.fromJson(json as Map<String, dynamic>))
+          .toList();
     } on DioException catch (e) {
       // Offline-first: спробувати отримати застарілі дані з кешу
       final staleCached = await LocalCacheDb.instance.getJsonStale(cacheKey);
       if (staleCached != null) {
         final results = staleCached['genres'] as List<dynamic>;
-        return results.map<Genre>((json) => Genre.fromJson(json as Map<String, dynamic>)).toList();
+        return results
+            .map<Genre>((json) => Genre.fromJson(json as Map<String, dynamic>))
+            .toList();
       }
       throw Exception('Failed to fetch tv genres: ${e.message}');
     }
   }
 
   // Метод для пошуку за назвою (фільми + серіали)
-  Future<Map<String, dynamic>> searchByName(String query, {int page = 1}) async {
+  Future<Map<String, dynamic>> searchByName(
+    String query, {
+    int page = 1,
+  }) async {
     final cacheKey = 'search_multi_${query.toLowerCase()}_page_$page';
-    final cached =
-        await LocalCacheDb.instance.getJson(cacheKey, maxAge: const Duration(minutes: 15));
+    final cached = await LocalCacheDb.instance.getJson(
+      cacheKey,
+      maxAge: const Duration(minutes: 15),
+    );
 
     if (cached != null) {
       final results = cached['results'] as List<dynamic>;
       final totalPages = cached['total_pages'] as int? ?? 1;
-      
+
       final List<Movie> movies = [];
       final List<TvShow> tvShows = [];
-      
+
       for (var item in results) {
         final mediaType = item['media_type'] as String?;
         if (mediaType == 'movie') {
@@ -437,7 +507,7 @@ class HomeApiService {
           tvShows.add(TvShow.fromJson(item as Map<String, dynamic>));
         }
       }
-      
+
       return {
         'movies': movies,
         'tvShows': tvShows,
@@ -450,20 +520,17 @@ class HomeApiService {
     try {
       final response = await _dio.get(
         '/search/multi',
-        queryParameters: {
-          'query': query,
-          'page': page,
-        },
+        queryParameters: {'query': query, 'page': page},
       );
 
       final data = response.data as Map<String, dynamic>;
       await LocalCacheDb.instance.putJson(cacheKey, data);
       final results = data['results'] as List<dynamic>;
       final totalPages = data['total_pages'] as int? ?? 1;
-      
+
       final List<Movie> movies = [];
       final List<TvShow> tvShows = [];
-      
+
       for (var item in results) {
         final mediaType = item['media_type'] as String?;
         if (mediaType == 'movie') {
@@ -472,7 +539,7 @@ class HomeApiService {
           tvShows.add(TvShow.fromJson(item as Map<String, dynamic>));
         }
       }
-      
+
       return {
         'movies': movies,
         'tvShows': tvShows,
@@ -486,10 +553,10 @@ class HomeApiService {
       if (staleCached != null) {
         final results = staleCached['results'] as List<dynamic>;
         final totalPages = staleCached['total_pages'] as int? ?? 1;
-        
+
         final List<Movie> movies = [];
         final List<TvShow> tvShows = [];
-        
+
         for (var item in results) {
           final mediaType = item['media_type'] as String?;
           if (mediaType == 'movie') {
@@ -498,7 +565,7 @@ class HomeApiService {
             tvShows.add(TvShow.fromJson(item as Map<String, dynamic>));
           }
         }
-        
+
         return {
           'movies': movies,
           'tvShows': tvShows,
@@ -532,14 +599,18 @@ class HomeApiService {
     }
     cacheKeyParts.add('page_$page');
     final cacheKey = cacheKeyParts.join('_');
-    
-    final cached =
-        await LocalCacheDb.instance.getJson(cacheKey, maxAge: const Duration(minutes: 15));
+
+    final cached = await LocalCacheDb.instance.getJson(
+      cacheKey,
+      maxAge: const Duration(minutes: 15),
+    );
 
     if (cached != null) {
       final results = cached['results'] as List<dynamic>;
       final totalPages = cached['total_pages'] as int? ?? 1;
-      final movies = results.map<Movie>((json) => Movie.fromJson(json as Map<String, dynamic>)).toList();
+      final movies = results
+          .map<Movie>((json) => Movie.fromJson(json as Map<String, dynamic>))
+          .toList();
       return {
         'movies': movies,
         'page': page,
@@ -553,17 +624,16 @@ class HomeApiService {
         // Пошук за назвою
         final response = await _dio.get(
           '/search/movie',
-          queryParameters: {
-            'query': query,
-            'page': page,
-          },
+          queryParameters: {'query': query, 'page': page},
         );
-        
+
         final data = response.data as Map<String, dynamic>;
         await LocalCacheDb.instance.putJson(cacheKey, data);
         final results = data['results'] as List<dynamic>;
         final totalPages = data['total_pages'] as int? ?? 1;
-        final movies = results.map<Movie>((json) => Movie.fromJson(json as Map<String, dynamic>)).toList();
+        final movies = results
+            .map<Movie>((json) => Movie.fromJson(json as Map<String, dynamic>))
+            .toList();
         return {
           'movies': movies,
           'page': page,
@@ -572,9 +642,7 @@ class HomeApiService {
         };
       } else {
         // Пошук за фільтрами через discover
-        final queryParams = <String, dynamic>{
-          'page': page,
-        };
+        final queryParams = <String, dynamic>{'page': page};
 
         if (genreName != null && genreName.isNotEmpty) {
           // Спочатку знаходимо ID жанру за назвою
@@ -599,7 +667,9 @@ class HomeApiService {
         await LocalCacheDb.instance.putJson(cacheKey, data);
         final results = data['results'] as List<dynamic>;
         final totalPages = data['total_pages'] as int? ?? 1;
-        final movies = results.map<Movie>((json) => Movie.fromJson(json as Map<String, dynamic>)).toList();
+        final movies = results
+            .map<Movie>((json) => Movie.fromJson(json as Map<String, dynamic>))
+            .toList();
         return {
           'movies': movies,
           'page': page,
@@ -613,7 +683,9 @@ class HomeApiService {
       if (staleCached != null) {
         final results = staleCached['results'] as List<dynamic>;
         final totalPages = staleCached['total_pages'] as int? ?? 1;
-        final movies = results.map<Movie>((json) => Movie.fromJson(json as Map<String, dynamic>)).toList();
+        final movies = results
+            .map<Movie>((json) => Movie.fromJson(json as Map<String, dynamic>))
+            .toList();
         return {
           'movies': movies,
           'page': page,
@@ -646,14 +718,18 @@ class HomeApiService {
     }
     cacheKeyParts.add('page_$page');
     final cacheKey = cacheKeyParts.join('_');
-    
-    final cached =
-        await LocalCacheDb.instance.getJson(cacheKey, maxAge: const Duration(minutes: 15));
+
+    final cached = await LocalCacheDb.instance.getJson(
+      cacheKey,
+      maxAge: const Duration(minutes: 15),
+    );
 
     if (cached != null) {
       final results = cached['results'] as List<dynamic>;
       final totalPages = cached['total_pages'] as int? ?? 1;
-      final tvShows = results.map<TvShow>((json) => TvShow.fromJson(json as Map<String, dynamic>)).toList();
+      final tvShows = results
+          .map<TvShow>((json) => TvShow.fromJson(json as Map<String, dynamic>))
+          .toList();
       return {
         'tvShows': tvShows,
         'page': page,
@@ -667,17 +743,18 @@ class HomeApiService {
         // Пошук за назвою
         final response = await _dio.get(
           '/search/tv',
-          queryParameters: {
-            'query': query,
-            'page': page,
-          },
+          queryParameters: {'query': query, 'page': page},
         );
-        
+
         final data = response.data as Map<String, dynamic>;
         await LocalCacheDb.instance.putJson(cacheKey, data);
         final results = data['results'] as List<dynamic>;
         final totalPages = data['total_pages'] as int? ?? 1;
-        final tvShows = results.map<TvShow>((json) => TvShow.fromJson(json as Map<String, dynamic>)).toList();
+        final tvShows = results
+            .map<TvShow>(
+              (json) => TvShow.fromJson(json as Map<String, dynamic>),
+            )
+            .toList();
         return {
           'tvShows': tvShows,
           'page': page,
@@ -686,9 +763,7 @@ class HomeApiService {
         };
       } else {
         // Пошук за фільтрами через discover
-        final queryParams = <String, dynamic>{
-          'page': page,
-        };
+        final queryParams = <String, dynamic>{'page': page};
 
         if (genreName != null && genreName.isNotEmpty) {
           // Спочатку знаходимо ID жанру за назвою
@@ -713,7 +788,11 @@ class HomeApiService {
         await LocalCacheDb.instance.putJson(cacheKey, data);
         final results = data['results'] as List<dynamic>;
         final totalPages = data['total_pages'] as int? ?? 1;
-        final tvShows = results.map<TvShow>((json) => TvShow.fromJson(json as Map<String, dynamic>)).toList();
+        final tvShows = results
+            .map<TvShow>(
+              (json) => TvShow.fromJson(json as Map<String, dynamic>),
+            )
+            .toList();
         return {
           'tvShows': tvShows,
           'page': page,
@@ -727,7 +806,11 @@ class HomeApiService {
       if (staleCached != null) {
         final results = staleCached['results'] as List<dynamic>;
         final totalPages = staleCached['total_pages'] as int? ?? 1;
-        final tvShows = results.map<TvShow>((json) => TvShow.fromJson(json as Map<String, dynamic>)).toList();
+        final tvShows = results
+            .map<TvShow>(
+              (json) => TvShow.fromJson(json as Map<String, dynamic>),
+            )
+            .toList();
         return {
           'tvShows': tvShows,
           'page': page,

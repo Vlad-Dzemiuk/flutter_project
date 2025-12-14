@@ -53,7 +53,7 @@ void main() {
       // Assert
       expect(token, isNotEmpty);
       expect(token.split('.').length, 3); // JWT has 3 parts
-      
+
       // Verify token was saved
       final savedToken = await testSecureStorage.getJwtToken();
       expect(savedToken, equals(token));
@@ -131,4 +131,3 @@ void main() {
     });
   });
 }
-

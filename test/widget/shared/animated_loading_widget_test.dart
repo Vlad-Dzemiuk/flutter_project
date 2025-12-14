@@ -4,11 +4,11 @@ import '../../unit/helpers/widget_test_helpers.dart';
 
 void main() {
   group('AnimatedLoadingWidget', () {
-    testWidgets('displays animated loading widget', (WidgetTester tester) async {
+    testWidgets('displays animated loading widget', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
-        WidgetTestHelper.createTestApp(
-          child: const AnimatedLoadingWidget(),
-        ),
+        WidgetTestHelper.createTestApp(child: const AnimatedLoadingWidget()),
       );
 
       // Use pump instead of pumpAndSettle since animation never settles
@@ -18,7 +18,9 @@ void main() {
       expect(find.byType(AnimatedLoadingWidget), findsOneWidget);
     });
 
-    testWidgets('displays loading message when provided', (WidgetTester tester) async {
+    testWidgets('displays loading message when provided', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         WidgetTestHelper.createTestApp(
           child: const AnimatedLoadingWidget(message: 'Loading...'),
@@ -34,9 +36,7 @@ void main() {
 
     testWidgets('displays loading indicator', (WidgetTester tester) async {
       await tester.pumpWidget(
-        WidgetTestHelper.createTestApp(
-          child: const AnimatedLoadingWidget(),
-        ),
+        WidgetTestHelper.createTestApp(child: const AnimatedLoadingWidget()),
       );
 
       // Use pump instead of pumpAndSettle since animation never settles
@@ -49,9 +49,7 @@ void main() {
 
     testWidgets('animates loading indicator', (WidgetTester tester) async {
       await tester.pumpWidget(
-        WidgetTestHelper.createTestApp(
-          child: const AnimatedLoadingWidget(),
-        ),
+        WidgetTestHelper.createTestApp(child: const AnimatedLoadingWidget()),
       );
 
       await tester.pump();
@@ -62,4 +60,3 @@ void main() {
     });
   });
 }
-

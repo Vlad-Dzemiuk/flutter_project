@@ -27,11 +27,12 @@ void main() {
     mockToggleFavoriteUseCase = MockToggleFavoriteUseCase();
     mockAddToWatchlistUseCase = MockAddToWatchlistUseCase();
     mockAuthRepository = MockAuthRepository();
-    
+
     when(() => mockAuthRepository.currentUser).thenReturn(null);
-    when(() => mockAuthRepository.authStateChanges())
-        .thenAnswer((_) => Stream.value(null));
-    
+    when(
+      () => mockAuthRepository.authStateChanges(),
+    ).thenAnswer((_) => Stream.value(null));
+
     bloc = MediaCollectionsBloc(
       getMediaCollectionsUseCase: mockGetMediaCollectionsUseCase,
       toggleFavoriteUseCase: mockToggleFavoriteUseCase,
@@ -45,10 +46,13 @@ void main() {
   });
 
   group('MediaCollectionsBloc', () {
-    test('initial state has authorized false when user is not authenticated', () {
-      expect(bloc.state.authorized, false);
-      expect(bloc.state.loading, false);
-    });
+    test(
+      'initial state has authorized false when user is not authenticated',
+      () {
+        expect(bloc.state.authorized, false);
+        expect(bloc.state.loading, false);
+      },
+    );
 
     blocTest<MediaCollectionsBloc, MediaCollectionsState>(
       'emits collections when LoadCollectionsEvent is successful',
@@ -63,13 +67,16 @@ void main() {
           favoriteKeys: {'movie_1'},
           watchlistKeys: {'movie_2'},
         );
-        when(() => mockGetMediaCollectionsUseCase(any()))
-            .thenAnswer((_) async => result);
-        when(() => mockAuthRepository.currentUser)
-            .thenReturn(TestDataFactory.createLocalUser());
+        when(
+          () => mockGetMediaCollectionsUseCase(any()),
+        ).thenAnswer((_) async => result);
+        when(
+          () => mockAuthRepository.currentUser,
+        ).thenReturn(TestDataFactory.createLocalUser());
         // Мокуємо authStateChanges як пустий Stream, щоб уникнути автоматичних подій
-        when(() => mockAuthRepository.authStateChanges())
-            .thenAnswer((_) => const Stream.empty());
+        when(
+          () => mockAuthRepository.authStateChanges(),
+        ).thenAnswer((_) => const Stream.empty());
         // Створюємо новий BLoC з авторизованим користувачем
         return MediaCollectionsBloc(
           getMediaCollectionsUseCase: mockGetMediaCollectionsUseCase,
@@ -93,6 +100,7 @@ void main() {
 
 class MockGetMediaCollectionsUseCase extends Mock
     implements GetMediaCollectionsUseCase {}
-class MockToggleFavoriteUseCase extends Mock implements ToggleFavoriteUseCase {}
-class MockAddToWatchlistUseCase extends Mock implements AddToWatchlistUseCase {}
 
+class MockToggleFavoriteUseCase extends Mock implements ToggleFavoriteUseCase {}
+
+class MockAddToWatchlistUseCase extends Mock implements AddToWatchlistUseCase {}

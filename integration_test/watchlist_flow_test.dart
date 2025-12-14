@@ -54,7 +54,9 @@ void main() {
       expect(find.byType(Scaffold), findsWidgets);
     });
 
-    testWidgets('User can navigate to watchlist page via bottom navigation', (WidgetTester tester) async {
+    testWidgets('User can navigate to watchlist page via bottom navigation', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
 
@@ -68,14 +70,18 @@ void main() {
 
       // Find and tap watchlist button in bottom navigation (Android/mobile)
       final watchlistButton = find.text('Watched');
-      expect(watchlistButton, findsWidgets, reason: 'Watched button should be visible in navigation');
+      expect(
+        watchlistButton,
+        findsWidgets,
+        reason: 'Watched button should be visible in navigation',
+      );
 
       await tester.tap(watchlistButton.first);
       await IntegrationTestHelper.waitForAsync(tester, seconds: 2);
 
       // Verify navigation worked - watchlist page should be visible
       expect(find.byType(Scaffold), findsWidgets);
-      
+
       // Verify watchlist page header with visibility icon (може бути не завжди, залежить від стану)
       final visibilityIcon = find.byIcon(Icons.visibility);
       // Не вимагаємо обов'язкової наявності іконки, оскільки сторінка може бути в різних станах
@@ -84,7 +90,9 @@ void main() {
       }
     });
 
-    testWidgets('Watchlist page displays correct structure', (WidgetTester tester) async {
+    testWidgets('Watchlist page displays correct structure', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
 
@@ -102,7 +110,11 @@ void main() {
 
       // Verify page structure - page should be visible (може бути list/grid/empty state)
       final scaffold = find.byType(Scaffold);
-      expect(scaffold, findsWidgets, reason: 'Watchlist page should have Scaffold');
+      expect(
+        scaffold,
+        findsWidgets,
+        reason: 'Watchlist page should have Scaffold',
+      );
 
       // Перевіряємо, що сторінка відображається (може бути будь-який контент)
       final listView = find.byType(ListView);
@@ -112,17 +124,23 @@ void main() {
       final column = find.byType(Column);
 
       // Сторінка повинна мати хоча б щось з цього (list, grid, scrollable, text, або column для empty state)
-      final hasContent = 
-        listView.evaluate().isNotEmpty ||
-        gridView.evaluate().isNotEmpty ||
-        scrollable.evaluate().isNotEmpty ||
-        textWidgets.evaluate().isNotEmpty ||
-        column.evaluate().isNotEmpty;
+      final hasContent =
+          listView.evaluate().isNotEmpty ||
+          gridView.evaluate().isNotEmpty ||
+          scrollable.evaluate().isNotEmpty ||
+          textWidgets.evaluate().isNotEmpty ||
+          column.evaluate().isNotEmpty;
 
-      expect(hasContent, isTrue, reason: 'Watchlist page should display some content');
+      expect(
+        hasContent,
+        isTrue,
+        reason: 'Watchlist page should display some content',
+      );
     });
 
-    testWidgets('Watchlist page shows empty state when no items', (WidgetTester tester) async {
+    testWidgets('Watchlist page shows empty state when no items', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
 
@@ -140,19 +158,25 @@ void main() {
 
       // Verify page is visible (може бути empty state, loading, або список)
       expect(find.byType(Scaffold), findsWidgets);
-      
+
       // Check for any content (empty state, loading, or list)
-      final hasAnyContent = 
-        find.byType(ListView).evaluate().isNotEmpty ||
-        find.byType(GridView).evaluate().isNotEmpty ||
-        find.byType(CircularProgressIndicator).evaluate().isNotEmpty ||
-        find.byType(Text).evaluate().isNotEmpty ||
-        find.byType(Column).evaluate().isNotEmpty;
-      
-      expect(hasAnyContent, isTrue, reason: 'Watchlist page should show some content');
+      final hasAnyContent =
+          find.byType(ListView).evaluate().isNotEmpty ||
+          find.byType(GridView).evaluate().isNotEmpty ||
+          find.byType(CircularProgressIndicator).evaluate().isNotEmpty ||
+          find.byType(Text).evaluate().isNotEmpty ||
+          find.byType(Column).evaluate().isNotEmpty;
+
+      expect(
+        hasAnyContent,
+        isTrue,
+        reason: 'Watchlist page should show some content',
+      );
     });
 
-    testWidgets('User can scroll watchlist when content exists', (WidgetTester tester) async {
+    testWidgets('User can scroll watchlist when content exists', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
 
@@ -201,7 +225,9 @@ void main() {
       }
     });
 
-    testWidgets('Watchlist navigation works from different pages', (WidgetTester tester) async {
+    testWidgets('Watchlist navigation works from different pages', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
 
@@ -227,10 +253,16 @@ void main() {
       // Verify we're on watchlist page
       expect(find.byType(Scaffold), findsWidgets);
       final visibilityIcon = find.byIcon(Icons.visibility);
-      expect(visibilityIcon, findsWidgets, reason: 'Should be on watchlist page');
+      expect(
+        visibilityIcon,
+        findsWidgets,
+        reason: 'Should be on watchlist page',
+      );
     });
 
-    testWidgets('Watchlist page handles back navigation correctly', (WidgetTester tester) async {
+    testWidgets('Watchlist page handles back navigation correctly', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
 
@@ -258,4 +290,3 @@ void main() {
     });
   });
 }
-

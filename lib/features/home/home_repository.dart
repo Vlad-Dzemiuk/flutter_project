@@ -8,7 +8,7 @@ abstract class HomeRepository {
   Future<List<Movie>> fetchAllMovies({int page = 1});
   Future<List<TvShow>> fetchPopularTvShows({int page = 1});
   Future<List<TvShow>> fetchAllTvShows({int page = 1});
-  
+
   // Пошук
   Future<List<Genre>> fetchMovieGenres();
   Future<List<Genre>> fetchTvGenres();

@@ -31,11 +31,17 @@ void main() {
         getIt.unregister<UpdateProfileUseCase>();
       }
       getIt.registerLazySingleton<AuthRepository>(() => mockAuthRepository);
-      getIt.registerLazySingleton<UpdateProfileUseCase>(() => mockUpdateProfileUseCase);
+      getIt.registerLazySingleton<UpdateProfileUseCase>(
+        () => mockUpdateProfileUseCase,
+      );
 
       // Setup mock AuthRepository
-      when(() => mockAuthRepository.currentUser).thenReturn(TestDataFactory.createLocalUser());
-      when(() => mockAuthRepository.authStateChanges()).thenAnswer((_) => Stream.value(TestDataFactory.createLocalUser()));
+      when(
+        () => mockAuthRepository.currentUser,
+      ).thenReturn(TestDataFactory.createLocalUser());
+      when(
+        () => mockAuthRepository.authStateChanges(),
+      ).thenAnswer((_) => Stream.value(TestDataFactory.createLocalUser()));
 
       // Setup mock UpdateProfileUseCase
       when(() => mockUpdateProfileUseCase(any())).thenAnswer(
@@ -54,9 +60,7 @@ void main() {
 
     testWidgets('displays edit profile page', (WidgetTester tester) async {
       await tester.pumpWidget(
-        WidgetTestHelper.createTestApp(
-          child: const EditProfilePage(),
-        ),
+        WidgetTestHelper.createTestApp(child: const EditProfilePage()),
       );
 
       await tester.pumpAndSettle();
@@ -66,9 +70,7 @@ void main() {
 
     testWidgets('displays name input field', (WidgetTester tester) async {
       await tester.pumpWidget(
-        WidgetTestHelper.createTestApp(
-          child: const EditProfilePage(),
-        ),
+        WidgetTestHelper.createTestApp(child: const EditProfilePage()),
       );
 
       await tester.pumpAndSettle();
@@ -79,9 +81,7 @@ void main() {
 
     testWidgets('displays save button', (WidgetTester tester) async {
       await tester.pumpWidget(
-        WidgetTestHelper.createTestApp(
-          child: const EditProfilePage(),
-        ),
+        WidgetTestHelper.createTestApp(child: const EditProfilePage()),
       );
 
       await tester.pumpAndSettle();
@@ -91,4 +91,3 @@ void main() {
     });
   });
 }
-

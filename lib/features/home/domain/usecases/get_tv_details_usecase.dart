@@ -9,7 +9,7 @@ class GetTvDetailsParams {
 }
 
 /// Use case для отримання детальної інформації про серіал
-/// 
+///
 /// Завантажує деталі серіалу, включаючи відео, відгуки та рекомендації
 class GetTvDetailsUseCase
     implements UseCase<Map<String, dynamic>, GetTvDetailsParams> {
@@ -30,7 +30,9 @@ class GetTvDetailsUseCase
     // Завантаження додаткових даних (бізнес-логіка: об'єднання даних)
     final videos = await repository.fetchTvVideos(params.tvId);
     final reviews = await repository.fetchTvReviews(params.tvId);
-    final recommendations = await repository.fetchTvRecommendations(params.tvId);
+    final recommendations = await repository.fetchTvRecommendations(
+      params.tvId,
+    );
 
     // Об'єднання всіх даних в один результат
     return {
@@ -41,5 +43,3 @@ class GetTvDetailsUseCase
     };
   }
 }
-
-

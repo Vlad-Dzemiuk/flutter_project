@@ -12,10 +12,8 @@ void main() {
             builder: (context) {
               return Scaffold(
                 body: ElevatedButton(
-                  onPressed: () => AppNotification.showSuccess(
-                    context,
-                    'Success message',
-                  ),
+                  onPressed: () =>
+                      AppNotification.showSuccess(context, 'Success message'),
                   child: const Text('Show Success'),
                 ),
               );
@@ -39,10 +37,8 @@ void main() {
             builder: (context) {
               return Scaffold(
                 body: ElevatedButton(
-                  onPressed: () => AppNotification.showError(
-                    context,
-                    'Error message',
-                  ),
+                  onPressed: () =>
+                      AppNotification.showError(context, 'Error message'),
                   child: const Text('Show Error'),
                 ),
               );
@@ -66,10 +62,8 @@ void main() {
             builder: (context) {
               return Scaffold(
                 body: ElevatedButton(
-                  onPressed: () => AppNotification.showInfo(
-                    context,
-                    'Info message',
-                  ),
+                  onPressed: () =>
+                      AppNotification.showInfo(context, 'Info message'),
                   child: const Text('Show Info'),
                 ),
               );
@@ -93,10 +87,8 @@ void main() {
             builder: (context) {
               return Scaffold(
                 body: ElevatedButton(
-                  onPressed: () => AppNotification.showWarning(
-                    context,
-                    'Warning message',
-                  ),
+                  onPressed: () =>
+                      AppNotification.showWarning(context, 'Warning message'),
                   child: const Text('Show Warning'),
                 ),
               );
@@ -113,7 +105,9 @@ void main() {
       expect(find.byIcon(Icons.warning_amber_rounded), findsOneWidget);
     });
 
-    testWidgets('shows notification with custom icon', (WidgetTester tester) async {
+    testWidgets('shows notification with custom icon', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         WidgetTestHelper.createTestApp(
           child: Builder(
@@ -141,7 +135,9 @@ void main() {
       expect(find.byIcon(Icons.star), findsOneWidget);
     });
 
-    testWidgets('shows notification with custom duration', (WidgetTester tester) async {
+    testWidgets('shows notification with custom duration', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         WidgetTestHelper.createTestApp(
           child: Builder(
@@ -166,12 +162,14 @@ void main() {
 
       expect(find.byType(SnackBar), findsOneWidget);
       expect(find.text('Custom duration message'), findsOneWidget);
-      
+
       final snackBar = tester.widget<SnackBar>(find.byType(SnackBar));
       expect(snackBar.duration, const Duration(seconds: 5));
     });
 
-    testWidgets('shows notification with NotificationType.success', (WidgetTester tester) async {
+    testWidgets('shows notification with NotificationType.success', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         WidgetTestHelper.createTestApp(
           child: Builder(
@@ -199,7 +197,9 @@ void main() {
       expect(find.byIcon(Icons.check_circle), findsOneWidget);
     });
 
-    testWidgets('shows notification with NotificationType.error', (WidgetTester tester) async {
+    testWidgets('shows notification with NotificationType.error', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         WidgetTestHelper.createTestApp(
           child: Builder(
@@ -227,7 +227,9 @@ void main() {
       expect(find.byIcon(Icons.error_outline), findsOneWidget);
     });
 
-    testWidgets('shows notification with NotificationType.info', (WidgetTester tester) async {
+    testWidgets('shows notification with NotificationType.info', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         WidgetTestHelper.createTestApp(
           child: Builder(
@@ -255,7 +257,9 @@ void main() {
       expect(find.byIcon(Icons.info_outline), findsOneWidget);
     });
 
-    testWidgets('shows notification with NotificationType.warning', (WidgetTester tester) async {
+    testWidgets('shows notification with NotificationType.warning', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         WidgetTestHelper.createTestApp(
           child: Builder(
@@ -283,17 +287,17 @@ void main() {
       expect(find.byIcon(Icons.warning_amber_rounded), findsOneWidget);
     });
 
-    testWidgets('notification has floating behavior', (WidgetTester tester) async {
+    testWidgets('notification has floating behavior', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         WidgetTestHelper.createTestApp(
           child: Builder(
             builder: (context) {
               return Scaffold(
                 body: ElevatedButton(
-                  onPressed: () => AppNotification.showSuccess(
-                    context,
-                    'Floating message',
-                  ),
+                  onPressed: () =>
+                      AppNotification.showSuccess(context, 'Floating message'),
                   child: const Text('Show Floating'),
                 ),
               );
@@ -309,17 +313,17 @@ void main() {
       expect(snackBar.behavior, SnackBarBehavior.floating);
     });
 
-    testWidgets('notification has rounded corners', (WidgetTester tester) async {
+    testWidgets('notification has rounded corners', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         WidgetTestHelper.createTestApp(
           child: Builder(
             builder: (context) {
               return Scaffold(
                 body: ElevatedButton(
-                  onPressed: () => AppNotification.showSuccess(
-                    context,
-                    'Rounded message',
-                  ),
+                  onPressed: () =>
+                      AppNotification.showSuccess(context, 'Rounded message'),
                   child: const Text('Show Rounded'),
                 ),
               );
@@ -333,10 +337,9 @@ void main() {
 
       final snackBar = tester.widget<SnackBar>(find.byType(SnackBar));
       expect(snackBar.shape, isA<RoundedRectangleBorder>());
-      
+
       final shape = snackBar.shape as RoundedRectangleBorder;
       expect(shape.borderRadius, BorderRadius.circular(12));
     });
   });
 }
-

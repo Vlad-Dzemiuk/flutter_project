@@ -8,14 +8,11 @@ class SignInParams {
   final String email;
   final String password;
 
-  const SignInParams({
-    required this.email,
-    required this.password,
-  });
+  const SignInParams({required this.email, required this.password});
 }
 
 /// Use case для входу користувача
-/// 
+///
 /// Валідує email та пароль, виконує авторизацію
 /// Повертає domain entity (User), а не data model
 class SignInUseCase implements UseCase<User, SignInParams> {
@@ -27,11 +24,11 @@ class SignInUseCase implements UseCase<User, SignInParams> {
   Future<User> call(SignInParams params) async {
     // Бізнес-логіка: валідація та авторизація
     final trimmedEmail = params.email.trim();
-    
+
     if (trimmedEmail.isEmpty) {
       throw Exception('Email не може бути порожнім');
     }
-    
+
     if (params.password.isEmpty) {
       throw Exception('Пароль не може бути порожнім');
     }
@@ -51,4 +48,3 @@ class SignInUseCase implements UseCase<User, SignInParams> {
     return UserMapper.toEntity(localUser);
   }
 }
-

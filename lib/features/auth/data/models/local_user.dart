@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 /// Data model для користувача (для збереження в Drift базі даних)
-/// 
+///
 /// Це модель даних, яка відповідає структурі бази даних
 class LocalUser extends Equatable {
   final int id;
@@ -19,5 +19,3 @@ class LocalUser extends Equatable {
   @override
   List<Object?> get props => [id, email, displayName, avatarUrl];
 }
-
-

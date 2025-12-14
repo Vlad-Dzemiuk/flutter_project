@@ -10,10 +10,9 @@ class GetFavoritesParams {
 }
 
 /// Use case для отримання списку улюблених фільмів
-/// 
+///
 /// Валідує accountId та завантажує улюблені фільми
-class GetFavoritesUseCase
-    implements UseCase<List<Movie>, GetFavoritesParams> {
+class GetFavoritesUseCase implements UseCase<List<Movie>, GetFavoritesParams> {
   final FavoritesRepository repository;
 
   GetFavoritesUseCase(this.repository);
@@ -34,4 +33,3 @@ class GetFavoritesUseCase
     return favorites;
   }
 }
-

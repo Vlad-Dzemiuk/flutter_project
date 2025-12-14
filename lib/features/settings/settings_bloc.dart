@@ -22,15 +22,17 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     try {
       final themeModeString = await UserPrefs.instance.getThemeMode();
       final languageCode = await UserPrefs.instance.getLanguageCode();
-      
+
       final themeMode = AppThemes.parseThemeMode(themeModeString);
-      
-      emit(state.copyWith(
-        themeMode: themeMode,
-        languageCode: languageCode,
-        loading: false,
-        error: '',
-      ));
+
+      emit(
+        state.copyWith(
+          themeMode: themeMode,
+          languageCode: languageCode,
+          loading: false,
+          error: '',
+        ),
+      );
     } catch (e) {
       final errorMessage = _getUserFriendlyError(e);
       emit(state.copyWith(loading: false, error: errorMessage));
@@ -69,15 +71,15 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
 
   String _getUserFriendlyError(dynamic error) {
     final errorString = error.toString().toLowerCase();
-    
+
     if (errorString.contains('permission') || errorString.contains('access')) {
       return 'Недостатньо прав доступу до сховища. Перевірте дозволи додатку.';
     }
-    
+
     if (errorString.contains('storage') || errorString.contains('disk')) {
       return 'Помилка збереження налаштувань. Перевірте доступ до сховища.';
     }
-    
+
     // Для інших помилок повертаємо загальне повідомлення
     return 'Не вдалося зберегти налаштування. Спробуйте пізніше.';
   }
@@ -88,7 +90,8 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     if (state.themeMode == ThemeMode.system) {
       return MediaQuery.platformBrightnessOf(context);
     }
-    return state.themeMode == ThemeMode.dark ? Brightness.dark : Brightness.light;
+    return state.themeMode == ThemeMode.dark
+        ? Brightness.dark
+        : Brightness.light;
   }
 }
-

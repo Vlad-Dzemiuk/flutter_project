@@ -31,4 +31,3 @@ class SettingsState extends Equatable {
   @override
   List<Object?> get props => [themeMode, languageCode, loading, error];
 }
-

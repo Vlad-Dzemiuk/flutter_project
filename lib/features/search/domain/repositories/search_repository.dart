@@ -9,5 +9,3 @@ abstract class SearchRepository {
     int page = 1,
   });
 }
-
-

@@ -17,20 +17,28 @@ void main() {
     test('should return combined movie details', () async {
       // Arrange
       final details = {'id': 1, 'title': 'Test Movie'};
-      final videos = [{'id': '1', 'key': 'abc123'}];
-      final reviews = [{'id': '1', 'content': 'Great movie'}];
+      final videos = [
+        {'id': '1', 'key': 'abc123'},
+      ];
+      final reviews = [
+        {'id': '1', 'content': 'Great movie'},
+      ];
       final recommendations = [
-        TestDataFactory.createMovie(id: 2, title: 'Recommended Movie')
+        TestDataFactory.createMovie(id: 2, title: 'Recommended Movie'),
       ];
 
-      when(() => mockRepository.fetchMovieDetails(any()))
-          .thenAnswer((_) async => details);
-      when(() => mockRepository.fetchMovieVideos(any()))
-          .thenAnswer((_) async => videos);
-      when(() => mockRepository.fetchMovieReviews(any()))
-          .thenAnswer((_) async => reviews);
-      when(() => mockRepository.fetchMovieRecommendations(any()))
-          .thenAnswer((_) async => recommendations);
+      when(
+        () => mockRepository.fetchMovieDetails(any()),
+      ).thenAnswer((_) async => details);
+      when(
+        () => mockRepository.fetchMovieVideos(any()),
+      ).thenAnswer((_) async => videos);
+      when(
+        () => mockRepository.fetchMovieReviews(any()),
+      ).thenAnswer((_) async => reviews);
+      when(
+        () => mockRepository.fetchMovieRecommendations(any()),
+      ).thenAnswer((_) async => recommendations);
 
       // Act
       final result = await useCase(const GetMovieDetailsParams(movieId: 1));
@@ -51,11 +59,13 @@ void main() {
       // Act & Assert
       expect(
         () => useCase(const GetMovieDetailsParams(movieId: 0)),
-        throwsA(isA<Exception>().having(
-          (e) => e.toString(),
-          'message',
-          contains('Невірний ID фільму'),
-        )),
+        throwsA(
+          isA<Exception>().having(
+            (e) => e.toString(),
+            'message',
+            contains('Невірний ID фільму'),
+          ),
+        ),
       );
       expect(
         () => useCase(const GetMovieDetailsParams(movieId: -1)),
@@ -65,4 +75,3 @@ void main() {
     });
   });
 }
-

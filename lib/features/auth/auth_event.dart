@@ -30,4 +30,3 @@ class RegisterEvent extends AuthEvent {
 class SignOutEvent extends AuthEvent {
   const SignOutEvent();
 }
-

@@ -33,12 +33,15 @@ void main() {
         ),
       ];
 
-      when(() => mockRepository.fetchFavorites())
-          .thenAnswer((_) async => emptyFavorites);
-      when(() => mockRepository.toggleFavorite(any()))
-          .thenAnswer((_) async => Future.value());
-      when(() => mockRepository.fetchFavorites())
-          .thenAnswer((_) async => updatedFavorites);
+      when(
+        () => mockRepository.fetchFavorites(),
+      ).thenAnswer((_) async => emptyFavorites);
+      when(
+        () => mockRepository.toggleFavorite(any()),
+      ).thenAnswer((_) async => Future.value());
+      when(
+        () => mockRepository.fetchFavorites(),
+      ).thenAnswer((_) async => updatedFavorites);
 
       // Act
       final result = await useCase(ToggleFavoriteParams(item: item));
@@ -62,12 +65,15 @@ void main() {
         ),
       ];
 
-      when(() => mockRepository.fetchFavorites())
-          .thenAnswer((_) async => emptyFavorites);
-      when(() => mockRepository.toggleFavorite(any()))
-          .thenAnswer((_) async => Future.value());
-      when(() => mockRepository.fetchFavorites())
-          .thenAnswer((_) async => updatedFavorites);
+      when(
+        () => mockRepository.fetchFavorites(),
+      ).thenAnswer((_) async => emptyFavorites);
+      when(
+        () => mockRepository.toggleFavorite(any()),
+      ).thenAnswer((_) async => Future.value());
+      when(
+        () => mockRepository.fetchFavorites(),
+      ).thenAnswer((_) async => updatedFavorites);
 
       // Act
       final result = await useCase(ToggleFavoriteParams(item: item));
@@ -77,4 +83,3 @@ void main() {
     });
   });
 }
-

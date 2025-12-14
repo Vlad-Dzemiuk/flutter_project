@@ -22,19 +22,36 @@ import 'package:project/features/collections/media_collection_entry.dart';
 
 /// Mock classes for testing
 class MockAuthRepository extends Mock implements AuthRepository {}
+
 class MockHomeRepository extends Mock implements HomeRepository {}
-class MockMediaCollectionsRepository extends Mock implements MediaCollectionsRepository {}
+
+class MockMediaCollectionsRepository extends Mock
+    implements MediaCollectionsRepository {}
+
 class MockSearchRepository extends Mock implements SearchRepository {}
+
 class MockFavoritesRepository extends Mock implements FavoritesRepository {}
+
 class MockProfileRepository extends Mock implements ProfileRepository {}
+
 class MockFirebaseAuthService extends Mock implements FirebaseAuthService {}
+
 class MockJwtTokenService extends Mock implements JwtTokenService {}
+
 class MockSecureStorageService extends Mock implements SecureStorageService {}
+
 class MockSearchMediaUseCase extends Mock implements SearchMediaUseCase {}
-class MockGetPopularContentUseCase extends Mock implements GetPopularContentUseCase {}
-class MockGetMovieDetailsUseCase extends Mock implements GetMovieDetailsUseCase {}
+
+class MockGetPopularContentUseCase extends Mock
+    implements GetPopularContentUseCase {}
+
+class MockGetMovieDetailsUseCase extends Mock
+    implements GetMovieDetailsUseCase {}
+
 class MockGetTvDetailsUseCase extends Mock implements GetTvDetailsUseCase {}
+
 class MockGetMovieVideosUseCase extends Mock implements GetMovieVideosUseCase {}
+
 class MockUpdateProfileUseCase extends Mock implements UpdateProfileUseCase {}
 
 /// Test data factories
@@ -125,4 +142,3 @@ class TestDataFactory {
     );
   }
 }
-

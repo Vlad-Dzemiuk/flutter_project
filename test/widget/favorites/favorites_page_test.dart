@@ -18,7 +18,9 @@ void main() {
       if (getIt.isRegistered<MediaCollectionsBloc>()) {
         getIt.unregister<MediaCollectionsBloc>();
       }
-      getIt.registerLazySingleton<MediaCollectionsBloc>(() => mediaCollectionsBloc);
+      getIt.registerLazySingleton<MediaCollectionsBloc>(
+        () => mediaCollectionsBloc,
+      );
     });
 
     tearDown(() {
@@ -43,7 +45,9 @@ void main() {
       expect(find.byType(FavoritesPage), findsOneWidget);
     });
 
-    testWidgets('displays empty state when not authorized', (WidgetTester tester) async {
+    testWidgets('displays empty state when not authorized', (
+      WidgetTester tester,
+    ) async {
       final unauthorizedBloc = WidgetTestHelper.createMockMediaCollectionsBloc(
         isAuthorized: false,
       );
@@ -67,16 +71,20 @@ void main() {
 
       // Should show empty state or login prompt
       expect(find.byType(FavoritesPage), findsOneWidget);
-      
+
       // Cleanup
       unauthorizedBloc.close();
       if (getIt.isRegistered<MediaCollectionsBloc>()) {
         getIt.unregister<MediaCollectionsBloc>();
       }
-      getIt.registerLazySingleton<MediaCollectionsBloc>(() => mediaCollectionsBloc);
+      getIt.registerLazySingleton<MediaCollectionsBloc>(
+        () => mediaCollectionsBloc,
+      );
     });
 
-    testWidgets('displays loading state when loading', (WidgetTester tester) async {
+    testWidgets('displays loading state when loading', (
+      WidgetTester tester,
+    ) async {
       final loadingBloc = WidgetTestHelper.createMockMediaCollectionsBloc(
         isAuthorized: true,
       );
@@ -106,14 +114,15 @@ void main() {
 
       // FavoritesPage uses AnimatedLoadingWidget for loading state
       expect(find.byType(AnimatedLoadingWidget), findsOneWidget);
-      
+
       // Cleanup
       loadingBloc.close();
       if (getIt.isRegistered<MediaCollectionsBloc>()) {
         getIt.unregister<MediaCollectionsBloc>();
       }
-      getIt.registerLazySingleton<MediaCollectionsBloc>(() => mediaCollectionsBloc);
+      getIt.registerLazySingleton<MediaCollectionsBloc>(
+        () => mediaCollectionsBloc,
+      );
     });
   });
 }
-

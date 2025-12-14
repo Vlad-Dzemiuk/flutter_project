@@ -64,18 +64,18 @@ class HomeState extends Equatable {
 
   @override
   List<Object?> get props => [
-        popularMovies,
-        popularTvShows,
-        allMovies,
-        allTvShows,
-        searchResults,
-        loading,
-        searching,
-        loadingMore,
-        error,
-        searchQuery,
-        hasMoreResults,
-      ];
+    popularMovies,
+    popularTvShows,
+    allMovies,
+    allTvShows,
+    searchResults,
+    loading,
+    searching,
+    loadingMore,
+    error,
+    searchQuery,
+    hasMoreResults,
+  ];
 }
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
@@ -100,11 +100,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     try {
       // Використання use case з retry механізмом для мережевих помилок
       final result = await RetryHelper.retry(
-        operation: () => getPopularContentUseCase(
-          const GetPopularContentParams(page: 1),
-        ),
+        operation: () =>
+            getPopularContentUseCase(const GetPopularContentParams(page: 1)),
       );
-      
+
       emit(
         state.copyWith(
           popularMovies: result.popularMovies,
@@ -121,19 +120,18 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
-  Future<void> _onSearch(
-    SearchEvent event,
-    Emitter<HomeState> emit,
-  ) async {
+  Future<void> _onSearch(SearchEvent event, Emitter<HomeState> emit) async {
     if (event.loadMore) {
       emit(state.copyWith(loadingMore: true));
     } else {
       emit(state.copyWith(searching: true, error: '', searchResults: []));
     }
-    
+
     try {
-      int currentPage = event.loadMore ? (state.searchResults.length ~/ 20) + 1 : 1;
-      
+      int currentPage = event.loadMore
+          ? (state.searchResults.length ~/ 20) + 1
+          : 1;
+
       // Використання use case з retry механізмом для мережевих помилок
       final result = await RetryHelper.retry(
         operation: () => searchMediaUseCase(
@@ -147,11 +145,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           ),
         ),
       );
-      
-      final allResults = event.loadMore 
-          ? [...state.searchResults, ...result.results] 
+
+      final allResults = event.loadMore
+          ? [...state.searchResults, ...result.results]
           : result.results;
-      
+
       emit(
         state.copyWith(
           searchResults: allResults,
@@ -164,34 +162,43 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       );
     } catch (e) {
       final errorMessage = _getUserFriendlyError(e);
-      emit(state.copyWith(error: errorMessage, searching: false, loadingMore: false));
+      emit(
+        state.copyWith(
+          error: errorMessage,
+          searching: false,
+          loadingMore: false,
+        ),
+      );
     }
   }
 
-  void _onClearSearch(
-    ClearSearchEvent event,
-    Emitter<HomeState> emit,
-  ) {
-    emit(state.copyWith(searchResults: [], clearSearchQuery: true, hasMoreResults: false));
+  void _onClearSearch(ClearSearchEvent event, Emitter<HomeState> emit) {
+    emit(
+      state.copyWith(
+        searchResults: [],
+        clearSearchQuery: true,
+        hasMoreResults: false,
+      ),
+    );
   }
 
   String _getUserFriendlyError(dynamic error) {
     final errorString = error.toString().toLowerCase();
-    
-    if (errorString.contains('socketexception') || 
+
+    if (errorString.contains('socketexception') ||
         errorString.contains('failed host lookup') ||
         errorString.contains('no address associated with hostname')) {
       return 'Немає інтернет-з\'єднання. Перевірте підключення до мережі.';
     }
-    
+
     if (errorString.contains('timeout') || errorString.contains('timed out')) {
       return 'Час очікування вичерпано. Перевірте інтернет-з\'єднання.';
     }
-    
+
     if (errorString.contains('connection') || errorString.contains('network')) {
       return 'Помилка підключення до сервера. Спробуйте пізніше.';
     }
-    
+
     // Для інших помилок повертаємо загальне повідомлення
     return 'Не вдалося завантажити дані. Спробуйте пізніше.';
   }

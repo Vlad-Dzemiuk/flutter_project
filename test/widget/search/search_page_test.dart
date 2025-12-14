@@ -35,13 +35,19 @@ void main() {
       if (getIt.isRegistered<MediaCollectionsBloc>()) {
         getIt.unregister<MediaCollectionsBloc>();
       }
-      getIt.registerLazySingleton<SearchMediaUseCase>(() => mockSearchMediaUseCase);
+      getIt.registerLazySingleton<SearchMediaUseCase>(
+        () => mockSearchMediaUseCase,
+      );
       getIt.registerLazySingleton<AuthRepository>(() => mockAuthRepository);
-      getIt.registerLazySingleton<MediaCollectionsBloc>(() => mediaCollectionsBloc);
+      getIt.registerLazySingleton<MediaCollectionsBloc>(
+        () => mediaCollectionsBloc,
+      );
 
       // Setup mock AuthRepository
       when(() => mockAuthRepository.currentUser).thenReturn(null);
-      when(() => mockAuthRepository.authStateChanges()).thenAnswer((_) => Stream.value(null));
+      when(
+        () => mockAuthRepository.authStateChanges(),
+      ).thenAnswer((_) => Stream.value(null));
 
       // Setup mock SearchMediaUseCase
       when(() => mockSearchMediaUseCase(any())).thenAnswer(
@@ -116,7 +122,7 @@ void main() {
       // Find the main search TextField (first one)
       final searchFields = find.byType(TextField);
       expect(searchFields, findsWidgets);
-      
+
       final searchField = searchFields.first;
       await tester.tap(searchField);
       await tester.enterText(searchField, 'test query');
@@ -146,7 +152,7 @@ void main() {
 
       // Initially shows Icons.tune_rounded
       expect(find.byIcon(Icons.tune_rounded), findsOneWidget);
-      
+
       final filterButton = find.byIcon(Icons.tune_rounded);
       await tester.tap(filterButton);
       await tester.pump();
@@ -154,10 +160,9 @@ void main() {
 
       // After toggle, should show Icons.tune
       expect(find.byIcon(Icons.tune), findsOneWidget);
-      
+
       // Filters should be visible (more TextFields)
       expect(find.byType(TextField), findsAtLeastNWidgets(2));
     });
   });
 }
-

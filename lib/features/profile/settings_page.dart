@@ -67,18 +67,12 @@ class _SettingsPageState extends State<_SettingsPageContent> {
                 ? const LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: [
-                      Color(0xFF0F172A),
-                      Color(0xFF0B1020),
-                    ],
+                    colors: [Color(0xFF0F172A), Color(0xFF0B1020)],
                   )
                 : LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: [
-                      colors.surfaceContainerHighest,
-                      colors.surface,
-                    ],
+                    colors: [colors.surfaceContainerHighest, colors.surface],
                   ),
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(24),
@@ -115,14 +109,22 @@ class _SettingsPageState extends State<_SettingsPageContent> {
                       Icon(
                         Icons.language,
                         color: colors.primary,
-                        size: isDesktop ? 28 : isTablet ? 26 : 24,
+                        size: isDesktop
+                            ? 28
+                            : isTablet
+                            ? 26
+                            : 24,
                       ),
                       SizedBox(width: spacing * 0.6),
                       Text(
                         modalL10n.selectLanguage,
                         style: TextStyle(
                           color: colors.onSurface,
-                          fontSize: isDesktop ? 24 : isTablet ? 22 : 20,
+                          fontSize: isDesktop
+                              ? 24
+                              : isTablet
+                              ? 22
+                              : 20,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -154,7 +156,9 @@ class _SettingsPageState extends State<_SettingsPageContent> {
       context.read<SettingsBloc>().add(SetLanguageEvent(lang));
       final updatedL10n = AppLocalizations.of(context)!;
       setState(() {
-        _selectedLanguage = lang == 'uk' ? updatedL10n.ukrainian : updatedL10n.english;
+        _selectedLanguage = lang == 'uk'
+            ? updatedL10n.ukrainian
+            : updatedL10n.english;
       });
     }
   }
@@ -181,18 +185,12 @@ class _SettingsPageState extends State<_SettingsPageContent> {
                 ? const LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: [
-                      Color(0xFF0F172A),
-                      Color(0xFF0B1020),
-                    ],
+                    colors: [Color(0xFF0F172A), Color(0xFF0B1020)],
                   )
                 : LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: [
-                      colors.surfaceContainerHighest,
-                      colors.surface,
-                    ],
+                    colors: [colors.surfaceContainerHighest, colors.surface],
                   ),
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(24),
@@ -229,14 +227,22 @@ class _SettingsPageState extends State<_SettingsPageContent> {
                       Icon(
                         Icons.dark_mode_outlined,
                         color: colors.primary,
-                        size: isDesktop ? 28 : isTablet ? 26 : 24,
+                        size: isDesktop
+                            ? 28
+                            : isTablet
+                            ? 26
+                            : 24,
                       ),
                       SizedBox(width: spacing * 0.6),
                       Text(
                         AppLocalizations.of(context)!.appThemeTitle,
                         style: TextStyle(
                           color: colors.onSurface,
-                          fontSize: isDesktop ? 24 : isTablet ? 22 : 20,
+                          fontSize: isDesktop
+                              ? 24
+                              : isTablet
+                              ? 22
+                              : 20,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -310,8 +316,12 @@ class _SettingsPageState extends State<_SettingsPageContent> {
                   builder: (context, constraints) {
                     final isDesktop = Responsive.isDesktop(context);
                     final isTablet = Responsive.isTablet(context);
-                    final horizontalPadding = Responsive.getHorizontalPadding(context);
-                    final verticalPadding = Responsive.getVerticalPadding(context);
+                    final horizontalPadding = Responsive.getHorizontalPadding(
+                      context,
+                    );
+                    final verticalPadding = Responsive.getVerticalPadding(
+                      context,
+                    );
                     final spacing = Responsive.getSpacing(context);
                     final maxFormWidth = Responsive.getMaxFormWidth(context);
 
@@ -335,14 +345,14 @@ class _SettingsPageState extends State<_SettingsPageContent> {
                                 size: isDesktop ? 28 : 24,
                               ),
                               SizedBox(width: spacing * 0.6),
-                      Text(
-                        AppLocalizations.of(context)!.settings,
-                        style: TextStyle(
-                          color: colors.onSurface,
-                          fontSize: isDesktop ? 24 : 20,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
+                              Text(
+                                AppLocalizations.of(context)!.settings,
+                                style: TextStyle(
+                                  color: colors.onSurface,
+                                  fontSize: isDesktop ? 24 : 20,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -357,7 +367,9 @@ class _SettingsPageState extends State<_SettingsPageContent> {
                               ),
                               child: ConstrainedBox(
                                 constraints: BoxConstraints(
-                                  maxWidth: isDesktop || isTablet ? maxFormWidth : double.infinity,
+                                  maxWidth: isDesktop || isTablet
+                                      ? maxFormWidth
+                                      : double.infinity,
                                 ),
                                 child: Column(
                                   children: [
@@ -365,21 +377,28 @@ class _SettingsPageState extends State<_SettingsPageContent> {
                                     if (isDesktop)
                                       GridView.count(
                                         shrinkWrap: true,
-                                        physics: const NeverScrollableScrollPhysics(),
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
                                         crossAxisCount: 2,
                                         crossAxisSpacing: spacing,
                                         mainAxisSpacing: spacing,
                                         childAspectRatio: 1.5,
                                         children: [
                                           _SettingsTile(
-                                            title: AppLocalizations.of(context)!.appLanguage,
+                                            title: AppLocalizations.of(
+                                              context,
+                                            )!.appLanguage,
                                             subtitle: _selectedLanguage,
                                             icon: Icons.language,
                                             onTap: _chooseLanguage,
                                           ),
                                           _SettingsTile(
-                                            title: AppLocalizations.of(context)!.appTheme,
-                                            subtitle: _getThemeLabel(currentTheme),
+                                            title: AppLocalizations.of(
+                                              context,
+                                            )!.appTheme,
+                                            subtitle: _getThemeLabel(
+                                              currentTheme,
+                                            ),
                                             icon: Icons.dark_mode_outlined,
                                             onTap: _chooseTheme,
                                           ),
@@ -389,15 +408,21 @@ class _SettingsPageState extends State<_SettingsPageContent> {
                                       Column(
                                         children: [
                                           _SettingsTile(
-                                            title: AppLocalizations.of(context)!.appLanguage,
+                                            title: AppLocalizations.of(
+                                              context,
+                                            )!.appLanguage,
                                             subtitle: _selectedLanguage,
                                             icon: Icons.language,
                                             onTap: _chooseLanguage,
                                           ),
                                           SizedBox(height: spacing),
                                           _SettingsTile(
-                                            title: AppLocalizations.of(context)!.appTheme,
-                                            subtitle: _getThemeLabel(currentTheme),
+                                            title: AppLocalizations.of(
+                                              context,
+                                            )!.appTheme,
+                                            subtitle: _getThemeLabel(
+                                              currentTheme,
+                                            ),
                                             icon: Icons.dark_mode_outlined,
                                             onTap: _chooseTheme,
                                           ),
@@ -405,18 +430,26 @@ class _SettingsPageState extends State<_SettingsPageContent> {
                                       ),
                                     SizedBox(height: spacing),
                                     _SettingsTile(
-                                      title: AppLocalizations.of(context)!.aboutApp,
+                                      title: AppLocalizations.of(
+                                        context,
+                                      )!.aboutApp,
                                       icon: Icons.info_outline,
                                       onTap: () {
-                                        Navigator.of(context).pushNamed(AppConstants.aboutRoute);
+                                        Navigator.of(
+                                          context,
+                                        ).pushNamed(AppConstants.aboutRoute);
                                       },
                                     ),
                                     SizedBox(height: spacing * 1.5),
                                     Text(
-                                      AppLocalizations.of(context)!.appVersion('1.0.0'),
+                                      AppLocalizations.of(
+                                        context,
+                                      )!.appVersion('1.0.0'),
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
-                                        color: colors.onSurface.withValues(alpha: 0.6),
+                                        color: colors.onSurface.withValues(
+                                          alpha: 0.6,
+                                        ),
                                         fontWeight: FontWeight.w600,
                                         fontSize: isDesktop ? 16 : 14,
                                       ),
@@ -465,18 +498,16 @@ class _SettingsTile extends StatelessWidget {
       margin: EdgeInsets.only(bottom: spacing),
       decoration: BoxDecoration(
         color: theme.cardColor,
-        borderRadius: BorderRadius.circular(
-          isDesktop ? 20 : 18,
-        ),
+        borderRadius: BorderRadius.circular(isDesktop ? 20 : 18),
         border: Border.all(
-          color: colors.outlineVariant.withValues(alpha:
-            theme.brightness == Brightness.light ? 1 : 0.4,
+          color: colors.outlineVariant.withValues(
+            alpha: theme.brightness == Brightness.light ? 1 : 0.4,
           ),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha:
-              theme.brightness == Brightness.light ? 0.08 : 0.25,
+            color: Colors.black.withValues(
+              alpha: theme.brightness == Brightness.light ? 0.08 : 0.25,
             ),
             blurRadius: isDesktop ? 22 : 18,
             offset: Offset(0, isDesktop ? 14 : 12),
@@ -485,7 +516,11 @@ class _SettingsTile extends StatelessWidget {
       ),
       child: ListTile(
         contentPadding: EdgeInsets.symmetric(
-          horizontal: isDesktop ? 20 : isTablet ? 18 : 16,
+          horizontal: isDesktop
+              ? 20
+              : isTablet
+              ? 18
+              : 16,
           vertical: isDesktop ? 12 : 8,
         ),
         leading: Container(
@@ -494,11 +529,7 @@ class _SettingsTile extends StatelessWidget {
             color: colors.primary.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Icon(
-            icon,
-            color: colors.primary,
-            size: isDesktop ? 24 : 20,
-          ),
+          child: Icon(icon, color: colors.primary, size: isDesktop ? 24 : 20),
         ),
         title: Text(
           title,
@@ -554,13 +585,19 @@ class _LanguageOption extends StatelessWidget {
       borderRadius: BorderRadius.circular(isDesktop ? 16 : 14),
       child: Container(
         padding: EdgeInsets.symmetric(
-          horizontal: isDesktop ? 18 : isTablet ? 16 : 14,
+          horizontal: isDesktop
+              ? 18
+              : isTablet
+              ? 16
+              : 14,
           vertical: isDesktop ? 16 : 14,
         ),
         decoration: BoxDecoration(
           color: isSelected
               ? colors.primary.withValues(alpha: isDark ? 0.2 : 0.1)
-              : colors.surfaceContainerHighest.withValues(alpha: isDark ? 0.2 : 0.5),
+              : colors.surfaceContainerHighest.withValues(
+                  alpha: isDark ? 0.2 : 0.5,
+                ),
           borderRadius: BorderRadius.circular(isDesktop ? 16 : 14),
           border: Border.all(
             color: isSelected
@@ -628,13 +665,19 @@ class _ThemeOption extends StatelessWidget {
       borderRadius: BorderRadius.circular(isDesktop ? 16 : 14),
       child: Container(
         padding: EdgeInsets.symmetric(
-          horizontal: isDesktop ? 18 : isTablet ? 16 : 14,
+          horizontal: isDesktop
+              ? 18
+              : isTablet
+              ? 16
+              : 14,
           vertical: isDesktop ? 16 : 14,
         ),
         decoration: BoxDecoration(
           color: isSelected
               ? colors.primary.withValues(alpha: isDark ? 0.2 : 0.1)
-              : colors.surfaceContainerHighest.withValues(alpha: isDark ? 0.2 : 0.5),
+              : colors.surfaceContainerHighest.withValues(
+                  alpha: isDark ? 0.2 : 0.5,
+                ),
           borderRadius: BorderRadius.circular(isDesktop ? 16 : 14),
           border: Border.all(
             color: isSelected

@@ -25,47 +25,59 @@ void main() {
       expect(movie.genreIds, [1, 2, 3]);
     });
 
-    test('fullPosterUrl should return correct URL when posterPath is provided', () {
-      // Arrange
-      final movie = MovieEntity(
-        id: 1,
-        title: 'Test Movie',
-        overview: 'Test overview',
-        posterPath: '/poster.jpg',
-        voteAverage: 8.5,
-      );
+    test(
+      'fullPosterUrl should return correct URL when posterPath is provided',
+      () {
+        // Arrange
+        final movie = MovieEntity(
+          id: 1,
+          title: 'Test Movie',
+          overview: 'Test overview',
+          posterPath: '/poster.jpg',
+          voteAverage: 8.5,
+        );
 
-      // Act & Assert
-      expect(movie.fullPosterUrl, 'https://image.tmdb.org/t/p/w500/poster.jpg');
-    });
+        // Act & Assert
+        expect(
+          movie.fullPosterUrl,
+          'https://image.tmdb.org/t/p/w500/poster.jpg',
+        );
+      },
+    );
 
-    test('fullPosterUrl should return empty string when posterPath is null', () {
-      // Arrange
-      final movie = MovieEntity(
-        id: 1,
-        title: 'Test Movie',
-        overview: 'Test overview',
-        posterPath: null,
-        voteAverage: 8.5,
-      );
+    test(
+      'fullPosterUrl should return empty string when posterPath is null',
+      () {
+        // Arrange
+        final movie = MovieEntity(
+          id: 1,
+          title: 'Test Movie',
+          overview: 'Test overview',
+          posterPath: null,
+          voteAverage: 8.5,
+        );
 
-      // Act & Assert
-      expect(movie.fullPosterUrl, '');
-    });
+        // Act & Assert
+        expect(movie.fullPosterUrl, '');
+      },
+    );
 
-    test('fullPosterUrl should return empty string when posterPath is empty', () {
-      // Arrange
-      final movie = MovieEntity(
-        id: 1,
-        title: 'Test Movie',
-        overview: 'Test overview',
-        posterPath: '',
-        voteAverage: 8.5,
-      );
+    test(
+      'fullPosterUrl should return empty string when posterPath is empty',
+      () {
+        // Arrange
+        final movie = MovieEntity(
+          id: 1,
+          title: 'Test Movie',
+          overview: 'Test overview',
+          posterPath: '',
+          voteAverage: 8.5,
+        );
 
-      // Act & Assert
-      expect(movie.fullPosterUrl, '');
-    });
+        // Act & Assert
+        expect(movie.fullPosterUrl, '');
+      },
+    );
 
     test('hasPoster should return true when posterPath is provided', () {
       // Arrange
@@ -110,4 +122,3 @@ void main() {
     });
   });
 }
-

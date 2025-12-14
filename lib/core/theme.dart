@@ -112,11 +112,7 @@ class AppGradients {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF0F172A),
-            Color(0xFF0B1020),
-            Color(0xFF0A0E1A),
-          ],
+          colors: [Color(0xFF0F172A), Color(0xFF0B1020), Color(0xFF0A0E1A)],
         ),
       );
     }
@@ -124,11 +120,7 @@ class AppGradients {
       gradient: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: [
-          Color(0xFFF7F8FC),
-          Color(0xFFEAEFF9),
-          Color(0xFFF4F6FB),
-        ],
+        colors: [Color(0xFFF7F8FC), Color(0xFFEAEFF9), Color(0xFFF4F6FB)],
       ),
     );
   }
@@ -144,8 +136,8 @@ class ThemeControllerScope extends InheritedWidget {
   });
 
   static ThemeController of(BuildContext context) {
-    final scope =
-        context.dependOnInheritedWidgetOfExactType<ThemeControllerScope>();
+    final scope = context
+        .dependOnInheritedWidgetOfExactType<ThemeControllerScope>();
     assert(scope != null, 'ThemeControllerScope not found in context');
     return scope!.controller;
   }
@@ -155,4 +147,3 @@ class ThemeControllerScope extends InheritedWidget {
     return oldWidget.controller != controller;
   }
 }
-

@@ -18,7 +18,7 @@ class SearchByFiltersParams {
 }
 
 /// Use case для пошуку фільмів за фільтрами
-/// 
+///
 /// Повертає список фільмів, що відповідають критеріям пошуку
 class SearchByFiltersUseCase
     implements UseCase<List<Movie>, SearchByFiltersParams> {
@@ -44,5 +44,3 @@ class SearchByFiltersUseCase
     return movies;
   }
 }
-
-

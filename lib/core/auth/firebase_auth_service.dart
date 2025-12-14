@@ -21,7 +21,7 @@ class FirebaseAuthService {
         email: email.trim(),
         password: password,
       );
-      
+
       if (credential.user == null) {
         throw Exception('Не вдалося увійти. Користувач не знайдений.');
       }
@@ -44,7 +44,7 @@ class FirebaseAuthService {
         email: email.trim(),
         password: password,
       );
-      
+
       if (credential.user == null) {
         throw Exception('Не вдалося зареєструвати користувача.');
       }
@@ -108,7 +108,7 @@ class FirebaseAuthService {
         password: currentPassword,
       );
       await user.reauthenticateWithCredential(credential);
-      
+
       // Змінюємо пароль
       await user.updatePassword(newPassword);
     } on FirebaseAuthException catch (e) {
@@ -138,7 +138,7 @@ class FirebaseAuthService {
   Future<String?> getIdToken({bool forceRefresh = false}) async {
     final user = _auth.currentUser;
     if (user == null) return null;
-    
+
     try {
       return await user.getIdToken(forceRefresh);
     } catch (e) {
@@ -151,7 +151,7 @@ class FirebaseAuthService {
     // Використовуємо hash code як id, оскільки Firebase використовує String UID
     // Для сумісності з існуючою системою, конвертуємо UID в int
     final id = firebaseUser.uid.hashCode;
-    
+
     return LocalUser(
       id: id,
       email: firebaseUser.email ?? '',
@@ -180,10 +180,11 @@ class FirebaseAuthService {
       case 'operation-not-allowed':
         return Exception('Операція не дозволена');
       case 'requires-recent-login':
-        return Exception('Потрібен нещодавній вхід для виконання цієї операції');
+        return Exception(
+          'Потрібен нещодавній вхід для виконання цієї операції',
+        );
       default:
         return Exception(e.message ?? 'Помилка аутентифікації');
     }
   }
 }
-

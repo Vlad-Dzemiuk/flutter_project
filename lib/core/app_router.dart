@@ -52,7 +52,9 @@ class AppRouter {
         if (!isLoggedIn) {
           return SlidePageRoute(
             beginOffset: const Offset(0.0, 1.0),
-            child: const LoginPage(redirectRoute: AppConstants.editProfileRoute),
+            child: const LoginPage(
+              redirectRoute: AppConstants.editProfileRoute,
+            ),
           );
         }
         return SlidePageRoute(
@@ -75,9 +77,7 @@ class AppRouter {
           child: const SettingsPage(),
         );
       case AppConstants.aboutRoute:
-        return FadePageRoute(
-          child: const AboutAppPage(),
-        );
+        return FadePageRoute(child: const AboutAppPage());
       case AppConstants.searchRoute:
         return SlidePageRoute(
           beginOffset: const Offset(0.0, 1.0),
@@ -89,9 +89,7 @@ class AppRouter {
           ),
         );
       case AppConstants.loginRoute:
-        return ScalePageRoute(
-          child: const LoginPage(),
-        );
+        return ScalePageRoute(child: const LoginPage());
       default:
         return FadePageRoute(
           child: const Scaffold(body: Center(child: Text('Route not found'))),

@@ -14,7 +14,9 @@ void main() {
       IntegrationTestHelper.setupErrorHandling();
     });
 
-    testWidgets('App handles network errors gracefully', (WidgetTester tester) async {
+    testWidgets('App handles network errors gracefully', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
       tester.takeException(); // Очищаємо overflow помилки
@@ -23,7 +25,9 @@ void main() {
       expect(find.byType(MaterialApp), findsOneWidget);
     });
 
-    testWidgets('App shows loading states appropriately', (WidgetTester tester) async {
+    testWidgets('App shows loading states appropriately', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
       tester.takeException(); // Очищаємо overflow помилки
@@ -32,7 +36,9 @@ void main() {
       expect(find.byType(Scaffold), findsWidgets);
     });
 
-    testWidgets('App handles empty states correctly', (WidgetTester tester) async {
+    testWidgets('App handles empty states correctly', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
       tester.takeException(); // Очищаємо overflow помилки
@@ -50,4 +56,3 @@ void main() {
     });
   });
 }
-

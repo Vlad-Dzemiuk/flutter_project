@@ -36,7 +36,8 @@ class Watchlist extends Table {
 class MediaCollectionsDatabase extends _$MediaCollectionsDatabase {
   MediaCollectionsDatabase._internal() : super(_openConnection());
 
-  static final MediaCollectionsDatabase instance = MediaCollectionsDatabase._internal();
+  static final MediaCollectionsDatabase instance =
+      MediaCollectionsDatabase._internal();
 
   @override
   int get schemaVersion => 1;
@@ -59,11 +60,8 @@ class MediaCollectionsDatabase extends _$MediaCollectionsDatabase {
     return LazyDatabase(() async {
       final dbFolder = await sqflite.getDatabasesPath();
       final path = p.join(dbFolder, 'media_collections.db');
-      
-      return SqfliteQueryExecutor(
-        path: path,
-        singleInstance: true,
-      );
+
+      return SqfliteQueryExecutor(path: path, singleInstance: true);
     });
   }
 
@@ -77,12 +75,12 @@ class MediaCollectionsDatabase extends _$MediaCollectionsDatabase {
   Future<Map<String, Map<String, dynamic>>> readFavorites() async {
     final entries = await select(favorites).get();
     final result = <String, Map<String, dynamic>>{};
-    
+
     for (final entry in entries) {
       final dataJson = jsonDecode(entry.data) as Map<String, dynamic>;
       result[entry.key] = dataJson;
     }
-    
+
     return result;
   }
 
@@ -90,12 +88,12 @@ class MediaCollectionsDatabase extends _$MediaCollectionsDatabase {
   Future<Map<String, Map<String, dynamic>>> readWatchlist() async {
     final entries = await select(watchlist).get();
     final result = <String, Map<String, dynamic>>{};
-    
+
     for (final entry in entries) {
       final dataJson = jsonDecode(entry.data) as Map<String, dynamic>;
       result[entry.key] = dataJson;
     }
-    
+
     return result;
   }
 
@@ -110,10 +108,12 @@ class MediaCollectionsDatabase extends _$MediaCollectionsDatabase {
   }
 
   /// Записати улюблені (внутрішній метод)
-  Future<void> _writeFavoritesInternal(Map<String, Map<String, dynamic>> data) async {
+  Future<void> _writeFavoritesInternal(
+    Map<String, Map<String, dynamic>> data,
+  ) async {
     // Видаляємо всі старі записи
     await delete(favorites).go();
-    
+
     // Додаємо нові записи через batch
     final now = DateTime.now().millisecondsSinceEpoch;
     await batch((batch) {
@@ -132,10 +132,12 @@ class MediaCollectionsDatabase extends _$MediaCollectionsDatabase {
   }
 
   /// Записати watchlist (внутрішній метод)
-  Future<void> _writeWatchlistInternal(Map<String, Map<String, dynamic>> data) async {
+  Future<void> _writeWatchlistInternal(
+    Map<String, Map<String, dynamic>> data,
+  ) async {
     // Видаляємо всі старі записи
     await delete(watchlist).go();
-    
+
     // Додаємо нові записи через batch
     final now = DateTime.now().millisecondsSinceEpoch;
     await batch((batch) {
@@ -161,7 +163,8 @@ class MediaCollectionsStorage {
   static final MediaCollectionsStorage instance = MediaCollectionsStorage._();
 
   /// Отримати доступ до бази даних (для ініціалізації)
-  Future<MediaCollectionsDatabase> get database async => MediaCollectionsDatabase.instance;
+  Future<MediaCollectionsDatabase> get database async =>
+      MediaCollectionsDatabase.instance;
 
   /// Отримати всі улюблені
   Future<Map<String, Map<String, dynamic>>> readFavorites() {

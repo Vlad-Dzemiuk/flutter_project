@@ -112,7 +112,9 @@ class _MainScaffoldState extends State<MainScaffold> {
                 children: [
                   NavigationRail(
                     extended: isDesktop && isLandscape,
-                    minWidth: isDesktop ? (isLandscape ? 100 : 80) : (isLandscape ? 80 : 72),
+                    minWidth: isDesktop
+                        ? (isLandscape ? 100 : 80)
+                        : (isLandscape ? 80 : 72),
                     backgroundColor: isDark
                         ? Colors.white.withValues(alpha: 0.03)
                         : colors.surfaceContainerHighest.withValues(alpha: 0.5),
@@ -214,9 +216,7 @@ class _MainScaffoldState extends State<MainScaffold> {
                     ],
                   ),
                   const VerticalDivider(thickness: 1, width: 1),
-                  Expanded(
-                    child: widget.body,
-                  ),
+                  Expanded(child: widget.body),
                 ],
               ),
             );
@@ -225,10 +225,13 @@ class _MainScaffoldState extends State<MainScaffold> {
           // На мобільних пристроях використовуємо bottom navigation
           // Робимо рівні верхній і нижній padding всередині BottomNavigationBar
           // і зменшуємо верхній padding Container, щоб іконки були нижче
-          final bottomNavPaddingTop = 4.0; // Верхній padding всередині BottomNavigationBar
-          final bottomNavPaddingBottom = 4.0; // Мінімальний нижній padding під іконками
-          final containerTopPadding = 2.0; // Мінімальний верхній padding Container для опускання іконок
-          
+          final bottomNavPaddingTop =
+              4.0; // Верхній padding всередині BottomNavigationBar
+          final bottomNavPaddingBottom =
+              4.0; // Мінімальний нижній padding під іконками
+          final containerTopPadding =
+              2.0; // Мінімальний верхній padding Container для опускання іконок
+
           return Scaffold(
             appBar: AppBar(
               toolbarHeight: 0,
@@ -250,10 +253,7 @@ class _MainScaffoldState extends State<MainScaffold> {
                     ? const LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
-                        colors: [
-                          Color(0xFF111827),
-                          Color(0xFF0B1020),
-                        ],
+                        colors: [Color(0xFF111827), Color(0xFF0B1020)],
                       )
                     : LinearGradient(
                         begin: Alignment.topLeft,
@@ -272,13 +272,13 @@ class _MainScaffoldState extends State<MainScaffold> {
                     bottom: bottomNavPaddingBottom,
                   ),
                   child: BottomNavigationBar(
-                      backgroundColor: isDark
-                          ? Colors.white.withValues(alpha: 0.06)
-                          : colors.surface.withValues(alpha: 0.9),
-                      elevation: 0,
-                      currentIndex: _getCurrentIndex(),
-                      onTap: _onTabTapped,
-                      type: BottomNavigationBarType.fixed,
+                    backgroundColor: isDark
+                        ? Colors.white.withValues(alpha: 0.06)
+                        : colors.surface.withValues(alpha: 0.9),
+                    elevation: 0,
+                    currentIndex: _getCurrentIndex(),
+                    onTap: _onTabTapped,
+                    type: BottomNavigationBarType.fixed,
                     selectedItemColor: colors.primary,
                     unselectedItemColor: isDark
                         ? Colors.white.withValues(alpha: 0.55)
@@ -294,52 +294,72 @@ class _MainScaffoldState extends State<MainScaffold> {
                     selectedFontSize: 14,
                     unselectedFontSize: 13,
                     items: [
-                    BottomNavigationBarItem(
-                      icon: _NavIcon(icon: Icons.home_outlined, isActive: false, size: 24),
-                      activeIcon: const _NavIcon(
-                        icon: Icons.home,
-                        isActive: true,
-                        size: 24,
+                      BottomNavigationBarItem(
+                        icon: _NavIcon(
+                          icon: Icons.home_outlined,
+                          isActive: false,
+                          size: 24,
+                        ),
+                        activeIcon: const _NavIcon(
+                          icon: Icons.home,
+                          isActive: true,
+                          size: 24,
+                        ),
+                        label: AppLocalizations.of(context)!.home,
                       ),
-                      label: AppLocalizations.of(context)!.home,
-                    ),
-                    BottomNavigationBarItem(
-                      icon: _NavIcon(icon: Icons.search_outlined, isActive: false, size: 24),
-                      activeIcon: const _NavIcon(
-                        icon: Icons.search,
-                        isActive: true,
-                        size: 24,
+                      BottomNavigationBarItem(
+                        icon: _NavIcon(
+                          icon: Icons.search_outlined,
+                          isActive: false,
+                          size: 24,
+                        ),
+                        activeIcon: const _NavIcon(
+                          icon: Icons.search,
+                          isActive: true,
+                          size: 24,
+                        ),
+                        label: AppLocalizations.of(context)!.search,
                       ),
-                      label: AppLocalizations.of(context)!.search,
-                    ),
-                    BottomNavigationBarItem(
-                      icon: _NavIcon(icon: Icons.visibility_outlined, isActive: false, size: 24),
-                      activeIcon: const _NavIcon(
-                        icon: Icons.visibility,
-                        isActive: true,
-                        size: 24,
+                      BottomNavigationBarItem(
+                        icon: _NavIcon(
+                          icon: Icons.visibility_outlined,
+                          isActive: false,
+                          size: 24,
+                        ),
+                        activeIcon: const _NavIcon(
+                          icon: Icons.visibility,
+                          isActive: true,
+                          size: 24,
+                        ),
+                        label: AppLocalizations.of(context)!.watched,
                       ),
-                      label: AppLocalizations.of(context)!.watched,
-                    ),
-                    BottomNavigationBarItem(
-                      icon: _NavIcon(icon: Icons.favorite_border, isActive: false, size: 24),
-                      activeIcon: const _NavIcon(
-                        icon: Icons.favorite,
-                        isActive: true,
-                        size: 24,
+                      BottomNavigationBarItem(
+                        icon: _NavIcon(
+                          icon: Icons.favorite_border,
+                          isActive: false,
+                          size: 24,
+                        ),
+                        activeIcon: const _NavIcon(
+                          icon: Icons.favorite,
+                          isActive: true,
+                          size: 24,
+                        ),
+                        label: AppLocalizations.of(context)!.favorites,
                       ),
-                      label: AppLocalizations.of(context)!.favorites,
-                    ),
-                    BottomNavigationBarItem(
-                      icon: _NavIcon(icon: Icons.person_outline, isActive: false, size: 24),
-                      activeIcon: const _NavIcon(
-                        icon: Icons.person,
-                        isActive: true,
-                        size: 24,
+                      BottomNavigationBarItem(
+                        icon: _NavIcon(
+                          icon: Icons.person_outline,
+                          isActive: false,
+                          size: 24,
+                        ),
+                        activeIcon: const _NavIcon(
+                          icon: Icons.person,
+                          isActive: true,
+                          size: 24,
+                        ),
+                        label: AppLocalizations.of(context)!.profile,
                       ),
-                      label: AppLocalizations.of(context)!.profile,
-                    ),
-                  ],
+                    ],
                   ),
                 ),
               ),
@@ -356,11 +376,7 @@ class _NavIcon extends StatelessWidget {
   final bool isActive;
   final double? size;
 
-  const _NavIcon({
-    required this.icon,
-    this.isActive = false,
-    this.size,
-  });
+  const _NavIcon({required this.icon, this.isActive = false, this.size});
 
   @override
   Widget build(BuildContext context) {
@@ -378,10 +394,7 @@ class _NavIcon extends StatelessWidget {
             : null,
         borderRadius: BorderRadius.circular(14),
       ),
-      child: Icon(
-        icon,
-        size: iconSize,
-      ),
+      child: Icon(icon, size: iconSize),
     );
   }
 }

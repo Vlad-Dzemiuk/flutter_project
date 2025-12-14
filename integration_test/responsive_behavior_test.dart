@@ -14,7 +14,9 @@ void main() {
       IntegrationTestHelper.setupErrorHandling();
     });
 
-    testWidgets('App adapts to different screen sizes', (WidgetTester tester) async {
+    testWidgets('App adapts to different screen sizes', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
       tester.takeException(); // Очищаємо overflow помилки
@@ -30,7 +32,9 @@ void main() {
       );
     });
 
-    testWidgets('Grid and list views adapt to screen size', (WidgetTester tester) async {
+    testWidgets('Grid and list views adapt to screen size', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
       tester.takeException(); // Очищаємо overflow помилки
@@ -48,7 +52,9 @@ void main() {
       );
     });
 
-    testWidgets('Navigation adapts to device type', (WidgetTester tester) async {
+    testWidgets('Navigation adapts to device type', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
       tester.takeException(); // Очищаємо overflow помилки
@@ -67,4 +73,3 @@ void main() {
     });
   });
 }
-

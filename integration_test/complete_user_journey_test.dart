@@ -12,68 +12,73 @@ void main() {
       IntegrationTestHelper.setupErrorHandling();
     });
 
-    testWidgets('Complete flow: Launch -> Browse -> Search -> View Details -> Profile', (WidgetTester tester) async {
-      app.main();
-      await IntegrationTestHelper.waitForAppLoad(tester);
+    testWidgets(
+      'Complete flow: Launch -> Browse -> Search -> View Details -> Profile',
+      (WidgetTester tester) async {
+        app.main();
+        await IntegrationTestHelper.waitForAppLoad(tester);
 
-      // Авторизуємо користувача перед тестом
-      await IntegrationTestHelper.authenticateUser(
-        tester,
-        email: 'test@example.com',
-        password: 'testpass123',
-        createIfNotExists: true,
-      );
-      tester.takeException(); // Очищаємо overflow помилки після авторизації
+        // Авторизуємо користувача перед тестом
+        await IntegrationTestHelper.authenticateUser(
+          tester,
+          email: 'test@example.com',
+          password: 'testpass123',
+          createIfNotExists: true,
+        );
+        tester.takeException(); // Очищаємо overflow помилки після авторизації
 
-      // Step 1: Verify app launched
-      expect(find.byType(MaterialApp), findsOneWidget);
+        // Step 1: Verify app launched
+        expect(find.byType(MaterialApp), findsOneWidget);
 
-      // Step 2: Browse home page
-      final scrollable = find.byType(Scrollable);
-      if (scrollable.evaluate().isNotEmpty) {
-        await tester.drag(scrollable.first, const Offset(0, -300));
-        await IntegrationTestHelper.waitForAsync(tester);
-        tester.takeException(); // Очищаємо overflow помилки
-      }
-
-      // Step 3: Navigate to search
-      final searchButton = find.text('Search');
-      if (searchButton.evaluate().isNotEmpty) {
-        await tester.tap(searchButton.first);
-        await IntegrationTestHelper.waitForAsync(tester);
-        tester.takeException(); // Очищаємо overflow помилки
-
-        // Enter search query
-        final searchField = find.byType(TextField).first;
-        if (searchField.evaluate().isNotEmpty) {
-          await tester.tap(searchField);
-          await tester.enterText(searchField, 'Movie');
-          await IntegrationTestHelper.waitForAsync(tester, seconds: 2);
+        // Step 2: Browse home page
+        final scrollable = find.byType(Scrollable);
+        if (scrollable.evaluate().isNotEmpty) {
+          await tester.drag(scrollable.first, const Offset(0, -300));
+          await IntegrationTestHelper.waitForAsync(tester);
           tester.takeException(); // Очищаємо overflow помилки
         }
-      }
 
-      // Step 4: Return to home
-      final homeButton = find.text('Home');
-      if (homeButton.evaluate().isNotEmpty) {
-        await tester.tap(homeButton.first);
-        await IntegrationTestHelper.waitForAsync(tester);
-        tester.takeException(); // Очищаємо overflow помилки
-      }
+        // Step 3: Navigate to search
+        final searchButton = find.text('Search');
+        if (searchButton.evaluate().isNotEmpty) {
+          await tester.tap(searchButton.first);
+          await IntegrationTestHelper.waitForAsync(tester);
+          tester.takeException(); // Очищаємо overflow помилки
 
-      // Step 5: Navigate to profile
-      final profileButton = find.text('Profile');
-      if (profileButton.evaluate().isNotEmpty) {
-        await tester.tap(profileButton.first);
-        await IntegrationTestHelper.waitForAsync(tester);
-        tester.takeException(); // Очищаємо overflow помилки
-      }
+          // Enter search query
+          final searchField = find.byType(TextField).first;
+          if (searchField.evaluate().isNotEmpty) {
+            await tester.tap(searchField);
+            await tester.enterText(searchField, 'Movie');
+            await IntegrationTestHelper.waitForAsync(tester, seconds: 2);
+            tester.takeException(); // Очищаємо overflow помилки
+          }
+        }
 
-      // Verify all navigation worked
-      expect(find.byType(Scaffold), findsWidgets);
-    });
+        // Step 4: Return to home
+        final homeButton = find.text('Home');
+        if (homeButton.evaluate().isNotEmpty) {
+          await tester.tap(homeButton.first);
+          await IntegrationTestHelper.waitForAsync(tester);
+          tester.takeException(); // Очищаємо overflow помилки
+        }
 
-    testWidgets('Complete flow: Home -> Media Details -> Back -> Favorites', (WidgetTester tester) async {
+        // Step 5: Navigate to profile
+        final profileButton = find.text('Profile');
+        if (profileButton.evaluate().isNotEmpty) {
+          await tester.tap(profileButton.first);
+          await IntegrationTestHelper.waitForAsync(tester);
+          tester.takeException(); // Очищаємо overflow помилки
+        }
+
+        // Verify all navigation worked
+        expect(find.byType(Scaffold), findsWidgets);
+      },
+    );
+
+    testWidgets('Complete flow: Home -> Media Details -> Back -> Favorites', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
 
@@ -121,7 +126,9 @@ void main() {
       expect(find.byType(Scaffold), findsWidgets);
     });
 
-    testWidgets('Complete flow: Profile -> Settings -> Change Theme -> Back', (WidgetTester tester) async {
+    testWidgets('Complete flow: Profile -> Settings -> Change Theme -> Back', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
 
@@ -170,4 +177,3 @@ void main() {
     });
   });
 }
-

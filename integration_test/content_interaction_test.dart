@@ -12,7 +12,9 @@ void main() {
       IntegrationTestHelper.setupErrorHandling();
     });
 
-    testWidgets('User can interact with media cards on home page', (WidgetTester tester) async {
+    testWidgets('User can interact with media cards on home page', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
 
@@ -38,7 +40,9 @@ void main() {
       }
     });
 
-    testWidgets('User can scroll through media sections', (WidgetTester tester) async {
+    testWidgets('User can scroll through media sections', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
 
@@ -62,7 +66,9 @@ void main() {
       }
     });
 
-    testWidgets('User can view "See More" for different categories', (WidgetTester tester) async {
+    testWidgets('User can view "See More" for different categories', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
 
@@ -93,7 +99,9 @@ void main() {
       }
     });
 
-    testWidgets('User can refresh content with pull-to-refresh', (WidgetTester tester) async {
+    testWidgets('User can refresh content with pull-to-refresh', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
 
@@ -117,7 +125,9 @@ void main() {
       }
     });
 
-    testWidgets('User can view media in grid and list views', (WidgetTester tester) async {
+    testWidgets('User can view media in grid and list views', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
 
@@ -147,4 +157,3 @@ void main() {
     });
   });
 }
-

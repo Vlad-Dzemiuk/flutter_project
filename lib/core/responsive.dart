@@ -29,7 +29,7 @@ class Responsive {
   static int getGridColumnCount(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final isLandscapeMode = isLandscape(context);
-    
+
     if (width < mobileBreakpoint) {
       return isLandscapeMode ? 3 : 2; // Мобільні: 2-3 колонки
     } else if (width < tabletBreakpoint) {
@@ -45,7 +45,7 @@ class Responsive {
   static EdgeInsets getHorizontalPadding(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final isLandscapeMode = isLandscape(context);
-    
+
     if (width < mobileBreakpoint) {
       return EdgeInsets.symmetric(horizontal: isLandscapeMode ? 20 : 16);
     } else if (width < tabletBreakpoint) {
@@ -74,7 +74,7 @@ class Responsive {
   static double getSpacing(BuildContext context) {
     final deviceType = getDeviceType(context);
     final isLandscapeMode = isLandscape(context);
-    
+
     switch (deviceType) {
       case DeviceType.mobile:
         return isLandscapeMode ? 14.0 : 12.0;
@@ -91,12 +91,13 @@ class Responsive {
     final columns = getGridColumnCount(context);
     final horizontalPadding = getHorizontalPadding(context);
     final spacing = getSpacing(context);
-    
-    final availableWidth = width - 
-        horizontalPadding.left - 
-        horizontalPadding.right - 
+
+    final availableWidth =
+        width -
+        horizontalPadding.left -
+        horizontalPadding.right -
         (spacing * (columns - 1));
-    
+
     return availableWidth / columns;
   }
 
@@ -119,7 +120,7 @@ class Responsive {
   static double getMaxFormWidth(BuildContext context) {
     final deviceType = getDeviceType(context);
     final isLandscapeMode = isLandscape(context);
-    
+
     switch (deviceType) {
       case DeviceType.mobile:
         return double.infinity;
@@ -134,7 +135,7 @@ class Responsive {
   static double getMediaCardAspectRatio(BuildContext context) {
     final deviceType = getDeviceType(context);
     final isLandscapeMode = isLandscape(context);
-    
+
     switch (deviceType) {
       case DeviceType.mobile:
         return isLandscapeMode ? 0.7 : 0.65;
@@ -147,9 +148,4 @@ class Responsive {
 }
 
 /// Типи пристроїв
-enum DeviceType {
-  mobile,
-  tablet,
-  desktop,
-}
-
+enum DeviceType { mobile, tablet, desktop }

@@ -13,7 +13,7 @@ class DioClient {
   final AuthRepository? _authRepository;
 
   DioClient._internal({AuthRepository? authRepository})
-      : _authRepository = authRepository {
+    : _authRepository = authRepository {
     _dio = Dio(
       BaseOptions(
         baseUrl: 'https://api.themoviedb.org/3',
@@ -44,7 +44,9 @@ class DioClient {
     _dio.interceptors.add(ApiKeyInterceptor());
 
     // 3. Auth Header Interceptor - автоматичне додавання авторизаційних headers
-    _dio.interceptors.add(AuthHeaderInterceptor(authRepository: _authRepository));
+    _dio.interceptors.add(
+      AuthHeaderInterceptor(authRepository: _authRepository),
+    );
 
     // 4. Retry Interceptor - повторює запити при мережевих помилках
     _dio.interceptors.add(
@@ -52,25 +54,25 @@ class DioClient {
         onError: (error, handler) async {
           // Перевіряємо, чи це мережева помилка, яку можна повторити
           final isRetryable = _isRetryableDioError(error);
-          
+
           if (isRetryable) {
             final options = error.requestOptions;
             final retryCount = options.extra['retryCount'] ?? 0;
             const maxRetries = 3;
-            
+
             if (retryCount < maxRetries) {
               options.extra['retryCount'] = retryCount + 1;
-              
+
               // Експоненційний backoff: delay = 1s, 2s, 4s
               final delay = Duration(seconds: 1 << retryCount);
-              
+
               _logger.w(
                 'Retrying request (attempt ${retryCount + 1}/$maxRetries) '
                 'after ${delay.inSeconds}s. Error: ${error.message}',
               );
-              
+
               await Future.delayed(delay);
-              
+
               try {
                 final response = await _dio.fetch(options);
                 return handler.resolve(response);
@@ -122,4 +124,3 @@ class DioClient {
     }
   }
 }
-

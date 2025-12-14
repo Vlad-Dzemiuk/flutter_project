@@ -28,7 +28,10 @@ class AuthDialog extends StatelessWidget {
       barrierColor: Colors.black.withValues(alpha: 0.5),
       builder: (ctx) => AuthDialog(
         title: title ?? (l10n?.authorizationRequired ?? 'Потрібна авторизація'),
-        message: message ?? (l10n?.loginToAddToFavorites ?? 'Увійдіть, щоб додати до вподобань.'),
+        message:
+            message ??
+            (l10n?.loginToAddToFavorites ??
+                'Увійдіть, щоб додати до вподобань.'),
         icon: icon,
       ),
     );
@@ -55,18 +58,12 @@ class AuthDialog extends StatelessWidget {
               ? const LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [
-                    Color(0xFF0F172A),
-                    Color(0xFF0B1020),
-                  ],
+                  colors: [Color(0xFF0F172A), Color(0xFF0B1020)],
                 )
               : LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [
-                    colors.surfaceContainerHighest,
-                    colors.surface,
-                  ],
+                  colors: [colors.surfaceContainerHighest, colors.surface],
                 ),
           borderRadius: BorderRadius.circular(isDesktop ? 24 : 20),
           border: Border.all(
@@ -81,7 +78,13 @@ class AuthDialog extends StatelessWidget {
           ],
         ),
         child: Padding(
-          padding: EdgeInsets.all(isDesktop ? 28 : isTablet ? 24 : 20),
+          padding: EdgeInsets.all(
+            isDesktop
+                ? 28
+                : isTablet
+                ? 24
+                : 20,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -165,4 +168,3 @@ class AuthDialog extends StatelessWidget {
     );
   }
 }
-

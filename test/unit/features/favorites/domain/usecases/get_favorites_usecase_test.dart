@@ -23,8 +23,9 @@ void main() {
         TestDataFactory.createMovie(id: 3, title: 'C Movie'),
       ];
 
-      when(() => mockRepository.getFavoriteMovies(any()))
-          .thenAnswer((_) async => movies);
+      when(
+        () => mockRepository.getFavoriteMovies(any()),
+      ).thenAnswer((_) async => movies);
 
       // Act
       final result = await useCase(const GetFavoritesParams(accountId: 1));
@@ -41,11 +42,13 @@ void main() {
       // Act & Assert
       expect(
         () => useCase(const GetFavoritesParams(accountId: 0)),
-        throwsA(isA<Exception>().having(
-          (e) => e.toString(),
-          'message',
-          contains('Невірний ID акаунта'),
-        )),
+        throwsA(
+          isA<Exception>().having(
+            (e) => e.toString(),
+            'message',
+            contains('Невірний ID акаунта'),
+          ),
+        ),
       );
       expect(
         () => useCase(const GetFavoritesParams(accountId: -1)),
@@ -54,4 +57,3 @@ void main() {
     });
   });
 }
-

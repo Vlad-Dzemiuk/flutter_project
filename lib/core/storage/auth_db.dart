@@ -49,11 +49,8 @@ class AuthDatabase extends _$AuthDatabase {
     return LazyDatabase(() async {
       final dbFolder = await sqflite.getDatabasesPath();
       final path = p.join(dbFolder, 'auth.db');
-      
-      return SqfliteQueryExecutor(
-        path: path,
-        singleInstance: true,
-      );
+
+      return SqfliteQueryExecutor(path: path, singleInstance: true);
     });
   }
 
@@ -76,13 +73,17 @@ class AuthDatabase extends _$AuthDatabase {
 
   /// Отримати користувача по email
   Future<User?> getUserByEmail(String email) async {
-    final query = select(users)..where((tbl) => tbl.email.equals(email))..limit(1);
+    final query = select(users)
+      ..where((tbl) => tbl.email.equals(email))
+      ..limit(1);
     return await query.getSingleOrNull();
   }
 
   /// Отримати користувача по id
   Future<User?> getUserById(int id) async {
-    final query = select(users)..where((tbl) => tbl.id.equals(id))..limit(1);
+    final query = select(users)
+      ..where((tbl) => tbl.id.equals(id))
+      ..limit(1);
     return await query.getSingleOrNull();
   }
 
@@ -98,7 +99,7 @@ class AuthDatabase extends _$AuthDatabase {
       displayName: clearDisplayName ? const Value.absent() : Value(displayName),
       avatarUrl: clearAvatar ? const Value.absent() : Value(avatarUrl),
     );
-    
+
     await (update(users)..where((tbl) => tbl.id.equals(id))).write(companion);
   }
 
@@ -132,7 +133,7 @@ class AuthDb {
   Future<Map<String, dynamic>?> getUserByEmail(String email) async {
     final user = await AuthDatabase.instance.getUserByEmail(email);
     if (user == null) return null;
-    
+
     return {
       'id': user.id,
       'email': user.email,

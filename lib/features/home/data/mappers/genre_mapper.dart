@@ -5,10 +5,7 @@ import '../models/genre_model.dart';
 class GenreMapper {
   /// Конвертує Genre (data model) в GenreEntity (domain entity)
   static GenreEntity toEntity(Genre genre) {
-    return GenreEntity(
-      id: genre.id,
-      name: genre.name,
-    );
+    return GenreEntity(id: genre.id, name: genre.name);
   }
 
   /// Конвертує список Genre в список GenreEntity
@@ -16,5 +13,3 @@ class GenreMapper {
     return genres.map((genre) => toEntity(genre)).toList();
   }
 }
-
-

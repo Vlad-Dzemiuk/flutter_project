@@ -14,14 +14,16 @@ void main() {
       IntegrationTestHelper.setupErrorHandling();
     });
 
-    testWidgets('Home page displays content sections', (WidgetTester tester) async {
+    testWidgets('Home page displays content sections', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
       tester.takeException(); // Очищаємо overflow помилки
 
       // Verify home page structure
       expect(find.byType(Scaffold), findsWidgets);
-      
+
       // Check for scrollable content
       final scrollables = find.byType(Scrollable);
       if (scrollables.evaluate().isNotEmpty) {
@@ -29,7 +31,9 @@ void main() {
       }
     });
 
-    testWidgets('User can scroll through home content', (WidgetTester tester) async {
+    testWidgets('User can scroll through home content', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
       tester.takeException(); // Очищаємо overflow помилки
@@ -49,7 +53,9 @@ void main() {
       }
     });
 
-    testWidgets('User can navigate to search from home header', (WidgetTester tester) async {
+    testWidgets('User can navigate to search from home header', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
       tester.takeException(); // Очищаємо overflow помилки
@@ -66,7 +72,9 @@ void main() {
       }
     });
 
-    testWidgets('User can refresh home page content', (WidgetTester tester) async {
+    testWidgets('User can refresh home page content', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
       tester.takeException(); // Очищаємо overflow помилки
@@ -82,4 +90,3 @@ void main() {
     });
   });
 }
-

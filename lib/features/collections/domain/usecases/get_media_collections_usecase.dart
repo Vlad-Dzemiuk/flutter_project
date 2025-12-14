@@ -23,7 +23,7 @@ class MediaCollectionsResult {
 }
 
 /// Use case для отримання всіх колекцій медіа (favorites + watchlist)
-/// 
+///
 /// Завантажує та обробляє favorites та watchlist
 class GetMediaCollectionsUseCase
     implements UseCase<MediaCollectionsResult, GetMediaCollectionsParams> {
@@ -49,4 +49,3 @@ class GetMediaCollectionsUseCase
     );
   }
 }
-

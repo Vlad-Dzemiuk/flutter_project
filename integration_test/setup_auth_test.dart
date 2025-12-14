@@ -17,7 +17,9 @@ void main() {
       IntegrationTestHelper.setupErrorHandling();
     });
 
-    testWidgets('Setup: Authenticate user for integration tests', (WidgetTester tester) async {
+    testWidgets('Setup: Authenticate user for integration tests', (
+      WidgetTester tester,
+    ) async {
       // Запускаємо додаток
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
@@ -53,4 +55,3 @@ void main() {
     });
   });
 }
-

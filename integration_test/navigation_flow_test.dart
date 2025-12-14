@@ -14,7 +14,9 @@ void main() {
       IntegrationTestHelper.setupErrorHandling();
     });
 
-    testWidgets('User can navigate through all main tabs', (WidgetTester tester) async {
+    testWidgets('User can navigate through all main tabs', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
       tester.takeException(); // Очищаємо overflow помилки
@@ -33,7 +35,9 @@ void main() {
       }
     });
 
-    testWidgets('User can navigate using navigation rail on desktop', (WidgetTester tester) async {
+    testWidgets('User can navigate using navigation rail on desktop', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
       tester.takeException(); // Очищаємо overflow помилки
@@ -43,7 +47,7 @@ void main() {
       if (navRail.evaluate().isNotEmpty) {
         // Test navigation rail destinations
         expect(navRail, findsOneWidget);
-        
+
         // Try tapping different destinations
         final destinations = find.byType(NavigationRailDestination);
         if (destinations.evaluate().isNotEmpty) {
@@ -55,7 +59,9 @@ void main() {
       }
     });
 
-    testWidgets('User can navigate using bottom navigation on mobile', (WidgetTester tester) async {
+    testWidgets('User can navigate using bottom navigation on mobile', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
       tester.takeException(); // Очищаємо overflow помилки
@@ -64,7 +70,7 @@ void main() {
       final bottomNav = find.byType(BottomNavigationBar);
       if (bottomNav.evaluate().isNotEmpty) {
         expect(bottomNav, findsOneWidget);
-        
+
         // Test all bottom nav items
         final navItems = find.byType(BottomNavigationBarItem);
         if (navItems.evaluate().isNotEmpty) {
@@ -79,54 +85,56 @@ void main() {
       }
     });
 
-    testWidgets('Deep navigation: Home -> Search -> Profile -> Settings -> Back', (WidgetTester tester) async {
-      app.main();
-      await IntegrationTestHelper.waitForAppLoad(tester);
-      tester.takeException(); // Очищаємо overflow помилки
-
-      // Авторизуємо користувача перед тестом (для доступу до Settings)
-      await IntegrationTestHelper.authenticateUser(
-        tester,
-        email: 'test@example.com',
-        password: 'testpass123',
-        createIfNotExists: true,
-      );
-      tester.takeException(); // Очищаємо overflow помилки після авторизації
-
-      // Home -> Search
-      final searchButton = find.text('Search');
-      if (searchButton.evaluate().isNotEmpty) {
-        await tester.tap(searchButton.first);
-        await IntegrationTestHelper.waitForAsync(tester);
+    testWidgets(
+      'Deep navigation: Home -> Search -> Profile -> Settings -> Back',
+      (WidgetTester tester) async {
+        app.main();
+        await IntegrationTestHelper.waitForAppLoad(tester);
         tester.takeException(); // Очищаємо overflow помилки
-      }
 
-      // Search -> Profile
-      final profileButton = find.text('Profile');
-      if (profileButton.evaluate().isNotEmpty) {
-        await tester.tap(profileButton.first);
-        await IntegrationTestHelper.waitForAsync(tester);
-        tester.takeException(); // Очищаємо overflow помилки
-      }
+        // Авторизуємо користувача перед тестом (для доступу до Settings)
+        await IntegrationTestHelper.authenticateUser(
+          tester,
+          email: 'test@example.com',
+          password: 'testpass123',
+          createIfNotExists: true,
+        );
+        tester.takeException(); // Очищаємо overflow помилки після авторизації
 
-      // Profile -> Settings
-      final settingsButton = find.text('Settings');
-      if (settingsButton.evaluate().isNotEmpty) {
-        await tester.tap(settingsButton);
-        await IntegrationTestHelper.waitForAsync(tester);
-        tester.takeException(); // Очищаємо overflow помилки
-      }
+        // Home -> Search
+        final searchButton = find.text('Search');
+        if (searchButton.evaluate().isNotEmpty) {
+          await tester.tap(searchButton.first);
+          await IntegrationTestHelper.waitForAsync(tester);
+          tester.takeException(); // Очищаємо overflow помилки
+        }
 
-      // Settings -> Back
-      final backButton = find.byIcon(Icons.arrow_back);
-      if (backButton.evaluate().isNotEmpty) {
-        await tester.tap(backButton);
-        await IntegrationTestHelper.waitForAsync(tester);
-        tester.takeException(); // Очищаємо overflow помилки
-      }
+        // Search -> Profile
+        final profileButton = find.text('Profile');
+        if (profileButton.evaluate().isNotEmpty) {
+          await tester.tap(profileButton.first);
+          await IntegrationTestHelper.waitForAsync(tester);
+          tester.takeException(); // Очищаємо overflow помилки
+        }
 
-      expect(find.byType(Scaffold), findsWidgets);
-    });
+        // Profile -> Settings
+        final settingsButton = find.text('Settings');
+        if (settingsButton.evaluate().isNotEmpty) {
+          await tester.tap(settingsButton);
+          await IntegrationTestHelper.waitForAsync(tester);
+          tester.takeException(); // Очищаємо overflow помилки
+        }
+
+        // Settings -> Back
+        final backButton = find.byIcon(Icons.arrow_back);
+        if (backButton.evaluate().isNotEmpty) {
+          await tester.tap(backButton);
+          await IntegrationTestHelper.waitForAsync(tester);
+          tester.takeException(); // Очищаємо overflow помилки
+        }
+
+        expect(find.byType(Scaffold), findsWidgets);
+      },
+    );
   });
 }
-

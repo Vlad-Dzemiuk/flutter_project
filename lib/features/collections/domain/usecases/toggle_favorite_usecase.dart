@@ -24,7 +24,7 @@ class ToggleFavoriteResult {
 }
 
 /// Use case для додавання/видалення медіа з улюблених
-/// 
+///
 /// Перемикає стан "улюблене" для медіа елемента
 class ToggleFavoriteUseCase
     implements UseCase<ToggleFavoriteResult, ToggleFavoriteParams> {
@@ -58,5 +58,3 @@ class ToggleFavoriteUseCase
     );
   }
 }
-
-

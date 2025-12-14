@@ -14,7 +14,9 @@ void main() {
       IntegrationTestHelper.setupErrorHandling();
     });
 
-    testWidgets('App launches and shows home page', (WidgetTester tester) async {
+    testWidgets('App launches and shows home page', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
       tester.takeException(); // Очищаємо overflow помилки
@@ -23,7 +25,9 @@ void main() {
       expect(find.byType(MaterialApp), findsOneWidget);
     });
 
-    testWidgets('Navigation between main tabs works', (WidgetTester tester) async {
+    testWidgets('Navigation between main tabs works', (
+      WidgetTester tester,
+    ) async {
       app.main();
       await IntegrationTestHelper.waitForAppLoad(tester);
       tester.takeException(); // Очищаємо overflow помилки
@@ -65,4 +69,3 @@ void main() {
     });
   });
 }
-

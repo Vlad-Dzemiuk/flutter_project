@@ -5,21 +5,24 @@ import 'package:project/core/network/retry_helper.dart';
 
 void main() {
   group('RetryHelper', () {
-    test('should return result on first attempt when operation succeeds', () async {
-      // Arrange
-      var attemptCount = 0;
-      Future<String> operation() async {
-        attemptCount++;
-        return 'success';
-      }
+    test(
+      'should return result on first attempt when operation succeeds',
+      () async {
+        // Arrange
+        var attemptCount = 0;
+        Future<String> operation() async {
+          attemptCount++;
+          return 'success';
+        }
 
-      // Act
-      final result = await RetryHelper.retry(operation: operation);
+        // Act
+        final result = await RetryHelper.retry(operation: operation);
 
-      // Assert
-      expect(result, 'success');
-      expect(attemptCount, 1);
-    });
+        // Assert
+        expect(result, 'success');
+        expect(attemptCount, 1);
+      },
+    );
 
     test('should retry on SocketException', () async {
       // Arrange
@@ -71,10 +74,7 @@ void main() {
 
       // Act & Assert
       expect(
-        () => RetryHelper.retry(
-          operation: operation,
-          maxRetries: 3,
-        ),
+        () => RetryHelper.retry(operation: operation, maxRetries: 3),
         throwsA(isA<Exception>()),
       );
       expect(attemptCount, 1);
@@ -153,14 +153,10 @@ void main() {
 
       // Act & Assert
       expect(
-        () => RetryHelper.retry(
-          operation: operation,
-          maxRetries: 3,
-        ),
+        () => RetryHelper.retry(operation: operation, maxRetries: 3),
         throwsA(isA<DioException>()),
       );
       expect(attemptCount, 1);
     });
   });
 }
-

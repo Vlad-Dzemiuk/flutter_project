@@ -23,35 +23,44 @@ void main() {
       expect(mediaItem.isMovie, true);
     });
 
-    test('fullPosterUrl should return correct URL when posterPath is provided', () {
-      // Arrange
-      final mediaItem = MediaItemEntity(
-        id: 1,
-        title: 'Test Media',
-        overview: 'Test overview',
-        posterPath: '/poster.jpg',
-        rating: 8.5,
-        isMovie: true,
-      );
+    test(
+      'fullPosterUrl should return correct URL when posterPath is provided',
+      () {
+        // Arrange
+        final mediaItem = MediaItemEntity(
+          id: 1,
+          title: 'Test Media',
+          overview: 'Test overview',
+          posterPath: '/poster.jpg',
+          rating: 8.5,
+          isMovie: true,
+        );
 
-      // Act & Assert
-      expect(mediaItem.fullPosterUrl, 'https://image.tmdb.org/t/p/w500/poster.jpg');
-    });
+        // Act & Assert
+        expect(
+          mediaItem.fullPosterUrl,
+          'https://image.tmdb.org/t/p/w500/poster.jpg',
+        );
+      },
+    );
 
-    test('fullPosterUrl should return empty string when posterPath is null', () {
-      // Arrange
-      final mediaItem = MediaItemEntity(
-        id: 1,
-        title: 'Test Media',
-        overview: 'Test overview',
-        posterPath: null,
-        rating: 8.5,
-        isMovie: true,
-      );
+    test(
+      'fullPosterUrl should return empty string when posterPath is null',
+      () {
+        // Arrange
+        final mediaItem = MediaItemEntity(
+          id: 1,
+          title: 'Test Media',
+          overview: 'Test overview',
+          posterPath: null,
+          rating: 8.5,
+          isMovie: true,
+        );
 
-      // Act & Assert
-      expect(mediaItem.fullPosterUrl, '');
-    });
+        // Act & Assert
+        expect(mediaItem.fullPosterUrl, '');
+      },
+    );
 
     test('hasPoster should return true when posterPath is provided', () {
       // Arrange
@@ -84,4 +93,3 @@ void main() {
     });
   });
 }
-

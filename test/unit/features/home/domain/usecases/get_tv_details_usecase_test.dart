@@ -17,20 +17,28 @@ void main() {
     test('should return combined TV details', () async {
       // Arrange
       final details = {'id': 1, 'name': 'Test TV Show'};
-      final videos = [{'id': '1', 'key': 'abc123'}];
-      final reviews = [{'id': '1', 'content': 'Great show'}];
+      final videos = [
+        {'id': '1', 'key': 'abc123'},
+      ];
+      final reviews = [
+        {'id': '1', 'content': 'Great show'},
+      ];
       final recommendations = [
-        TestDataFactory.createTvShow(id: 2, name: 'Recommended Show')
+        TestDataFactory.createTvShow(id: 2, name: 'Recommended Show'),
       ];
 
-      when(() => mockRepository.fetchTvDetails(any()))
-          .thenAnswer((_) async => details);
-      when(() => mockRepository.fetchTvVideos(any()))
-          .thenAnswer((_) async => videos);
-      when(() => mockRepository.fetchTvReviews(any()))
-          .thenAnswer((_) async => reviews);
-      when(() => mockRepository.fetchTvRecommendations(any()))
-          .thenAnswer((_) async => recommendations);
+      when(
+        () => mockRepository.fetchTvDetails(any()),
+      ).thenAnswer((_) async => details);
+      when(
+        () => mockRepository.fetchTvVideos(any()),
+      ).thenAnswer((_) async => videos);
+      when(
+        () => mockRepository.fetchTvReviews(any()),
+      ).thenAnswer((_) async => reviews);
+      when(
+        () => mockRepository.fetchTvRecommendations(any()),
+      ).thenAnswer((_) async => recommendations);
 
       // Act
       final result = await useCase(const GetTvDetailsParams(tvId: 1));
@@ -51,11 +59,13 @@ void main() {
       // Act & Assert
       expect(
         () => useCase(const GetTvDetailsParams(tvId: 0)),
-        throwsA(isA<Exception>().having(
-          (e) => e.toString(),
-          'message',
-          contains('Невірний ID серіалу'),
-        )),
+        throwsA(
+          isA<Exception>().having(
+            (e) => e.toString(),
+            'message',
+            contains('Невірний ID серіалу'),
+          ),
+        ),
       );
       expect(
         () => useCase(const GetTvDetailsParams(tvId: -1)),
@@ -65,4 +75,3 @@ void main() {
     });
   });
 }
-

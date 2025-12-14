@@ -18,15 +18,14 @@ void main() {
   setUp(() {
     mockGetUserProfileUseCase = MockGetUserProfileUseCase();
     // Mock the use case to return a default value to prevent errors during initialization
-    when(() => mockGetUserProfileUseCase(any()))
-        .thenAnswer((_) async => UserProfile(
-          name: 'Initial User',
-          username: 'initial',
-          avatarPath: '',
-        ));
-    profileBloc = ProfileBloc(
-      getUserProfileUseCase: mockGetUserProfileUseCase,
+    when(() => mockGetUserProfileUseCase(any())).thenAnswer(
+      (_) async => UserProfile(
+        name: 'Initial User',
+        username: 'initial',
+        avatarPath: '',
+      ),
     );
+    profileBloc = ProfileBloc(getUserProfileUseCase: mockGetUserProfileUseCase);
   });
 
   tearDown(() {
@@ -51,108 +50,92 @@ void main() {
           username: 'testuser',
           avatarPath: '/avatar.jpg',
         );
-        when(() => mockGetUserProfileUseCase(any()))
-            .thenAnswer((_) async => userProfile);
-        return ProfileBloc(
-          getUserProfileUseCase: mockGetUserProfileUseCase,
-        );
+        when(
+          () => mockGetUserProfileUseCase(any()),
+        ).thenAnswer((_) async => userProfile);
+        return ProfileBloc(getUserProfileUseCase: mockGetUserProfileUseCase);
       },
-      wait: const Duration(milliseconds: 200), // Wait for initial LoadProfileEvent to complete
-      skip: 2, // Skip initial LoadProfileEvent states (loading: true, loading: false)
+      wait: const Duration(
+        milliseconds: 200,
+      ), // Wait for initial LoadProfileEvent to complete
+      skip:
+          2, // Skip initial LoadProfileEvent states (loading: true, loading: false)
       act: (bloc) => bloc.add(const LoadProfileEvent()),
       expect: () => [
         isA<ProfileState>().having((s) => s.loading, 'loading', true),
-        isA<ProfileState>().having(
-          (s) => s.loading,
-          'loading',
-          false,
-        ).having(
-          (s) => s.user?.name,
-          'user.name',
-          'Test User',
-        ),
+        isA<ProfileState>()
+            .having((s) => s.loading, 'loading', false)
+            .having((s) => s.user?.name, 'user.name', 'Test User'),
       ],
     );
 
     blocTest<ProfileBloc, ProfileState>(
       'emits error message for unauthorized errors',
       build: () {
-        when(() => mockGetUserProfileUseCase(any()))
-            .thenThrow(Exception('Unauthorized: Permission denied'));
-        return ProfileBloc(
-          getUserProfileUseCase: mockGetUserProfileUseCase,
-        );
+        when(
+          () => mockGetUserProfileUseCase(any()),
+        ).thenThrow(Exception('Unauthorized: Permission denied'));
+        return ProfileBloc(getUserProfileUseCase: mockGetUserProfileUseCase);
       },
-      wait: const Duration(milliseconds: 200), // Wait for initial LoadProfileEvent to complete
+      wait: const Duration(
+        milliseconds: 200,
+      ), // Wait for initial LoadProfileEvent to complete
       skip: 2, // Skip initial LoadProfileEvent states
       act: (bloc) => bloc.add(const LoadProfileEvent()),
       expect: () => [
         isA<ProfileState>().having((s) => s.loading, 'loading', true),
-        isA<ProfileState>().having(
-          (s) => s.loading,
-          'loading',
-          false,
-        ).having(
-          (s) => s.error,
-          'error',
-          contains('Недостатньо прав'),
-        ),
+        isA<ProfileState>()
+            .having((s) => s.loading, 'loading', false)
+            .having((s) => s.error, 'error', contains('Недостатньо прав')),
       ],
     );
 
     blocTest<ProfileBloc, ProfileState>(
       'emits error message for not found errors',
       build: () {
-        when(() => mockGetUserProfileUseCase(any()))
-            .thenThrow(Exception('NotFoundException: 404'));
-        return ProfileBloc(
-          getUserProfileUseCase: mockGetUserProfileUseCase,
-        );
+        when(
+          () => mockGetUserProfileUseCase(any()),
+        ).thenThrow(Exception('NotFoundException: 404'));
+        return ProfileBloc(getUserProfileUseCase: mockGetUserProfileUseCase);
       },
-      wait: const Duration(milliseconds: 200), // Wait for initial LoadProfileEvent to complete
+      wait: const Duration(
+        milliseconds: 200,
+      ), // Wait for initial LoadProfileEvent to complete
       skip: 2, // Skip initial LoadProfileEvent states
       act: (bloc) => bloc.add(const LoadProfileEvent()),
       expect: () => [
         isA<ProfileState>().having((s) => s.loading, 'loading', true),
-        isA<ProfileState>().having(
-          (s) => s.loading,
-          'loading',
-          false,
-        ).having(
-          (s) => s.error,
-          'error',
-          contains('не знайдено'),
-        ),
+        isA<ProfileState>()
+            .having((s) => s.loading, 'loading', false)
+            .having((s) => s.error, 'error', contains('не знайдено')),
       ],
     );
 
     blocTest<ProfileBloc, ProfileState>(
       'emits generic error message for unknown errors',
       build: () {
-        when(() => mockGetUserProfileUseCase(any()))
-            .thenThrow(Exception('Unknown error'));
-        return ProfileBloc(
-          getUserProfileUseCase: mockGetUserProfileUseCase,
-        );
+        when(
+          () => mockGetUserProfileUseCase(any()),
+        ).thenThrow(Exception('Unknown error'));
+        return ProfileBloc(getUserProfileUseCase: mockGetUserProfileUseCase);
       },
-      wait: const Duration(milliseconds: 200), // Wait for initial LoadProfileEvent to complete
+      wait: const Duration(
+        milliseconds: 200,
+      ), // Wait for initial LoadProfileEvent to complete
       skip: 2, // Skip initial LoadProfileEvent states
       act: (bloc) => bloc.add(const LoadProfileEvent()),
       expect: () => [
         isA<ProfileState>().having((s) => s.loading, 'loading', true),
-        isA<ProfileState>().having(
-          (s) => s.loading,
-          'loading',
-          false,
-        ).having(
-          (s) => s.error,
-          'error',
-          contains('Не вдалося завантажити профіль'),
-        ),
+        isA<ProfileState>()
+            .having((s) => s.loading, 'loading', false)
+            .having(
+              (s) => s.error,
+              'error',
+              contains('Не вдалося завантажити профіль'),
+            ),
       ],
     );
   });
 }
 
 class MockGetUserProfileUseCase extends Mock implements GetUserProfileUseCase {}
-

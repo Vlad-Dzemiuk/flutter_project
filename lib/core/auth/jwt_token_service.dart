@@ -3,23 +3,24 @@ import 'package:crypto/crypto.dart';
 import '../storage/secure_storage_service.dart';
 
 /// Сервіс для роботи з JWT токенами (Mock API)
-/// 
+///
 /// Генерує та зберігає JWT токени для локальної аутентифікації
 class JwtTokenService {
-  static const String _jwtSecret = 'your-secret-key-change-in-production'; // В продакшені використовуйте безпечний ключ
-  
+  static const String _jwtSecret =
+      'your-secret-key-change-in-production'; // В продакшені використовуйте безпечний ключ
+
   JwtTokenService._internal([SecureStorageService? secureStorage])
-      : _secureStorage = secureStorage ?? SecureStorageService.instance;
+    : _secureStorage = secureStorage ?? SecureStorageService.instance;
   static final JwtTokenService instance = JwtTokenService._internal();
 
   /// Конструктор для тестування (дозволяє передати тестовий SecureStorageService)
   JwtTokenService.forTesting(SecureStorageService secureStorage)
-      : _secureStorage = secureStorage;
+    : _secureStorage = secureStorage;
 
   final SecureStorageService _secureStorage;
 
   /// Генерує JWT токен для користувача
-  /// 
+  ///
   /// [userId] - ID користувача
   /// [email] - Email користувача
   /// [expiresInDays] - Термін дії токена в днях (за замовчуванням 7 днів)
@@ -30,33 +31,37 @@ class JwtTokenService {
   }) async {
     final now = DateTime.now();
     final expiresAt = now.add(Duration(days: expiresInDays));
-    
+
     // Створюємо payload
     final payload = {
       'userId': userId,
       'email': email,
       'iat': now.millisecondsSinceEpoch ~/ 1000, // Issued at (Unix timestamp)
-      'exp': expiresAt.millisecondsSinceEpoch ~/ 1000, // Expiration (Unix timestamp)
+      'exp':
+          expiresAt.millisecondsSinceEpoch ~/
+          1000, // Expiration (Unix timestamp)
     };
 
     // Кодуємо header та payload
-    final header = base64Url.encode(utf8.encode(jsonEncode({'typ': 'JWT', 'alg': 'HS256'})));
+    final header = base64Url.encode(
+      utf8.encode(jsonEncode({'typ': 'JWT', 'alg': 'HS256'})),
+    );
     final payloadEncoded = base64Url.encode(utf8.encode(jsonEncode(payload)));
-    
+
     // Створюємо signature
     final signature = _createSignature('$header.$payloadEncoded');
-    
+
     // Формуємо JWT токен
     final token = '$header.$payloadEncoded.$signature';
-    
+
     // Зберігаємо токен
     await _secureStorage.saveJwtToken(token);
-    
+
     return token;
   }
 
   /// Перевіряє валідність JWT токена
-  /// 
+  ///
   /// Повертає payload якщо токен валідний, null якщо ні
   Future<Map<String, dynamic>?> validateToken(String? token) async {
     if (token == null || token.isEmpty) {
@@ -81,7 +86,8 @@ class JwtTokenService {
 
       // Декодуємо payload
       final payloadBytes = base64Url.decode(payload);
-      final payloadJson = jsonDecode(utf8.decode(payloadBytes)) as Map<String, dynamic>;
+      final payloadJson =
+          jsonDecode(utf8.decode(payloadBytes)) as Map<String, dynamic>;
 
       // Перевіряємо термін дії
       final exp = payloadJson['exp'] as int?;
@@ -123,10 +129,10 @@ class JwtTokenService {
   Future<int?> getUserIdFromToken() async {
     final token = await getToken();
     if (token == null) return null;
-    
+
     final payload = await validateToken(token);
     if (payload == null) return null;
-    
+
     return payload['userId'] as int?;
   }
 
@@ -134,11 +140,10 @@ class JwtTokenService {
   Future<String?> getEmailFromToken() async {
     final token = await getToken();
     if (token == null) return null;
-    
+
     final payload = await validateToken(token);
     if (payload == null) return null;
-    
+
     return payload['email'] as String?;
   }
 }
-
