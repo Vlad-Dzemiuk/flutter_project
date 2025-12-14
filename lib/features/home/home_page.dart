@@ -929,30 +929,24 @@ class MediaPosterCard extends StatelessWidget {
   Widget _buildCardContent(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        // Розраховуємо доступну висоту для тексту (загальна висота мінус постер і відступи)
-        final cardWidth = width;
+        // Розраховуємо розміри картки
         final cardHeight = height;
-        final posterHeight =
-            cardWidth != null ? cardWidth * 1.5 : constraints.maxWidth * 1.5;
-        final totalHeight = cardHeight ?? constraints.maxHeight;
-        final availableHeight = totalHeight > 0
-            ? totalHeight -
-                posterHeight -
-                8 -
-                4 // poster + spacing + title spacing
-            : null;
+        final maxHeight = cardHeight ?? constraints.maxHeight;
 
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // ===== POSTER =====
-            ClipRRect(
-              borderRadius: BorderRadius.circular(18),
-              child: AspectRatio(
-                aspectRatio: 2 / 3,
-                child: Stack(
-                  children: [
+        return SizedBox(
+          height: maxHeight > 0 ? maxHeight : null,
+          child: ClipRect(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // ===== POSTER =====
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(18),
+                  child: AspectRatio(
+                    aspectRatio: 2 / 3,
+                    child: Stack(
+                      children: [
                     Positioned.fill(
                       child: item.posterPath != null &&
                               item.posterPath!.isNotEmpty
@@ -1083,55 +1077,9 @@ class MediaPosterCard extends StatelessWidget {
                 ),
               ),
             ),
-
-            const SizedBox(height: 8),
-
-            // ===== TITLE =====
-            Text(
-              item.title,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(
-                context,
-              ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+              ],
             ),
-
-            const SizedBox(height: 4),
-
-            // ===== DESCRIPTION =====
-            availableHeight != null && availableHeight > 0
-                ? SizedBox(
-                    height: availableHeight.clamp(
-                      0.0,
-                      40.0,
-                    ), // Обмежуємо максимальну висоту
-                    child: Text(
-                      item.overview,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(
-                              context,
-                            )
-                                .colorScheme
-                                .onSurfaceVariant
-                                .withValues(alpha: 0.7),
-                            height: 1.3,
-                          ),
-                    ),
-                  )
-                : Text(
-                    item.overview,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-                          height: 1.3,
-                        ),
-                  ),
-          ],
+          ),
         );
       },
     );

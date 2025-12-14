@@ -74,16 +74,33 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   Future<void> _pickAvatar(ImageSource source) async {
-    final picked = await _picker.pickImage(
-      source: source,
-      maxHeight: 512,
-      maxWidth: 512,
-      imageQuality: 85,
-    );
-    if (picked == null) return;
-    setState(() {
-      _avatarPath = picked.path;
-    });
+    try {
+      final picked = await _picker.pickImage(
+        source: source,
+        maxHeight: 512,
+        maxWidth: 512,
+        imageQuality: 85,
+      );
+      if (picked == null) return;
+      if (!mounted) return;
+      setState(() {
+        _avatarPath = picked.path;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
+      // Обробляємо помилки камери (особливо для емуляторів)
+      if (e.toString().contains('camera') || 
+          e.toString().contains('Camera') ||
+          e.toString().contains('No such file')) {
+        AppNotification.showWarning(
+          context,
+          'Камера недоступна. Використовуйте галерею або реальний пристрій.',
+        );
+      } else {
+        AppNotification.showError(context, l10n.error(e.toString()));
+      }
+    }
   }
 
   Future<void> _showAvatarSheet() async {

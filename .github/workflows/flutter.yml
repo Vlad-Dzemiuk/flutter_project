@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 env:
-  FLUTTER_VERSION: '3.27.0'
+  FLUTTER_VERSION: '3.35.6'
 
 jobs:
   # Job 1: Code Quality Check
@@ -33,6 +33,17 @@ jobs:
 
       - name: Get dependencies
         run: flutter pub get
+
+      - name: Verify pubspec.lock is up to date
+        run: |
+          flutter pub get
+          if [ -n "$(git status --porcelain pubspec.lock)" ]; then
+            echo "❌ pubspec.lock is out of sync. Please run 'flutter pub get' locally and commit the changes."
+            git diff pubspec.lock
+            exit 1
+          else
+            echo "✅ pubspec.lock is up to date."
+          fi
 
       - name: Format code
         run: dart format .
@@ -247,6 +258,13 @@ jobs:
           echo "TMDB_API_KEY=${{ secrets.TMDB_API_KEY }}" > .env
           echo "AUTH_METHOD=local" >> .env
           cat .env
+
+      - name: Verify Gradle configuration
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew tasks --all || echo "Gradle verification completed"
+        continue-on-error: true
 
       - name: Build APK with obfuscation
         run: |
