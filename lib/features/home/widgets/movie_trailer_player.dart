@@ -60,8 +60,8 @@ class _MovieTrailerPlayerState extends ConsumerState<MovieTrailerPlayer> {
       false; // Прапорець для запобігання подвійного очищення
   bool _watchRecorded =
       false; // Прапорець для запобігання подвійного додавання до watchlist
-  late final MediaCollectionsBloc _collectionsBloc = di
-      .getIt<MediaCollectionsBloc>();
+  late final MediaCollectionsBloc _collectionsBloc =
+      di.getIt<MediaCollectionsBloc>();
 
   @override
   void dispose() {
@@ -518,19 +518,25 @@ class _MovieTrailerPlayerState extends ConsumerState<MovieTrailerPlayer> {
                                 _errorMessage ??
                                     AppLocalizations.of(
                                       context,
-                                    )!.videoUnavailable,
-                                style: Theme.of(context).textTheme.bodyMedium
+                                    )!
+                                        .videoUnavailable,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
                                     ?.copyWith(color: Colors.grey[600]),
                                 textAlign: TextAlign.center,
                               ),
                               if (_failedVideoKeys.isNotEmpty) ...[
                                 const SizedBox(height: 4),
-                                Text(
-                                  AppLocalizations.of(
-                                    context,
-                                  )!.tryingToFindAnotherVideo,
-                                  style: Theme.of(context).textTheme.bodySmall
-                                      ?.copyWith(color: Colors.grey[500]),
+                                  Text(
+                                    AppLocalizations.of(
+                                      context,
+                                    )!
+                                        .tryingToFindAnotherVideo,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall
+                                        ?.copyWith(color: Colors.grey[500]),
                                   textAlign: TextAlign.center,
                                 ),
                               ],
@@ -539,17 +545,18 @@ class _MovieTrailerPlayerState extends ConsumerState<MovieTrailerPlayer> {
                         ),
                       )
                     : _controller != null
-                    ? YoutubePlayer(
-                        controller: _controller!,
-                        aspectRatio: 16 / 9,
-                      )
-                    : Container(
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Center(child: CircularProgressIndicator()),
-                      ),
+                        ? YoutubePlayer(
+                            controller: _controller!,
+                            aspectRatio: 16 / 9,
+                          )
+                        : Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Center(
+                                child: CircularProgressIndicator()),
+                          ),
               ),
             ),
             const SizedBox(height: 8),

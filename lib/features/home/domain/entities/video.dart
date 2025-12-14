@@ -42,8 +42,8 @@ class Video {
     final id = idValue is String
         ? idValue
         : idValue is int
-        ? idValue.toString()
-        : '';
+            ? idValue.toString()
+            : '';
 
     final key = json['key'] as String? ?? '';
     final site = json['site'] as String? ?? '';

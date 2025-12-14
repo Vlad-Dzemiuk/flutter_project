@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:project/features/auth/login_page.dart';
 import 'package:project/features/auth/auth_bloc.dart';
 import 'package:project/features/auth/auth_state.dart';

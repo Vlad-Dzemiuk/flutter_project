@@ -1,8 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:project/features/favorites/domain/usecases/get_favorites_usecase.dart';
-import 'package:project/features/favorites/domain/repositories/favorites_repository.dart';
-import 'package:project/features/home/data/models/movie_model.dart';
 import '../../../../helpers/test_helpers.dart';
 
 void main() {

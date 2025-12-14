@@ -2,9 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:project/features/home/home_repository.dart';
 import 'package:project/features/home/home_api_service.dart';
-import 'package:project/features/home/data/models/movie_model.dart';
-import 'package:project/features/home/data/models/tv_show_model.dart';
-import 'package:project/features/home/data/models/genre_model.dart';
 
 void main() {
   late HomeRepositoryImpl repository;

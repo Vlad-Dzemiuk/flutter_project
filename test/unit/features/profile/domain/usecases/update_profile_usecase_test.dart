@@ -1,8 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:project/features/profile/domain/usecases/update_profile_usecase.dart';
-import 'package:project/features/auth/auth_repository.dart';
-import 'package:project/features/auth/data/models/local_user.dart';
 import '../../../../helpers/test_helpers.dart';
 
 void main() {

@@ -1,8 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:project/features/search/domain/usecases/search_by_filters_usecase.dart';
-import 'package:project/features/search/domain/repositories/search_repository.dart';
-import 'package:project/features/home/data/models/movie_model.dart';
 import '../../../../helpers/test_helpers.dart';
 
 void main() {

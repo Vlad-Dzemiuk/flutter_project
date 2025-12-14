@@ -1,4 +1,3 @@
-import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:project/features/settings/settings_bloc.dart';
@@ -75,7 +74,8 @@ void main() {
       expect(state.props, [ThemeMode.dark, 'uk', true, 'Error']);
     });
 
-    test('getEffectiveBrightness returns correct brightness for dark theme', () {
+    test('getEffectiveBrightness returns correct brightness for dark theme',
+        () {
       // This test verifies the method exists and can be called
       // Full testing requires BuildContext which is better suited for widget tests
       final state = SettingsState(themeMode: ThemeMode.dark);

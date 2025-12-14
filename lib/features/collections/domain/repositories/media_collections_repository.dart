@@ -44,9 +44,8 @@ class MediaCollectionsRepository {
   List<MediaCollectionEntry> _mapAndSort(
     Map<String, Map<String, dynamic>> data,
   ) {
-    final entries = data.values
-        .map((json) => MediaCollectionEntry.fromJson(json))
-        .toList();
+    final entries =
+        data.values.map((json) => MediaCollectionEntry.fromJson(json)).toList();
     entries.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
     return entries;
   }

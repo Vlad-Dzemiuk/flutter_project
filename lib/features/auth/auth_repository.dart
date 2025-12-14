@@ -16,10 +16,10 @@ class AuthRepository {
     AuthMethod? authMethod,
     FirebaseAuthService? firebaseAuthService,
     JwtTokenService? jwtTokenService,
-  }) : _db = AuthDb.instance,
-       _authMethod = authMethod ?? AuthMethod.local,
-       _firebaseAuthService = firebaseAuthService ?? FirebaseAuthService(),
-       _jwtTokenService = jwtTokenService ?? JwtTokenService.instance;
+  })  : _db = AuthDb.instance,
+        _authMethod = authMethod ?? AuthMethod.local,
+        _firebaseAuthService = firebaseAuthService ?? FirebaseAuthService(),
+        _jwtTokenService = jwtTokenService ?? JwtTokenService.instance;
 
   final AuthDb _db;
   final AuthMethod _authMethod;

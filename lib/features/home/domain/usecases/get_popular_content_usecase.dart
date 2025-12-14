@@ -1,8 +1,6 @@
 import 'package:project/core/domain/base_usecase.dart';
 import '../../home_repository.dart';
 import 'package:project/features/home/home_media_item.dart';
-import 'package:project/features/home/data/models/movie_model.dart';
-import 'package:project/features/home/data/models/tv_show_model.dart';
 
 /// Параметри для GetPopularContentUseCase
 class GetPopularContentParams {
@@ -44,18 +42,14 @@ class GetPopularContentUseCase
     final catalogTv = await repository.fetchAllTvShows(page: params.page);
 
     // Трансформація моделей даних в presentation models
-    final List<HomeMediaItem> popularMoviesItems = popularMovies
-        .map((m) => HomeMediaItem.fromMovie(m))
-        .toList();
-    final List<HomeMediaItem> popularTvItems = popularTv
-        .map((t) => HomeMediaItem.fromTvShow(t))
-        .toList();
-    final List<HomeMediaItem> allMoviesItems = catalogMovies
-        .map((m) => HomeMediaItem.fromMovie(m))
-        .toList();
-    final List<HomeMediaItem> allTvItems = catalogTv
-        .map((t) => HomeMediaItem.fromTvShow(t))
-        .toList();
+    final List<HomeMediaItem> popularMoviesItems =
+        popularMovies.map((m) => HomeMediaItem.fromMovie(m)).toList();
+    final List<HomeMediaItem> popularTvItems =
+        popularTv.map((t) => HomeMediaItem.fromTvShow(t)).toList();
+    final List<HomeMediaItem> allMoviesItems =
+        catalogMovies.map((m) => HomeMediaItem.fromMovie(m)).toList();
+    final List<HomeMediaItem> allTvItems =
+        catalogTv.map((t) => HomeMediaItem.fromTvShow(t)).toList();
 
     return PopularContentResult(
       popularMovies: popularMoviesItems,

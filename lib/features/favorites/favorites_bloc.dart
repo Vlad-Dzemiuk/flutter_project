@@ -32,7 +32,7 @@ class FavoritesBloc extends Bloc<FavoritesEvent, FavoritesState> {
   final GetFavoritesUseCase getFavoritesUseCase;
 
   FavoritesBloc({required this.getFavoritesUseCase})
-    : super(const FavoritesState()) {
+      : super(const FavoritesState()) {
     on<LoadFavoritesEvent>(_onLoadFavorites);
     add(const LoadFavoritesEvent());
   }

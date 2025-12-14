@@ -48,9 +48,8 @@ class _ProfilePageState extends State<ProfilePage> {
           stream: authRepo.authStateChanges(),
           builder: (context, snapshot) {
             final localUser = snapshot.data ?? authRepo.currentUser;
-            final user = localUser != null
-                ? UserMapper.toEntity(localUser)
-                : null;
+            final user =
+                localUser != null ? UserMapper.toEntity(localUser) : null;
 
             if (user == null) {
               return _buildUnauthorizedView(context);
@@ -104,8 +103,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: ConstrainedBox(
                         constraints: BoxConstraints(
                           maxWidth: maxFormWidth,
-                          minHeight:
-                              constraints.maxHeight -
+                          minHeight: constraints.maxHeight -
                               (verticalPadding.top +
                                   verticalPadding.bottom * 2),
                         ),
@@ -142,10 +140,12 @@ class _ProfilePageState extends State<ProfilePage> {
                                         _isLogin
                                             ? AppLocalizations.of(
                                                 context,
-                                              )!.login
+                                              )!
+                                                .login
                                             : AppLocalizations.of(
                                                 context,
-                                              )!.signUp,
+                                              )!
+                                                .signUp,
                                         style: TextStyle(
                                           color: colors.onSurface,
                                           fontSize: isDesktop ? 26 : 22,
@@ -156,10 +156,12 @@ class _ProfilePageState extends State<ProfilePage> {
                                         _isLogin
                                             ? AppLocalizations.of(
                                                 context,
-                                              )!.returnToViewing
+                                              )!
+                                                .returnToViewing
                                             : AppLocalizations.of(
                                                 context,
-                                              )!.createAccountQuick,
+                                              )!
+                                                .createAccountQuick,
                                         style: TextStyle(
                                           color: colors.onSurface.withValues(
                                             alpha: 0.65,
@@ -178,8 +180,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                 isDesktop
                                     ? 24
                                     : isTablet
-                                    ? 20
-                                    : 18,
+                                        ? 20
+                                        : 18,
                               ),
                               decoration: BoxDecoration(
                                 color: theme.cardColor,
@@ -196,8 +198,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                     color: Colors.black.withValues(
                                       alpha:
                                           theme.brightness == Brightness.light
-                                          ? 0.08
-                                          : 0.25,
+                                              ? 0.08
+                                              : 0.25,
                                     ),
                                     blurRadius: isDesktop ? 20 : 18,
                                     offset: Offset(0, isDesktop ? 12 : 10),
@@ -215,7 +217,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                       controller: _emailController,
                                       label: AppLocalizations.of(
                                         context,
-                                      )!.email,
+                                      )!
+                                          .email,
                                       icon: Icons.alternate_email,
                                       keyboardType: TextInputType.emailAddress,
                                       validator: (value) {
@@ -236,7 +239,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                       controller: _passwordController,
                                       label: AppLocalizations.of(
                                         context,
-                                      )!.password,
+                                      )!
+                                          .password,
                                       icon: Icons.lock_outline,
                                       obscureText: true,
                                       validator: (value) {
@@ -276,8 +280,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                                     _emailController.text;
                                                 final password =
                                                     _passwordController.text;
-                                                final bloc = context
-                                                    .read<AuthBloc>();
+                                                final bloc =
+                                                    context.read<AuthBloc>();
                                                 // Перевіряємо, чи BLoC не закритий перед додаванням події
                                                 if (!bloc.isClosed) {
                                                   if (_isLogin) {
@@ -301,12 +305,12 @@ class _ProfilePageState extends State<ProfilePage> {
                                             ? const SizedBox(
                                                 width: 20,
                                                 height: 20,
-                                                child: CircularProgressIndicator(
+                                                child:
+                                                    CircularProgressIndicator(
                                                   strokeWidth: 2,
                                                   valueColor:
                                                       AlwaysStoppedAnimation<
-                                                        Color
-                                                      >(Colors.white),
+                                                          Color>(Colors.white),
                                                 ),
                                               )
                                             : const Icon(Icons.login),
@@ -314,10 +318,12 @@ class _ProfilePageState extends State<ProfilePage> {
                                           _isLogin
                                               ? AppLocalizations.of(
                                                   context,
-                                                )!.signIn
+                                                )!
+                                                  .signIn
                                               : AppLocalizations.of(
                                                   context,
-                                                )!.signUp,
+                                                )!
+                                                  .signUp,
                                           style: const TextStyle(
                                             fontWeight: FontWeight.w800,
                                           ),
@@ -340,10 +346,12 @@ class _ProfilePageState extends State<ProfilePage> {
                                         _isLogin
                                             ? AppLocalizations.of(
                                                 context,
-                                              )!.noAccount
+                                              )!
+                                                .noAccount
                                             : AppLocalizations.of(
                                                 context,
-                                              )!.hasAccount,
+                                              )!
+                                                .hasAccount,
                                       ),
                                     ),
                                   ],
@@ -448,8 +456,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             maxWidth: isDesktop || isTablet
                                 ? maxFormWidth
                                 : double.infinity,
-                            minHeight:
-                                constraints.maxHeight -
+                            minHeight: constraints.maxHeight -
                                 (verticalPadding.top +
                                     verticalPadding.bottom * 3),
                           ),
@@ -462,8 +469,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                   isDesktop
                                       ? 32
                                       : isTablet
-                                      ? 28
-                                      : 24,
+                                          ? 28
+                                          : 24,
                                 ),
                                 decoration: BoxDecoration(
                                   color: theme.cardColor,
@@ -471,8 +478,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                     isDesktop
                                         ? 32
                                         : isTablet
-                                        ? 30
-                                        : 28,
+                                            ? 30
+                                            : 28,
                                   ),
                                   border: Border.all(
                                     color: colors.outlineVariant.withValues(
@@ -484,8 +491,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                       color: Colors.black.withValues(
                                         alpha:
                                             theme.brightness == Brightness.light
-                                            ? 0.08
-                                            : 0.25,
+                                                ? 0.08
+                                                : 0.25,
                                       ),
                                       blurRadius: isDesktop ? 22 : 18,
                                       offset: Offset(0, isDesktop ? 14 : 12),
@@ -498,30 +505,28 @@ class _ProfilePageState extends State<ProfilePage> {
                                       radius: isDesktop
                                           ? 72
                                           : isTablet
-                                          ? 68
-                                          : 62,
-                                      backgroundImage:
-                                          (user.avatarUrl != null &&
+                                              ? 68
+                                              : 62,
+                                      backgroundImage: (user.avatarUrl !=
+                                                  null &&
                                               user.avatarUrl!.isNotEmpty)
                                           ? (user.avatarUrl!.startsWith('http')
-                                                ? NetworkImage(user.avatarUrl!)
-                                                : FileImage(
-                                                        File(user.avatarUrl!),
-                                                      )
-                                                      as ImageProvider)
+                                              ? NetworkImage(user.avatarUrl!)
+                                              : FileImage(
+                                                  File(user.avatarUrl!),
+                                                ) as ImageProvider)
                                           : null,
                                       backgroundColor: colors.primary
                                           .withValues(alpha: 0.08),
-                                      child:
-                                          (user.avatarUrl == null ||
+                                      child: (user.avatarUrl == null ||
                                               user.avatarUrl!.isEmpty)
                                           ? Icon(
                                               Icons.person,
                                               size: isDesktop
                                                   ? 64
                                                   : isTablet
-                                                  ? 60
-                                                  : 56,
+                                                      ? 60
+                                                      : 56,
                                               color: colors.primary,
                                             )
                                           : null,
@@ -532,19 +537,19 @@ class _ProfilePageState extends State<ProfilePage> {
                                       textAlign: TextAlign.center,
                                       style: theme.textTheme.headlineSmall
                                           ?.copyWith(
-                                            fontWeight: FontWeight.w700,
-                                            color: colors.onSurface,
-                                            fontSize: isDesktop ? 26 : 24,
-                                          ),
+                                        fontWeight: FontWeight.w700,
+                                        color: colors.onSurface,
+                                        fontSize: isDesktop ? 26 : 24,
+                                      ),
                                     ),
                                     SizedBox(height: 6),
                                     Text(
                                       user.email,
-                                      style: theme.textTheme.bodyMedium
-                                          ?.copyWith(
-                                            color: colors.onSurfaceVariant,
-                                            fontSize: isDesktop ? 16 : 14,
-                                          ),
+                                      style:
+                                          theme.textTheme.bodyMedium?.copyWith(
+                                        color: colors.onSurfaceVariant,
+                                        fontSize: isDesktop ? 16 : 14,
+                                      ),
                                     ),
                                     SizedBox(height: spacing * 2),
                                     // Адаптивна сітка для кнопок
@@ -559,7 +564,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                               Row(
                                                 children: [
                                                   Expanded(
-                                                    child: FilledButton.tonalIcon(
+                                                    child:
+                                                        FilledButton.tonalIcon(
                                                       onPressed: () {
                                                         Navigator.of(
                                                           context,
@@ -575,16 +581,17 @@ class _ProfilePageState extends State<ProfilePage> {
                                                       label: Text(
                                                         AppLocalizations.of(
                                                           context,
-                                                        )!.watched,
+                                                        )!
+                                                            .watched,
                                                       ),
-                                                      style: FilledButton.styleFrom(
-                                                        padding:
-                                                            EdgeInsets.symmetric(
-                                                              vertical:
-                                                                  isDesktop
-                                                                  ? 16
-                                                                  : 14,
-                                                            ),
+                                                      style: FilledButton
+                                                          .styleFrom(
+                                                        padding: EdgeInsets
+                                                            .symmetric(
+                                                          vertical: isDesktop
+                                                              ? 16
+                                                              : 14,
+                                                        ),
                                                       ),
                                                     ),
                                                   ),
@@ -592,7 +599,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                                     width: buttonSpacing,
                                                   ),
                                                   Expanded(
-                                                    child: FilledButton.tonalIcon(
+                                                    child:
+                                                        FilledButton.tonalIcon(
                                                       onPressed: () {
                                                         Navigator.of(
                                                           context,
@@ -609,14 +617,14 @@ class _ProfilePageState extends State<ProfilePage> {
                                                           context,
                                                         )!.favorites,
                                                       ),
-                                                      style: FilledButton.styleFrom(
-                                                        padding:
-                                                            EdgeInsets.symmetric(
-                                                              vertical:
-                                                                  isDesktop
-                                                                  ? 16
-                                                                  : 14,
-                                                            ),
+                                                      style: FilledButton
+                                                          .styleFrom(
+                                                        padding: EdgeInsets
+                                                            .symmetric(
+                                                          vertical: isDesktop
+                                                              ? 16
+                                                              : 14,
+                                                        ),
                                                       ),
                                                     ),
                                                   ),
@@ -631,9 +639,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                                   foregroundColor:
                                                       colors.onErrorContainer,
                                                   padding: EdgeInsets.symmetric(
-                                                    vertical: isDesktop
-                                                        ? 16
-                                                        : 14,
+                                                    vertical:
+                                                        isDesktop ? 16 : 14,
                                                   ),
                                                 ),
                                                 onPressed: () async {
@@ -650,7 +657,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                                 label: Text(
                                                   AppLocalizations.of(
                                                     context,
-                                                  )!.signOut,
+                                                  )!
+                                                      .signOut,
                                                 ),
                                               ),
                                               SizedBox(height: buttonSpacing),
@@ -669,13 +677,13 @@ class _ProfilePageState extends State<ProfilePage> {
                                                 label: Text(
                                                   AppLocalizations.of(
                                                     context,
-                                                  )!.editProfileButton,
+                                                  )!
+                                                      .editProfileButton,
                                                 ),
                                                 style: FilledButton.styleFrom(
                                                   padding: EdgeInsets.symmetric(
-                                                    vertical: isDesktop
-                                                        ? 16
-                                                        : 14,
+                                                    vertical:
+                                                        isDesktop ? 16 : 14,
                                                   ),
                                                 ),
                                               ),
@@ -696,13 +704,13 @@ class _ProfilePageState extends State<ProfilePage> {
                                                 label: Text(
                                                   AppLocalizations.of(
                                                     context,
-                                                  )!.settings,
+                                                  )!
+                                                      .settings,
                                                 ),
                                                 style: FilledButton.styleFrom(
                                                   padding: EdgeInsets.symmetric(
-                                                    vertical: isDesktop
-                                                        ? 16
-                                                        : 14,
+                                                    vertical:
+                                                        isDesktop ? 16 : 14,
                                                   ),
                                                 ),
                                               ),
@@ -715,7 +723,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                               Row(
                                                 children: [
                                                   Expanded(
-                                                    child: FilledButton.tonalIcon(
+                                                    child:
+                                                        FilledButton.tonalIcon(
                                                       onPressed: () {
                                                         Navigator.of(
                                                           context,
@@ -731,7 +740,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                                       label: Text(
                                                         AppLocalizations.of(
                                                           context,
-                                                        )!.watched,
+                                                        )!
+                                                            .watched,
                                                       ),
                                                     ),
                                                   ),
@@ -739,7 +749,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                                     width: buttonSpacing,
                                                   ),
                                                   Expanded(
-                                                    child: FilledButton.tonalIcon(
+                                                    child:
+                                                        FilledButton.tonalIcon(
                                                       onPressed: () {
                                                         Navigator.of(
                                                           context,
@@ -783,7 +794,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                                 label: Text(
                                                   AppLocalizations.of(
                                                     context,
-                                                  )!.signOut,
+                                                  )!
+                                                      .signOut,
                                                 ),
                                               ),
                                               SizedBox(height: buttonSpacing),
@@ -802,7 +814,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                                 label: Text(
                                                   AppLocalizations.of(
                                                     context,
-                                                  )!.editProfileButton,
+                                                  )!
+                                                      .editProfileButton,
                                                 ),
                                               ),
                                               SizedBox(
@@ -822,7 +835,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                                 label: Text(
                                                   AppLocalizations.of(
                                                     context,
-                                                  )!.settings,
+                                                  )!
+                                                      .settings,
                                                 ),
                                               ),
                                             ],

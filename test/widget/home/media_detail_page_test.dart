@@ -8,7 +8,6 @@ import 'package:project/features/home/domain/usecases/get_tv_details_usecase.dar
 import 'package:project/features/home/domain/usecases/get_movie_videos_usecase.dart';
 import 'package:project/features/collections/media_collections_bloc.dart';
 import 'package:project/core/di.dart';
-import 'package:project/shared/widgets/animated_loading_widget.dart';
 import '../../unit/helpers/widget_test_helpers.dart';
 import '../../unit/helpers/test_helpers.dart';
 

@@ -157,90 +157,92 @@ class _MediaListPageState extends State<MediaListPage> {
                             message: AppLocalizations.of(context)!.loading,
                           )
                         : _error.isNotEmpty
-                        ? Center(
-                            child: Padding(
-                              padding: Responsive.getHorizontalPadding(context),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.error_outline,
-                                    size: Responsive.isMobile(context)
-                                        ? 64
-                                        : 80,
-                                    color: colors.onSurfaceVariant.withValues(
-                                      alpha: 0.6,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: Responsive.getSpacing(context),
-                                  ),
-                                  Text(
-                                    _error,
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: Responsive.isMobile(context)
-                                          ? 16
-                                          : 18,
-                                      color: colors.onSurface,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height:
-                                        Responsive.getSpacing(context) * 1.5,
-                                  ),
-                                  FilledButton.icon(
-                                    onPressed: _loadItems,
-                                    icon: const Icon(Icons.refresh),
-                                    label: const Text('Спробувати знову'),
-                                    style: FilledButton.styleFrom(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: Responsive.isMobile(context)
-                                            ? 24
-                                            : 32,
-                                        vertical: Responsive.isMobile(context)
-                                            ? 12
-                                            : 14,
+                            ? Center(
+                                child: Padding(
+                                  padding:
+                                      Responsive.getHorizontalPadding(context),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.error_outline,
+                                        size: Responsive.isMobile(context)
+                                            ? 64
+                                            : 80,
+                                        color:
+                                            colors.onSurfaceVariant.withValues(
+                                          alpha: 0.6,
+                                        ),
                                       ),
-                                    ),
+                                      SizedBox(
+                                        height: Responsive.getSpacing(context),
+                                      ),
+                                      Text(
+                                        _error,
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontSize: Responsive.isMobile(context)
+                                              ? 16
+                                              : 18,
+                                          color: colors.onSurface,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: Responsive.getSpacing(context) *
+                                            1.5,
+                                      ),
+                                      FilledButton.icon(
+                                        onPressed: _loadItems,
+                                        icon: const Icon(Icons.refresh),
+                                        label: const Text('Спробувати знову'),
+                                        style: FilledButton.styleFrom(
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal:
+                                                Responsive.isMobile(context)
+                                                    ? 24
+                                                    : 32,
+                                            vertical:
+                                                Responsive.isMobile(context)
+                                                    ? 12
+                                                    : 14,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ],
+                                ),
+                              )
+                            : BlocBuilder<MediaCollectionsBloc,
+                                MediaCollectionsState>(
+                                bloc: _collectionsBloc,
+                                buildWhen: (previous, current) =>
+                                    previous.authorized != current.authorized,
+                                builder: (context, collectionsState) {
+                                  final canModify = collectionsState.authorized;
+                                  return RefreshIndicator(
+                                    onRefresh: _loadItems,
+                                    edgeOffset: 70,
+                                    child: isMobile
+                                        ? _buildList(
+                                            context,
+                                            theme,
+                                            colors,
+                                            canModify,
+                                            collectionsState,
+                                            horizontalPadding,
+                                          )
+                                        : _buildGrid(
+                                            context,
+                                            theme,
+                                            colors,
+                                            canModify,
+                                            collectionsState,
+                                            horizontalPadding,
+                                          ),
+                                  );
+                                },
                               ),
-                            ),
-                          )
-                        : BlocBuilder<
-                            MediaCollectionsBloc,
-                            MediaCollectionsState
-                          >(
-                            bloc: _collectionsBloc,
-                            buildWhen: (previous, current) =>
-                                previous.authorized != current.authorized,
-                            builder: (context, collectionsState) {
-                              final canModify = collectionsState.authorized;
-                              return RefreshIndicator(
-                                onRefresh: _loadItems,
-                                edgeOffset: 70,
-                                child: isMobile
-                                    ? _buildList(
-                                        context,
-                                        theme,
-                                        colors,
-                                        canModify,
-                                        collectionsState,
-                                        horizontalPadding,
-                                      )
-                                    : _buildGrid(
-                                        context,
-                                        theme,
-                                        colors,
-                                        canModify,
-                                        collectionsState,
-                                        horizontalPadding,
-                                      ),
-                              );
-                            },
-                          ),
                   ),
                 ],
               );
@@ -307,8 +309,7 @@ class _MediaListPageState extends State<MediaListPage> {
                         child: SizedBox(
                           height: Responsive.isMobile(context) ? 120 : 140,
                           width: Responsive.isMobile(context) ? 90 : 105,
-                          child:
-                              item.posterPath != null &&
+                          child: item.posterPath != null &&
                                   item.posterPath!.isNotEmpty
                               ? CachedNetworkImage(
                                   imageUrl:
@@ -338,23 +339,23 @@ class _MediaListPageState extends State<MediaListPage> {
                                   ),
                                   errorWidget: (context, url, error) =>
                                       Container(
-                                        decoration: BoxDecoration(
-                                          gradient: LinearGradient(
-                                            begin: Alignment.topLeft,
-                                            end: Alignment.bottomRight,
-                                            colors: [
-                                              Colors.blueGrey.shade900,
-                                              Colors.blueGrey.shade700,
-                                            ],
-                                          ),
-                                        ),
-                                        child: Icon(
-                                          Icons.movie,
-                                          color: colors.onSurfaceVariant
-                                              .withValues(alpha: 0.7),
-                                          size: 32,
-                                        ),
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                        colors: [
+                                          Colors.blueGrey.shade900,
+                                          Colors.blueGrey.shade700,
+                                        ],
                                       ),
+                                    ),
+                                    child: Icon(
+                                      Icons.movie,
+                                      color: colors.onSurfaceVariant
+                                          .withValues(alpha: 0.7),
+                                      size: 32,
+                                    ),
+                                  ),
                                 )
                               : Container(
                                   decoration: BoxDecoration(
@@ -417,13 +418,12 @@ class _MediaListPageState extends State<MediaListPage> {
                                   vertical: 6,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: colors.surfaceContainerHighest
-                                      .withValues(
-                                        alpha:
-                                            theme.brightness == Brightness.light
-                                            ? 0.7
-                                            : 0.25,
-                                      ),
+                                  color:
+                                      colors.surfaceContainerHighest.withValues(
+                                    alpha: theme.brightness == Brightness.light
+                                        ? 0.7
+                                        : 0.25,
+                                  ),
                                   borderRadius: BorderRadius.circular(12),
                                   border: Border.all(
                                     color: colors.outlineVariant.withValues(
@@ -453,8 +453,8 @@ class _MediaListPageState extends State<MediaListPage> {
                               IconButton(
                                 onPressed: canModify
                                     ? () => _collectionsBloc.add(
-                                        ToggleFavoriteEvent(item),
-                                      )
+                                          ToggleFavoriteEvent(item),
+                                        )
                                     : () => _showAuthDialog(context),
                                 icon: Icon(
                                   isFavorite

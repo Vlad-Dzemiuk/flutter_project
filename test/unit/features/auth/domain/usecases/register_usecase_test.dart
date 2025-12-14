@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:project/features/auth/domain/usecases/register_usecase.dart';
-import 'package:project/features/auth/auth_repository.dart';
 import 'package:project/features/auth/domain/entities/user.dart';
 import '../../../../helpers/test_helpers.dart';
 

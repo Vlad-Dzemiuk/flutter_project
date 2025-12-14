@@ -1,11 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:project/features/home/media_list_page.dart';
 import 'package:project/features/home/domain/usecases/get_popular_content_usecase.dart';
 import 'package:project/features/collections/media_collections_bloc.dart';
 import 'package:project/core/di.dart';
-import 'package:project/shared/widgets/animated_loading_widget.dart';
 import '../../unit/helpers/widget_test_helpers.dart';
 import '../../unit/helpers/test_helpers.dart';
 

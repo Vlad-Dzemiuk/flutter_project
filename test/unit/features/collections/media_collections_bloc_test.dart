@@ -6,9 +6,6 @@ import 'package:project/features/collections/media_collections_event.dart';
 import 'package:project/features/collections/domain/usecases/get_media_collections_usecase.dart';
 import 'package:project/features/collections/domain/usecases/toggle_favorite_usecase.dart';
 import 'package:project/features/collections/domain/usecases/add_to_watchlist_usecase.dart';
-import 'package:project/features/auth/auth_repository.dart';
-import 'package:project/features/home/home_media_item.dart';
-import 'package:project/features/collections/media_collection_entry.dart';
 import '../../helpers/test_helpers.dart';
 
 void main() {

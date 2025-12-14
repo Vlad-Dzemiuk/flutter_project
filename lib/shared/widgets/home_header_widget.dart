@@ -122,9 +122,8 @@ class HomeHeaderWidget extends StatelessWidget {
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: colors.primary,
-                          foregroundColor: isDark
-                              ? colors.onPrimary
-                              : Colors.white,
+                          foregroundColor:
+                              isDark ? colors.onPrimary : Colors.white,
                           padding: EdgeInsets.symmetric(
                             horizontal: isMobile ? 14 : 18,
                             vertical: isMobile ? 12 : 14,

@@ -107,9 +107,8 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
 
         // Завантажуємо рекомендації
         final recs = recommendations.cast<Movie>();
-        final recommendationItems = recs
-            .map((m) => HomeMediaItem.fromMovie(m))
-            .toList();
+        final recommendationItems =
+            recs.map((m) => HomeMediaItem.fromMovie(m)).toList();
         setState(() {
           _recommendations = recommendationItems;
         });
@@ -134,9 +133,8 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
         });
 
         // Завантажуємо рекомендації
-        final recommendationItems = recommendations
-            .map((t) => HomeMediaItem.fromTvShow(t))
-            .toList();
+        final recommendationItems =
+            recommendations.map((t) => HomeMediaItem.fromTvShow(t)).toList();
         setState(() {
           _recommendations = recommendationItems;
         });
@@ -252,8 +250,8 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
     final colors = theme.colorScheme;
     final title = _details != null
         ? (widget.item.isMovie
-              ? (_details!['title'] as String? ?? widget.item.title)
-              : (_details!['name'] as String? ?? widget.item.title))
+            ? (_details!['title'] as String? ?? widget.item.title)
+            : (_details!['name'] as String? ?? widget.item.title))
         : widget.item.title;
 
     return Scaffold(
@@ -266,140 +264,142 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
                   message: AppLocalizations.of(context)!.loading,
                 )
               : _error.isNotEmpty
-              ? Center(
-                  child: Text(
-                    _error,
-                    style: TextStyle(color: colors.onSurface),
-                  ),
-                )
-              : LayoutBuilder(
-                  builder: (context, constraints) {
-                    final isDesktop = Responsive.isDesktop(context);
-                    final isTablet = Responsive.isTablet(context);
-                    final isLandscape = Responsive.isLandscape(context);
-                    final horizontalPadding = Responsive.getHorizontalPadding(
-                      context,
-                    );
-                    final verticalPadding = Responsive.getVerticalPadding(
-                      context,
-                    );
-                    final spacing = Responsive.getSpacing(context);
+                  ? Center(
+                      child: Text(
+                        _error,
+                        style: TextStyle(color: colors.onSurface),
+                      ),
+                    )
+                  : LayoutBuilder(
+                      builder: (context, constraints) {
+                        final isDesktop = Responsive.isDesktop(context);
+                        final isTablet = Responsive.isTablet(context);
+                        final isLandscape = Responsive.isLandscape(context);
+                        final horizontalPadding =
+                            Responsive.getHorizontalPadding(
+                          context,
+                        );
+                        final verticalPadding = Responsive.getVerticalPadding(
+                          context,
+                        );
+                        final spacing = Responsive.getSpacing(context);
 
-                    return RefreshIndicator(
-                      edgeOffset: 80,
-                      onRefresh: _loadData,
-                      child: SingleChildScrollView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(
-                            maxWidth: isLandscape
-                                ? (isDesktop
-                                      ? 1600
-                                      : isTablet
-                                      ? 1400
-                                      : double.infinity)
-                                : (isDesktop ? 1200 : double.infinity),
-                          ),
-                          child: Center(
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: isDesktop
-                                    ? horizontalPadding.left
-                                    : 0,
+                        return RefreshIndicator(
+                          edgeOffset: 80,
+                          onRefresh: _loadData,
+                          child: SingleChildScrollView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(
+                                maxWidth: isLandscape
+                                    ? (isDesktop
+                                        ? 1600
+                                        : isTablet
+                                            ? 1400
+                                            : double.infinity)
+                                    : (isDesktop ? 1200 : double.infinity),
                               ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding: EdgeInsets.fromLTRB(
-                                      horizontalPadding.left,
-                                      verticalPadding.top,
-                                      horizontalPadding.right,
-                                      verticalPadding.bottom,
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          widget.item.isMovie
-                                              ? Icons.movie
-                                              : Icons.tv,
-                                          color: colors.primary,
-                                          size: isLandscape
-                                              ? (isDesktop
-                                                    ? 32
-                                                    : isTablet
-                                                    ? 28
-                                                    : 24)
-                                              : (isDesktop ? 28 : 24),
+                              child: Center(
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal:
+                                        isDesktop ? horizontalPadding.left : 0,
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.fromLTRB(
+                                          horizontalPadding.left,
+                                          verticalPadding.top,
+                                          horizontalPadding.right,
+                                          verticalPadding.bottom,
                                         ),
-                                        SizedBox(width: spacing * 0.6),
-                                        Expanded(
-                                          child: Text(
-                                            title,
-                                            maxLines: isLandscape
-                                                ? (isDesktop
-                                                      ? 4
-                                                      : isTablet
-                                                      ? 3
-                                                      : 2)
-                                                : (isDesktop ? 3 : 2),
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(
-                                              color: colors.onSurface,
-                                              fontSize: isLandscape
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              widget.item.isMovie
+                                                  ? Icons.movie
+                                                  : Icons.tv,
+                                              color: colors.primary,
+                                              size: isLandscape
                                                   ? (isDesktop
-                                                        ? 30
-                                                        : isTablet
-                                                        ? 26
-                                                        : 22)
-                                                  : (isDesktop
-                                                        ? 26
-                                                        : isTablet
-                                                        ? 22
-                                                        : 20),
-                                              fontWeight: FontWeight.w700,
+                                                      ? 32
+                                                      : isTablet
+                                                          ? 28
+                                                          : 24)
+                                                  : (isDesktop ? 28 : 24),
                                             ),
-                                          ),
+                                            SizedBox(width: spacing * 0.6),
+                                            Expanded(
+                                              child: Text(
+                                                title,
+                                                maxLines: isLandscape
+                                                    ? (isDesktop
+                                                        ? 4
+                                                        : isTablet
+                                                            ? 3
+                                                            : 2)
+                                                    : (isDesktop ? 3 : 2),
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(
+                                                  color: colors.onSurface,
+                                                  fontSize: isLandscape
+                                                      ? (isDesktop
+                                                          ? 30
+                                                          : isTablet
+                                                              ? 26
+                                                              : 22)
+                                                      : (isDesktop
+                                                          ? 26
+                                                          : isTablet
+                                                              ? 22
+                                                              : 20),
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                              ),
+                                            ),
+                                            SizedBox(width: spacing * 0.5),
+                                            _buildFavoriteAction(),
+                                          ],
                                         ),
-                                        SizedBox(width: spacing * 0.5),
-                                        _buildFavoriteAction(),
-                                      ],
-                                    ),
-                                  ),
-                                  _buildHeroSection(),
-                                  SizedBox(height: spacing * 1.5),
-                                  Padding(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: horizontalPadding.left,
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        _buildTrailerSection(),
-                                        SizedBox(height: spacing * 1.5),
-                                        _buildOverviewSection(),
-                                        SizedBox(height: spacing * 1.5),
-                                        _buildCharacteristics(),
-                                        SizedBox(height: spacing * 1.5),
-                                        _buildReviewsSection(),
-                                        SizedBox(height: spacing * 1.5),
-                                        _buildRecommendationsSection(),
-                                        SizedBox(
-                                          height: verticalPadding.bottom * 2,
+                                      ),
+                                      _buildHeroSection(),
+                                      SizedBox(height: spacing * 1.5),
+                                      Padding(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: horizontalPadding.left,
                                         ),
-                                      ],
-                                    ),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            _buildTrailerSection(),
+                                            SizedBox(height: spacing * 1.5),
+                                            _buildOverviewSection(),
+                                            SizedBox(height: spacing * 1.5),
+                                            _buildCharacteristics(),
+                                            SizedBox(height: spacing * 1.5),
+                                            _buildReviewsSection(),
+                                            SizedBox(height: spacing * 1.5),
+                                            _buildRecommendationsSection(),
+                                            SizedBox(
+                                              height:
+                                                  verticalPadding.bottom * 2,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ],
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
+                        );
+                      },
+                    ),
         ),
       ),
     );
@@ -414,9 +414,8 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
     final horizontalPadding = Responsive.getHorizontalPadding(context);
     final spacing = Responsive.getSpacing(context);
 
-    final posterPathFromApi = _details != null
-        ? _details!['poster_path'] as String?
-        : null;
+    final posterPathFromApi =
+        _details != null ? _details!['poster_path'] as String? : null;
     final posterPath = posterPathFromApi ?? widget.item.posterPath;
 
     final ratingFromApi = _details != null
@@ -426,33 +425,33 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
 
     final title = _details != null
         ? (widget.item.isMovie
-              ? (_details!['title'] as String? ?? widget.item.title)
-              : (_details!['name'] as String? ?? widget.item.title))
+            ? (_details!['title'] as String? ?? widget.item.title)
+            : (_details!['name'] as String? ?? widget.item.title))
         : widget.item.title;
 
     // Адаптивні розміри постеру з урахуванням орієнтації
     final posterWidth = isLandscape
         ? (isDesktop
-              ? 240.0
-              : isTablet
-              ? 200.0
-              : 160.0)
+            ? 240.0
+            : isTablet
+                ? 200.0
+                : 160.0)
         : (isDesktop
-              ? 200.0
-              : isTablet
-              ? 160.0
-              : 128.0);
+            ? 200.0
+            : isTablet
+                ? 160.0
+                : 128.0);
     final posterHeight = isLandscape
         ? (isDesktop
-              ? 360.0
-              : isTablet
-              ? 300.0
-              : 240.0)
+            ? 360.0
+            : isTablet
+                ? 300.0
+                : 240.0)
         : (isDesktop
-              ? 300.0
-              : isTablet
-              ? 240.0
-              : 188.0);
+            ? 300.0
+            : isTablet
+                ? 240.0
+                : 188.0);
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: horizontalPadding.left),
@@ -460,15 +459,15 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
         padding: EdgeInsets.all(
           isLandscape
               ? (isDesktop
-                    ? 28
-                    : isTablet
-                    ? 24
-                    : 18)
+                  ? 28
+                  : isTablet
+                      ? 24
+                      : 18)
               : (isDesktop
-                    ? 24
-                    : isTablet
-                    ? 18
-                    : 14),
+                  ? 24
+                  : isTablet
+                      ? 18
+                      : 14),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -520,8 +519,8 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
                             size: isDesktop
                                 ? 64
                                 : isTablet
-                                ? 56
-                                : 48,
+                                    ? 56
+                                    : 48,
                             color: colors.onSurfaceVariant,
                           ),
                         ),
@@ -542,8 +541,8 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
                           size: isDesktop
                               ? 64
                               : isTablet
-                              ? 56
-                              : 48,
+                                  ? 56
+                                  : 48,
                           color: colors.onSurfaceVariant,
                         ),
                       ),
@@ -556,23 +555,22 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
                 children: [
                   Text(
                     title,
-                    maxLines: isLandscape
-                        ? (isDesktop ? 5 : 4)
-                        : (isDesktop ? 4 : 3),
+                    maxLines:
+                        isLandscape ? (isDesktop ? 5 : 4) : (isDesktop ? 4 : 3),
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       color: colors.onSurface,
                       fontSize: isLandscape
                           ? (isDesktop
-                                ? 28
-                                : isTablet
-                                ? 24
-                                : 20)
+                              ? 28
+                              : isTablet
+                                  ? 24
+                                  : 20)
                           : (isDesktop
-                                ? 24
-                                : isTablet
-                                ? 20
-                                : 18),
+                              ? 24
+                              : isTablet
+                                  ? 20
+                                  : 18),
                       fontWeight: FontWeight.w800,
                     ),
                   ),
@@ -623,7 +621,8 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
                           icon: Icons.people_outline,
                           label: AppLocalizations.of(
                             context,
-                          )!.votes(_details!['vote_count'] as int),
+                          )!
+                              .votes(_details!['vote_count'] as int),
                         ),
                     ],
                   ),
@@ -644,14 +643,16 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
                             icon: Icons.schedule,
                             label: AppLocalizations.of(
                               context,
-                            )!.minutes(_details!['runtime'] as int),
+                            )!
+                                .minutes(_details!['runtime'] as int),
                           ),
                         if ((_details!['number_of_seasons'] as int?) != null)
                           _ChipBadge(
                             icon: Icons.tv,
                             label: AppLocalizations.of(
                               context,
-                            )!.seasons(_details!['number_of_seasons'] as int),
+                            )!
+                                .seasons(_details!['number_of_seasons'] as int),
                           ),
                       ],
                     ),
@@ -718,8 +719,7 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
   Widget _buildOverviewSection() {
     final colors = Theme.of(context).colorScheme;
     final isDesktop = Responsive.isDesktop(context);
-    final overview =
-        _details != null &&
+    final overview = _details != null &&
             (_details!['overview'] as String?)?.isNotEmpty == true
         ? _details!['overview'] as String
         : '';
@@ -741,11 +741,10 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
   Widget _buildCharacteristics() {
     if (_details == null) return const SizedBox.shrink();
 
-    final genres =
-        (_details!['genres'] as List<dynamic>?)
-            ?.map((g) => (g as Map<String, dynamic>)['name'] as String?)
-            .whereType<String>()
-            .toList() ??
+    final genres = (_details!['genres'] as List<dynamic>?)
+             ?.map((g) => (g as Map<String, dynamic>)['name'] as String?)
+             .whereType<String>()
+             .toList() ??
         [];
 
     final releaseDate = widget.item.isMovie
@@ -825,10 +824,10 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
             color: Theme.of(context).colorScheme.onSurfaceVariant,
             fontSize: isLandscape
                 ? (isDesktop
-                      ? 18
-                      : isTablet
-                      ? 16
-                      : 14)
+                    ? 18
+                    : isTablet
+                        ? 16
+                        : 14)
                 : (isDesktop ? 16 : 14),
           ),
         ),
@@ -839,10 +838,10 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
     final useGridView = isDesktop || (isTablet && isLandscape);
     final reviewColumns = isLandscape
         ? (isDesktop
-              ? 3
-              : isTablet
-              ? 2
-              : 2)
+            ? 3
+            : isTablet
+                ? 2
+                : 2)
         : (isDesktop ? 2 : 2);
 
     return _Section(
@@ -1014,12 +1013,11 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
                     final item = _recommendations[index];
                     return MediaPosterCard(
                       item: item,
-                      isFavorite: canModify
-                          ? collectionsState.isFavorite(item)
-                          : false,
+                      isFavorite:
+                          canModify ? collectionsState.isFavorite(item) : false,
                       onFavoriteToggle: canModify
                           ? () =>
-                                _collectionsBloc.add(ToggleFavoriteEvent(item))
+                              _collectionsBloc.add(ToggleFavoriteEvent(item))
                           : _showAuthDialog,
                       onTap: () {
                         Navigator.of(context).push(
@@ -1047,8 +1045,8 @@ class _MediaDetailPageState extends State<MediaDetailPage> {
                             : false,
                         onFavoriteToggle: canModify
                             ? () => _collectionsBloc.add(
-                                ToggleFavoriteEvent(item),
-                              )
+                                  ToggleFavoriteEvent(item),
+                                )
                             : _showAuthDialog,
                         onTap: () {
                           Navigator.of(context).push(
@@ -1130,8 +1128,8 @@ class _GlassCard extends StatelessWidget {
           isDesktop
               ? 22
               : isTablet
-              ? 20
-              : 18,
+                  ? 20
+                  : 18,
         ),
         border: Border.all(color: colors.outlineVariant.withValues(alpha: 0.8)),
         boxShadow: [

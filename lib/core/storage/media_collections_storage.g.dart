@@ -204,9 +204,9 @@ class FavoritesCompanion extends UpdateCompanion<FavoriteEntry> {
     required String data,
     required int updatedAt,
     this.rowid = const Value.absent(),
-  }) : key = Value(key),
-       data = Value(data),
-       updatedAt = Value(updatedAt);
+  })  : key = Value(key),
+        data = Value(data),
+        updatedAt = Value(updatedAt);
   static Insertable<FavoriteEntry> custom({
     Expression<String>? key,
     Expression<String>? data,
@@ -466,9 +466,9 @@ class WatchlistCompanion extends UpdateCompanion<WatchlistEntry> {
     required String data,
     required int updatedAt,
     this.rowid = const Value.absent(),
-  }) : key = Value(key),
-       data = Value(data),
-       updatedAt = Value(updatedAt);
+  })  : key = Value(key),
+        data = Value(data),
+        updatedAt = Value(updatedAt);
   static Insertable<WatchlistEntry> custom({
     Expression<String>? key,
     Expression<String>? data,
@@ -540,20 +540,18 @@ abstract class _$MediaCollectionsDatabase extends GeneratedDatabase {
   List<DatabaseSchemaEntity> get allSchemaEntities => [favorites, watchlist];
 }
 
-typedef $$FavoritesTableCreateCompanionBuilder =
-    FavoritesCompanion Function({
-      required String key,
-      required String data,
-      required int updatedAt,
-      Value<int> rowid,
-    });
-typedef $$FavoritesTableUpdateCompanionBuilder =
-    FavoritesCompanion Function({
-      Value<String> key,
-      Value<String> data,
-      Value<int> updatedAt,
-      Value<int> rowid,
-    });
+typedef $$FavoritesTableCreateCompanionBuilder = FavoritesCompanion Function({
+  required String key,
+  required String data,
+  required int updatedAt,
+  Value<int> rowid,
+});
+typedef $$FavoritesTableUpdateCompanionBuilder = FavoritesCompanion Function({
+  Value<String> key,
+  Value<String> data,
+  Value<int> updatedAt,
+  Value<int> rowid,
+});
 
 class $$FavoritesTableFilterComposer
     extends Composer<_$MediaCollectionsDatabase, $FavoritesTable> {
@@ -565,19 +563,19 @@ class $$FavoritesTableFilterComposer
     super.$removeJoinBuilderFromRootComposer,
   });
   ColumnFilters<String> get key => $composableBuilder(
-    column: $table.key,
-    builder: (column) => ColumnFilters(column),
-  );
+        column: $table.key,
+        builder: (column) => ColumnFilters(column),
+      );
 
   ColumnFilters<String> get data => $composableBuilder(
-    column: $table.data,
-    builder: (column) => ColumnFilters(column),
-  );
+        column: $table.data,
+        builder: (column) => ColumnFilters(column),
+      );
 
   ColumnFilters<int> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnFilters(column),
-  );
+        column: $table.updatedAt,
+        builder: (column) => ColumnFilters(column),
+      );
 }
 
 class $$FavoritesTableOrderingComposer
@@ -590,19 +588,19 @@ class $$FavoritesTableOrderingComposer
     super.$removeJoinBuilderFromRootComposer,
   });
   ColumnOrderings<String> get key => $composableBuilder(
-    column: $table.key,
-    builder: (column) => ColumnOrderings(column),
-  );
+        column: $table.key,
+        builder: (column) => ColumnOrderings(column),
+      );
 
   ColumnOrderings<String> get data => $composableBuilder(
-    column: $table.data,
-    builder: (column) => ColumnOrderings(column),
-  );
+        column: $table.data,
+        builder: (column) => ColumnOrderings(column),
+      );
 
   ColumnOrderings<int> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnOrderings(column),
-  );
+        column: $table.updatedAt,
+        builder: (column) => ColumnOrderings(column),
+      );
 }
 
 class $$FavoritesTableAnnotationComposer
@@ -624,108 +622,95 @@ class $$FavoritesTableAnnotationComposer
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
 }
 
-class $$FavoritesTableTableManager
-    extends
-        RootTableManager<
-          _$MediaCollectionsDatabase,
-          $FavoritesTable,
-          FavoriteEntry,
-          $$FavoritesTableFilterComposer,
-          $$FavoritesTableOrderingComposer,
-          $$FavoritesTableAnnotationComposer,
-          $$FavoritesTableCreateCompanionBuilder,
-          $$FavoritesTableUpdateCompanionBuilder,
-          (
-            FavoriteEntry,
-            BaseReferences<
-              _$MediaCollectionsDatabase,
-              $FavoritesTable,
-              FavoriteEntry
-            >,
-          ),
-          FavoriteEntry,
-          PrefetchHooks Function()
-        > {
+class $$FavoritesTableTableManager extends RootTableManager<
+    _$MediaCollectionsDatabase,
+    $FavoritesTable,
+    FavoriteEntry,
+    $$FavoritesTableFilterComposer,
+    $$FavoritesTableOrderingComposer,
+    $$FavoritesTableAnnotationComposer,
+    $$FavoritesTableCreateCompanionBuilder,
+    $$FavoritesTableUpdateCompanionBuilder,
+    (
+      FavoriteEntry,
+      BaseReferences<_$MediaCollectionsDatabase, $FavoritesTable,
+          FavoriteEntry>,
+    ),
+    FavoriteEntry,
+    PrefetchHooks Function()> {
   $$FavoritesTableTableManager(
     _$MediaCollectionsDatabase db,
     $FavoritesTable table,
   ) : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$FavoritesTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$FavoritesTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$FavoritesTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback:
-              ({
-                Value<String> key = const Value.absent(),
-                Value<String> data = const Value.absent(),
-                Value<int> updatedAt = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => FavoritesCompanion(
-                key: key,
-                data: data,
-                updatedAt: updatedAt,
-                rowid: rowid,
-              ),
-          createCompanionCallback:
-              ({
-                required String key,
-                required String data,
-                required int updatedAt,
-                Value<int> rowid = const Value.absent(),
-              }) => FavoritesCompanion.insert(
-                key: key,
-                data: data,
-                updatedAt: updatedAt,
-                rowid: rowid,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
-              .toList(),
-          prefetchHooksCallback: null,
-        ),
-      );
+          TableManagerState(
+            db: db,
+            table: table,
+            createFilteringComposer: () =>
+                $$FavoritesTableFilterComposer($db: db, $table: table),
+            createOrderingComposer: () =>
+                $$FavoritesTableOrderingComposer($db: db, $table: table),
+            createComputedFieldComposer: () =>
+                $$FavoritesTableAnnotationComposer($db: db, $table: table),
+            updateCompanionCallback: ({
+              Value<String> key = const Value.absent(),
+              Value<String> data = const Value.absent(),
+              Value<int> updatedAt = const Value.absent(),
+              Value<int> rowid = const Value.absent(),
+            }) =>
+                FavoritesCompanion(
+              key: key,
+              data: data,
+              updatedAt: updatedAt,
+              rowid: rowid,
+            ),
+            createCompanionCallback: ({
+              required String key,
+              required String data,
+              required int updatedAt,
+              Value<int> rowid = const Value.absent(),
+            }) =>
+                FavoritesCompanion.insert(
+              key: key,
+              data: data,
+              updatedAt: updatedAt,
+              rowid: rowid,
+            ),
+            withReferenceMapper: (p0) => p0
+                .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+                .toList(),
+            prefetchHooksCallback: null,
+          ),
+        );
 }
 
-typedef $$FavoritesTableProcessedTableManager =
-    ProcessedTableManager<
-      _$MediaCollectionsDatabase,
-      $FavoritesTable,
+typedef $$FavoritesTableProcessedTableManager = ProcessedTableManager<
+    _$MediaCollectionsDatabase,
+    $FavoritesTable,
+    FavoriteEntry,
+    $$FavoritesTableFilterComposer,
+    $$FavoritesTableOrderingComposer,
+    $$FavoritesTableAnnotationComposer,
+    $$FavoritesTableCreateCompanionBuilder,
+    $$FavoritesTableUpdateCompanionBuilder,
+    (
       FavoriteEntry,
-      $$FavoritesTableFilterComposer,
-      $$FavoritesTableOrderingComposer,
-      $$FavoritesTableAnnotationComposer,
-      $$FavoritesTableCreateCompanionBuilder,
-      $$FavoritesTableUpdateCompanionBuilder,
-      (
-        FavoriteEntry,
-        BaseReferences<
-          _$MediaCollectionsDatabase,
-          $FavoritesTable,
-          FavoriteEntry
-        >,
-      ),
-      FavoriteEntry,
-      PrefetchHooks Function()
-    >;
-typedef $$WatchlistTableCreateCompanionBuilder =
-    WatchlistCompanion Function({
-      required String key,
-      required String data,
-      required int updatedAt,
-      Value<int> rowid,
-    });
-typedef $$WatchlistTableUpdateCompanionBuilder =
-    WatchlistCompanion Function({
-      Value<String> key,
-      Value<String> data,
-      Value<int> updatedAt,
-      Value<int> rowid,
-    });
+      BaseReferences<_$MediaCollectionsDatabase, $FavoritesTable,
+          FavoriteEntry>,
+    ),
+    FavoriteEntry,
+    PrefetchHooks Function()>;
+typedef $$WatchlistTableCreateCompanionBuilder = WatchlistCompanion Function({
+  required String key,
+  required String data,
+  required int updatedAt,
+  Value<int> rowid,
+});
+typedef $$WatchlistTableUpdateCompanionBuilder = WatchlistCompanion Function({
+  Value<String> key,
+  Value<String> data,
+  Value<int> updatedAt,
+  Value<int> rowid,
+});
 
 class $$WatchlistTableFilterComposer
     extends Composer<_$MediaCollectionsDatabase, $WatchlistTable> {
@@ -737,19 +722,19 @@ class $$WatchlistTableFilterComposer
     super.$removeJoinBuilderFromRootComposer,
   });
   ColumnFilters<String> get key => $composableBuilder(
-    column: $table.key,
-    builder: (column) => ColumnFilters(column),
-  );
+        column: $table.key,
+        builder: (column) => ColumnFilters(column),
+      );
 
   ColumnFilters<String> get data => $composableBuilder(
-    column: $table.data,
-    builder: (column) => ColumnFilters(column),
-  );
+        column: $table.data,
+        builder: (column) => ColumnFilters(column),
+      );
 
   ColumnFilters<int> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnFilters(column),
-  );
+        column: $table.updatedAt,
+        builder: (column) => ColumnFilters(column),
+      );
 }
 
 class $$WatchlistTableOrderingComposer
@@ -762,19 +747,19 @@ class $$WatchlistTableOrderingComposer
     super.$removeJoinBuilderFromRootComposer,
   });
   ColumnOrderings<String> get key => $composableBuilder(
-    column: $table.key,
-    builder: (column) => ColumnOrderings(column),
-  );
+        column: $table.key,
+        builder: (column) => ColumnOrderings(column),
+      );
 
   ColumnOrderings<String> get data => $composableBuilder(
-    column: $table.data,
-    builder: (column) => ColumnOrderings(column),
-  );
+        column: $table.data,
+        builder: (column) => ColumnOrderings(column),
+      );
 
   ColumnOrderings<int> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnOrderings(column),
-  );
+        column: $table.updatedAt,
+        builder: (column) => ColumnOrderings(column),
+      );
 }
 
 class $$WatchlistTableAnnotationComposer
@@ -796,94 +781,83 @@ class $$WatchlistTableAnnotationComposer
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
 }
 
-class $$WatchlistTableTableManager
-    extends
-        RootTableManager<
-          _$MediaCollectionsDatabase,
-          $WatchlistTable,
-          WatchlistEntry,
-          $$WatchlistTableFilterComposer,
-          $$WatchlistTableOrderingComposer,
-          $$WatchlistTableAnnotationComposer,
-          $$WatchlistTableCreateCompanionBuilder,
-          $$WatchlistTableUpdateCompanionBuilder,
-          (
-            WatchlistEntry,
-            BaseReferences<
-              _$MediaCollectionsDatabase,
-              $WatchlistTable,
-              WatchlistEntry
-            >,
-          ),
-          WatchlistEntry,
-          PrefetchHooks Function()
-        > {
+class $$WatchlistTableTableManager extends RootTableManager<
+    _$MediaCollectionsDatabase,
+    $WatchlistTable,
+    WatchlistEntry,
+    $$WatchlistTableFilterComposer,
+    $$WatchlistTableOrderingComposer,
+    $$WatchlistTableAnnotationComposer,
+    $$WatchlistTableCreateCompanionBuilder,
+    $$WatchlistTableUpdateCompanionBuilder,
+    (
+      WatchlistEntry,
+      BaseReferences<_$MediaCollectionsDatabase, $WatchlistTable,
+          WatchlistEntry>,
+    ),
+    WatchlistEntry,
+    PrefetchHooks Function()> {
   $$WatchlistTableTableManager(
     _$MediaCollectionsDatabase db,
     $WatchlistTable table,
   ) : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$WatchlistTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$WatchlistTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$WatchlistTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback:
-              ({
-                Value<String> key = const Value.absent(),
-                Value<String> data = const Value.absent(),
-                Value<int> updatedAt = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => WatchlistCompanion(
-                key: key,
-                data: data,
-                updatedAt: updatedAt,
-                rowid: rowid,
-              ),
-          createCompanionCallback:
-              ({
-                required String key,
-                required String data,
-                required int updatedAt,
-                Value<int> rowid = const Value.absent(),
-              }) => WatchlistCompanion.insert(
-                key: key,
-                data: data,
-                updatedAt: updatedAt,
-                rowid: rowid,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
-              .toList(),
-          prefetchHooksCallback: null,
-        ),
-      );
+          TableManagerState(
+            db: db,
+            table: table,
+            createFilteringComposer: () =>
+                $$WatchlistTableFilterComposer($db: db, $table: table),
+            createOrderingComposer: () =>
+                $$WatchlistTableOrderingComposer($db: db, $table: table),
+            createComputedFieldComposer: () =>
+                $$WatchlistTableAnnotationComposer($db: db, $table: table),
+            updateCompanionCallback: ({
+              Value<String> key = const Value.absent(),
+              Value<String> data = const Value.absent(),
+              Value<int> updatedAt = const Value.absent(),
+              Value<int> rowid = const Value.absent(),
+            }) =>
+                WatchlistCompanion(
+              key: key,
+              data: data,
+              updatedAt: updatedAt,
+              rowid: rowid,
+            ),
+            createCompanionCallback: ({
+              required String key,
+              required String data,
+              required int updatedAt,
+              Value<int> rowid = const Value.absent(),
+            }) =>
+                WatchlistCompanion.insert(
+              key: key,
+              data: data,
+              updatedAt: updatedAt,
+              rowid: rowid,
+            ),
+            withReferenceMapper: (p0) => p0
+                .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+                .toList(),
+            prefetchHooksCallback: null,
+          ),
+        );
 }
 
-typedef $$WatchlistTableProcessedTableManager =
-    ProcessedTableManager<
-      _$MediaCollectionsDatabase,
-      $WatchlistTable,
+typedef $$WatchlistTableProcessedTableManager = ProcessedTableManager<
+    _$MediaCollectionsDatabase,
+    $WatchlistTable,
+    WatchlistEntry,
+    $$WatchlistTableFilterComposer,
+    $$WatchlistTableOrderingComposer,
+    $$WatchlistTableAnnotationComposer,
+    $$WatchlistTableCreateCompanionBuilder,
+    $$WatchlistTableUpdateCompanionBuilder,
+    (
       WatchlistEntry,
-      $$WatchlistTableFilterComposer,
-      $$WatchlistTableOrderingComposer,
-      $$WatchlistTableAnnotationComposer,
-      $$WatchlistTableCreateCompanionBuilder,
-      $$WatchlistTableUpdateCompanionBuilder,
-      (
-        WatchlistEntry,
-        BaseReferences<
-          _$MediaCollectionsDatabase,
-          $WatchlistTable,
-          WatchlistEntry
-        >,
-      ),
-      WatchlistEntry,
-      PrefetchHooks Function()
-    >;
+      BaseReferences<_$MediaCollectionsDatabase, $WatchlistTable,
+          WatchlistEntry>,
+    ),
+    WatchlistEntry,
+    PrefetchHooks Function()>;
 
 class $MediaCollectionsDatabaseManager {
   final _$MediaCollectionsDatabase _db;

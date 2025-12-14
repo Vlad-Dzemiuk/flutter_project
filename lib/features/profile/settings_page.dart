@@ -112,19 +112,19 @@ class _SettingsPageState extends State<_SettingsPageContent> {
                         size: isDesktop
                             ? 28
                             : isTablet
-                            ? 26
-                            : 24,
+                                ? 26
+                                : 24,
                       ),
                       SizedBox(width: spacing * 0.6),
                       Text(
                         modalL10n.selectLanguage,
                         style: TextStyle(
                           color: colors.onSurface,
-                          fontSize: isDesktop
-                              ? 24
-                              : isTablet
-                              ? 22
-                              : 20,
+                              fontSize: isDesktop
+                                  ? 24
+                                  : isTablet
+                                      ? 22
+                                      : 20,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -156,9 +156,8 @@ class _SettingsPageState extends State<_SettingsPageContent> {
       context.read<SettingsBloc>().add(SetLanguageEvent(lang));
       final updatedL10n = AppLocalizations.of(context)!;
       setState(() {
-        _selectedLanguage = lang == 'uk'
-            ? updatedL10n.ukrainian
-            : updatedL10n.english;
+        _selectedLanguage =
+            lang == 'uk' ? updatedL10n.ukrainian : updatedL10n.english;
       });
     }
   }
@@ -230,19 +229,19 @@ class _SettingsPageState extends State<_SettingsPageContent> {
                         size: isDesktop
                             ? 28
                             : isTablet
-                            ? 26
-                            : 24,
+                                ? 26
+                                : 24,
                       ),
                       SizedBox(width: spacing * 0.6),
                       Text(
                         AppLocalizations.of(context)!.appThemeTitle,
                         style: TextStyle(
                           color: colors.onSurface,
-                          fontSize: isDesktop
-                              ? 24
-                              : isTablet
-                              ? 22
-                              : 20,
+                              fontSize: isDesktop
+                                  ? 24
+                                  : isTablet
+                                      ? 22
+                                      : 20,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -387,7 +386,8 @@ class _SettingsPageState extends State<_SettingsPageContent> {
                                           _SettingsTile(
                                             title: AppLocalizations.of(
                                               context,
-                                            )!.appLanguage,
+                                            )!
+                                                .appLanguage,
                                             subtitle: _selectedLanguage,
                                             icon: Icons.language,
                                             onTap: _chooseLanguage,
@@ -395,7 +395,8 @@ class _SettingsPageState extends State<_SettingsPageContent> {
                                           _SettingsTile(
                                             title: AppLocalizations.of(
                                               context,
-                                            )!.appTheme,
+                                            )!
+                                                .appTheme,
                                             subtitle: _getThemeLabel(
                                               currentTheme,
                                             ),
@@ -410,7 +411,8 @@ class _SettingsPageState extends State<_SettingsPageContent> {
                                           _SettingsTile(
                                             title: AppLocalizations.of(
                                               context,
-                                            )!.appLanguage,
+                                            )!
+                                                .appLanguage,
                                             subtitle: _selectedLanguage,
                                             icon: Icons.language,
                                             onTap: _chooseLanguage,
@@ -419,7 +421,8 @@ class _SettingsPageState extends State<_SettingsPageContent> {
                                           _SettingsTile(
                                             title: AppLocalizations.of(
                                               context,
-                                            )!.appTheme,
+                                            )!
+                                                .appTheme,
                                             subtitle: _getThemeLabel(
                                               currentTheme,
                                             ),
@@ -432,7 +435,8 @@ class _SettingsPageState extends State<_SettingsPageContent> {
                                     _SettingsTile(
                                       title: AppLocalizations.of(
                                         context,
-                                      )!.aboutApp,
+                                      )!
+                                          .aboutApp,
                                       icon: Icons.info_outline,
                                       onTap: () {
                                         Navigator.of(
@@ -444,7 +448,8 @@ class _SettingsPageState extends State<_SettingsPageContent> {
                                     Text(
                                       AppLocalizations.of(
                                         context,
-                                      )!.appVersion('1.0.0'),
+                                      )!
+                                          .appVersion('1.0.0'),
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                         color: colors.onSurface.withValues(
@@ -519,8 +524,8 @@ class _SettingsTile extends StatelessWidget {
           horizontal: isDesktop
               ? 20
               : isTablet
-              ? 18
-              : 16,
+                  ? 18
+                  : 16,
           vertical: isDesktop ? 12 : 8,
         ),
         leading: Container(
@@ -588,8 +593,8 @@ class _LanguageOption extends StatelessWidget {
           horizontal: isDesktop
               ? 18
               : isTablet
-              ? 16
-              : 14,
+                  ? 16
+                  : 14,
           vertical: isDesktop ? 16 : 14,
         ),
         decoration: BoxDecoration(
@@ -668,8 +673,8 @@ class _ThemeOption extends StatelessWidget {
           horizontal: isDesktop
               ? 18
               : isTablet
-              ? 16
-              : 14,
+                  ? 16
+                  : 14,
           vertical: isDesktop ? 16 : 14,
         ),
         decoration: BoxDecoration(

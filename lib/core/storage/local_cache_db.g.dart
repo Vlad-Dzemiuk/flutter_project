@@ -204,9 +204,9 @@ class CacheEntriesCompanion extends UpdateCompanion<CacheEntry> {
     required String data,
     required DateTime updatedAt,
     this.rowid = const Value.absent(),
-  }) : key = Value(key),
-       data = Value(data),
-       updatedAt = Value(updatedAt);
+  })  : key = Value(key),
+        data = Value(data),
+        updatedAt = Value(updatedAt);
   static Insertable<CacheEntry> custom({
     Expression<String>? key,
     Expression<String>? data,
@@ -276,20 +276,20 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   List<DatabaseSchemaEntity> get allSchemaEntities => [cacheEntries];
 }
 
-typedef $$CacheEntriesTableCreateCompanionBuilder =
-    CacheEntriesCompanion Function({
-      required String key,
-      required String data,
-      required DateTime updatedAt,
-      Value<int> rowid,
-    });
-typedef $$CacheEntriesTableUpdateCompanionBuilder =
-    CacheEntriesCompanion Function({
-      Value<String> key,
-      Value<String> data,
-      Value<DateTime> updatedAt,
-      Value<int> rowid,
-    });
+typedef $$CacheEntriesTableCreateCompanionBuilder = CacheEntriesCompanion
+    Function({
+  required String key,
+  required String data,
+  required DateTime updatedAt,
+  Value<int> rowid,
+});
+typedef $$CacheEntriesTableUpdateCompanionBuilder = CacheEntriesCompanion
+    Function({
+  Value<String> key,
+  Value<String> data,
+  Value<DateTime> updatedAt,
+  Value<int> rowid,
+});
 
 class $$CacheEntriesTableFilterComposer
     extends Composer<_$AppDatabase, $CacheEntriesTable> {
@@ -301,19 +301,19 @@ class $$CacheEntriesTableFilterComposer
     super.$removeJoinBuilderFromRootComposer,
   });
   ColumnFilters<String> get key => $composableBuilder(
-    column: $table.key,
-    builder: (column) => ColumnFilters(column),
-  );
+        column: $table.key,
+        builder: (column) => ColumnFilters(column),
+      );
 
   ColumnFilters<String> get data => $composableBuilder(
-    column: $table.data,
-    builder: (column) => ColumnFilters(column),
-  );
+        column: $table.data,
+        builder: (column) => ColumnFilters(column),
+      );
 
   ColumnFilters<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnFilters(column),
-  );
+        column: $table.updatedAt,
+        builder: (column) => ColumnFilters(column),
+      );
 }
 
 class $$CacheEntriesTableOrderingComposer
@@ -326,19 +326,19 @@ class $$CacheEntriesTableOrderingComposer
     super.$removeJoinBuilderFromRootComposer,
   });
   ColumnOrderings<String> get key => $composableBuilder(
-    column: $table.key,
-    builder: (column) => ColumnOrderings(column),
-  );
+        column: $table.key,
+        builder: (column) => ColumnOrderings(column),
+      );
 
   ColumnOrderings<String> get data => $composableBuilder(
-    column: $table.data,
-    builder: (column) => ColumnOrderings(column),
-  );
+        column: $table.data,
+        builder: (column) => ColumnOrderings(column),
+      );
 
   ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnOrderings(column),
-  );
+        column: $table.updatedAt,
+        builder: (column) => ColumnOrderings(column),
+      );
 }
 
 class $$CacheEntriesTableAnnotationComposer
@@ -360,84 +360,79 @@ class $$CacheEntriesTableAnnotationComposer
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
 }
 
-class $$CacheEntriesTableTableManager
-    extends
-        RootTableManager<
-          _$AppDatabase,
-          $CacheEntriesTable,
-          CacheEntry,
-          $$CacheEntriesTableFilterComposer,
-          $$CacheEntriesTableOrderingComposer,
-          $$CacheEntriesTableAnnotationComposer,
-          $$CacheEntriesTableCreateCompanionBuilder,
-          $$CacheEntriesTableUpdateCompanionBuilder,
-          (
-            CacheEntry,
-            BaseReferences<_$AppDatabase, $CacheEntriesTable, CacheEntry>,
-          ),
-          CacheEntry,
-          PrefetchHooks Function()
-        > {
+class $$CacheEntriesTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $CacheEntriesTable,
+    CacheEntry,
+    $$CacheEntriesTableFilterComposer,
+    $$CacheEntriesTableOrderingComposer,
+    $$CacheEntriesTableAnnotationComposer,
+    $$CacheEntriesTableCreateCompanionBuilder,
+    $$CacheEntriesTableUpdateCompanionBuilder,
+    (
+      CacheEntry,
+      BaseReferences<_$AppDatabase, $CacheEntriesTable, CacheEntry>,
+    ),
+    CacheEntry,
+    PrefetchHooks Function()> {
   $$CacheEntriesTableTableManager(_$AppDatabase db, $CacheEntriesTable table)
-    : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$CacheEntriesTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$CacheEntriesTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$CacheEntriesTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback:
-              ({
-                Value<String> key = const Value.absent(),
-                Value<String> data = const Value.absent(),
-                Value<DateTime> updatedAt = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => CacheEntriesCompanion(
-                key: key,
-                data: data,
-                updatedAt: updatedAt,
-                rowid: rowid,
-              ),
-          createCompanionCallback:
-              ({
-                required String key,
-                required String data,
-                required DateTime updatedAt,
-                Value<int> rowid = const Value.absent(),
-              }) => CacheEntriesCompanion.insert(
-                key: key,
-                data: data,
-                updatedAt: updatedAt,
-                rowid: rowid,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
-              .toList(),
-          prefetchHooksCallback: null,
-        ),
-      );
+      : super(
+          TableManagerState(
+            db: db,
+            table: table,
+            createFilteringComposer: () =>
+                $$CacheEntriesTableFilterComposer($db: db, $table: table),
+            createOrderingComposer: () =>
+                $$CacheEntriesTableOrderingComposer($db: db, $table: table),
+            createComputedFieldComposer: () =>
+                $$CacheEntriesTableAnnotationComposer($db: db, $table: table),
+            updateCompanionCallback: ({
+              Value<String> key = const Value.absent(),
+              Value<String> data = const Value.absent(),
+              Value<DateTime> updatedAt = const Value.absent(),
+              Value<int> rowid = const Value.absent(),
+            }) =>
+                CacheEntriesCompanion(
+              key: key,
+              data: data,
+              updatedAt: updatedAt,
+              rowid: rowid,
+            ),
+            createCompanionCallback: ({
+              required String key,
+              required String data,
+              required DateTime updatedAt,
+              Value<int> rowid = const Value.absent(),
+            }) =>
+                CacheEntriesCompanion.insert(
+              key: key,
+              data: data,
+              updatedAt: updatedAt,
+              rowid: rowid,
+            ),
+            withReferenceMapper: (p0) => p0
+                .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+                .toList(),
+            prefetchHooksCallback: null,
+          ),
+        );
 }
 
-typedef $$CacheEntriesTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDatabase,
-      $CacheEntriesTable,
+typedef $$CacheEntriesTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $CacheEntriesTable,
+    CacheEntry,
+    $$CacheEntriesTableFilterComposer,
+    $$CacheEntriesTableOrderingComposer,
+    $$CacheEntriesTableAnnotationComposer,
+    $$CacheEntriesTableCreateCompanionBuilder,
+    $$CacheEntriesTableUpdateCompanionBuilder,
+    (
       CacheEntry,
-      $$CacheEntriesTableFilterComposer,
-      $$CacheEntriesTableOrderingComposer,
-      $$CacheEntriesTableAnnotationComposer,
-      $$CacheEntriesTableCreateCompanionBuilder,
-      $$CacheEntriesTableUpdateCompanionBuilder,
-      (
-        CacheEntry,
-        BaseReferences<_$AppDatabase, $CacheEntriesTable, CacheEntry>,
-      ),
-      CacheEntry,
-      PrefetchHooks Function()
-    >;
+      BaseReferences<_$AppDatabase, $CacheEntriesTable, CacheEntry>,
+    ),
+    CacheEntry,
+    PrefetchHooks Function()>;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;

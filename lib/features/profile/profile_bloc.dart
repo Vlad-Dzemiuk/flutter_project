@@ -28,7 +28,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final GetUserProfileUseCase getUserProfileUseCase;
 
   ProfileBloc({required this.getUserProfileUseCase})
-    : super(const ProfileState()) {
+      : super(const ProfileState()) {
     on<LoadProfileEvent>(_onLoadProfile);
     add(const LoadProfileEvent());
   }

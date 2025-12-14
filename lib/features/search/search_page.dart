@@ -249,8 +249,8 @@ class _SearchPageState extends State<SearchPage> {
                                           style: TextStyle(
                                             fontSize:
                                                 Responsive.isMobile(context)
-                                                ? 20
-                                                : 24,
+                                                    ? 20
+                                                    : 24,
                                             fontWeight: FontWeight.w700,
                                             color: colors.onSurface,
                                           ),
@@ -264,22 +264,19 @@ class _SearchPageState extends State<SearchPage> {
                                 ),
                                 Container(
                                   padding: EdgeInsets.symmetric(
-                                    horizontal: Responsive.isMobile(context)
-                                        ? 14
-                                        : 18,
-                                    vertical: Responsive.isMobile(context)
-                                        ? 10
-                                        : 12,
+                                    horizontal:
+                                        Responsive.isMobile(context) ? 14 : 18,
+                                    vertical:
+                                        Responsive.isMobile(context) ? 10 : 12,
                                   ),
                                   decoration: BoxDecoration(
                                     color: colors.surfaceContainerHighest
                                         .withValues(
-                                          alpha:
-                                              theme.brightness ==
-                                                  Brightness.light
-                                              ? 1
-                                              : 0.18,
-                                        ),
+                                      alpha:
+                                          theme.brightness == Brightness.light
+                                               ? 1
+                                               : 0.18,
+                                    ),
                                     borderRadius: BorderRadius.circular(16),
                                     border: Border.all(
                                       color: colors.outlineVariant.withValues(
@@ -289,11 +286,10 @@ class _SearchPageState extends State<SearchPage> {
                                     boxShadow: [
                                       BoxShadow(
                                         color: Colors.black.withValues(
-                                          alpha:
-                                              theme.brightness ==
+                                          alpha: theme.brightness ==
                                                   Brightness.light
-                                              ? 0.08
-                                              : 0.25,
+                                               ? 0.08
+                                               : 0.25,
                                         ),
                                         blurRadius: 12,
                                         offset: const Offset(0, 8),
@@ -321,19 +317,20 @@ class _SearchPageState extends State<SearchPage> {
                                             color: colors.onSurface,
                                             fontSize:
                                                 Responsive.isMobile(context)
-                                                ? 16
-                                                : 18,
+                                                    ? 16
+                                                    : 18,
                                           ),
                                           decoration: InputDecoration(
                                             hintText: AppLocalizations.of(
                                               context,
-                                            )!.enterTitle,
+                                            )!
+                                                .enterTitle,
                                             hintStyle: TextStyle(
                                               color: colors.onSurfaceVariant,
                                               fontSize:
                                                   Responsive.isMobile(context)
-                                                  ? 16
-                                                  : 18,
+                                                      ? 16
+                                                      : 18,
                                             ),
                                             border: InputBorder.none,
                                           ),
@@ -411,13 +408,12 @@ class _SearchPageState extends State<SearchPage> {
                                   Responsive.isMobile(context) ? 14 : 18,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: colors.surfaceContainerHighest
-                                      .withValues(
-                                        alpha:
-                                            theme.brightness == Brightness.light
-                                            ? 1
-                                            : 0.16,
-                                      ),
+                                  color:
+                                      colors.surfaceContainerHighest.withValues(
+                                    alpha: theme.brightness == Brightness.light
+                                        ? 1
+                                        : 0.16,
+                                  ),
                                   borderRadius: BorderRadius.circular(18),
                                   border: Border.all(
                                     color: colors.outlineVariant.withValues(
@@ -435,7 +431,8 @@ class _SearchPageState extends State<SearchPage> {
                                             controller: _genreController,
                                             label: AppLocalizations.of(
                                               context,
-                                            )!.genreExample,
+                                            )!
+                                                .genreExample,
                                             icon: Icons.category_outlined,
                                           ),
                                         ),
@@ -451,7 +448,8 @@ class _SearchPageState extends State<SearchPage> {
                                                 controller: _yearController,
                                                 label: AppLocalizations.of(
                                                   context,
-                                                )!.year,
+                                                )!
+                                                    .year,
                                                 keyboardType:
                                                     TextInputType.number,
                                                 icon: Icons
@@ -474,7 +472,8 @@ class _SearchPageState extends State<SearchPage> {
                                                       Text(
                                                         AppLocalizations.of(
                                                           context,
-                                                        )!.rating,
+                                                        )!
+                                                            .rating,
                                                         style: TextStyle(
                                                           color:
                                                               colors.onSurface,
@@ -485,31 +484,33 @@ class _SearchPageState extends State<SearchPage> {
                                                       ),
                                                       Container(
                                                         padding:
-                                                            const EdgeInsets.symmetric(
-                                                              horizontal: 10,
-                                                              vertical: 6,
-                                                            ),
-                                                        decoration: BoxDecoration(
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                          horizontal: 10,
+                                                          vertical: 6,
+                                                        ),
+                                                        decoration:
+                                                            BoxDecoration(
                                                           color: colors
                                                               .surfaceContainerHighest
                                                               .withValues(
-                                                                alpha:
-                                                                    theme.brightness ==
-                                                                        Brightness
-                                                                            .light
-                                                                    ? 1
-                                                                    : 0.18,
-                                                              ),
+                                                            alpha: theme.brightness ==
+                                                                    Brightness
+                                                                        .light
+                                                                ? 1
+                                                                : 0.18,
+                                                          ),
                                                           borderRadius:
-                                                              BorderRadius.circular(
-                                                                12,
-                                                              ),
+                                                              BorderRadius
+                                                                  .circular(
+                                                            12,
+                                                          ),
                                                         ),
                                                         child: Text(
                                                           _rating
                                                               .toStringAsFixed(
-                                                                1,
-                                                              ),
+                                                            1,
+                                                          ),
                                                           style: TextStyle(
                                                             color: colors
                                                                 .onSurface,
@@ -528,8 +529,8 @@ class _SearchPageState extends State<SearchPage> {
                                                     value: _rating,
                                                     onChanged: (val) =>
                                                         setState(
-                                                          () => _rating = val,
-                                                        ),
+                                                      () => _rating = val,
+                                                    ),
                                                   ),
                                                 ],
                                               ),
@@ -574,33 +575,35 @@ class _SearchPageState extends State<SearchPage> {
                                                                 FontWeight.w600,
                                                           ),
                                                         ),
-                                                        Container(
-                                                          padding:
-                                                              const EdgeInsets.symmetric(
-                                                                horizontal: 10,
-                                                                vertical: 6,
-                                                              ),
-                                                          decoration: BoxDecoration(
-                                                            color: colors
-                                                                .surfaceContainerHighest
-                                                                .withValues(
-                                                                  alpha:
-                                                                      theme.brightness ==
-                                                                          Brightness
-                                                                              .light
-                                                                      ? 1
-                                                                      : 0.18,
-                                                                ),
-                                                            borderRadius:
-                                                                BorderRadius.circular(
-                                                                  12,
-                                                                ),
-                                                          ),
-                                                          child: Text(
-                                                            _rating
-                                                                .toStringAsFixed(
-                                                                  1,
-                                                                ),
+                                                          Container(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .symmetric(
+                                                              horizontal: 10,
+                                                              vertical: 6,
+                                                            ),
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              color: colors
+                                                                  .surfaceContainerHighest
+                                                                  .withValues(
+                                                              alpha: theme.brightness ==
+                                                                      Brightness
+                                                                          .light
+                                                                  ? 1
+                                                                  : 0.18,
+                                                            ),
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                12,
+                                                            ),
+                                                            ),
+                                                            child: Text(
+                                                              _rating
+                                                                  .toStringAsFixed(
+                                                              1,
+                                                            ),
                                                             style: TextStyle(
                                                               color: colors
                                                                   .onSurface,
@@ -621,8 +624,8 @@ class _SearchPageState extends State<SearchPage> {
                                                       value: _rating,
                                                       onChanged: (val) =>
                                                           setState(
-                                                            () => _rating = val,
-                                                          ),
+                                                        () => _rating = val,
+                                                      ),
                                                     ),
                                                   ],
                                                 ),
@@ -637,16 +640,15 @@ class _SearchPageState extends State<SearchPage> {
                                       child: ElevatedButton.icon(
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: colors.primary,
-                                          foregroundColor:
-                                              theme.brightness ==
+                                          foregroundColor: theme.brightness ==
                                                   Brightness.light
-                                              ? Colors.white
-                                              : colors.onPrimary,
+                                               ? Colors.white
+                                               : colors.onPrimary,
                                           padding: EdgeInsets.symmetric(
                                             vertical:
                                                 Responsive.isMobile(context)
-                                                ? 14
-                                                : 16,
+                                                    ? 14
+                                                    : 16,
                                           ),
                                           shape: RoundedRectangleBorder(
                                             borderRadius: BorderRadius.circular(
@@ -659,13 +661,14 @@ class _SearchPageState extends State<SearchPage> {
                                         label: Text(
                                           AppLocalizations.of(
                                             context,
-                                          )!.searchWithFilters,
+                                          )!
+                                              .searchWithFilters,
                                           style: TextStyle(
                                             fontWeight: FontWeight.w700,
                                             fontSize:
                                                 Responsive.isMobile(context)
-                                                ? 14
-                                                : 16,
+                                                    ? 14
+                                                    : 16,
                                           ),
                                         ),
                                       ),
@@ -679,13 +682,12 @@ class _SearchPageState extends State<SearchPage> {
                           Expanded(
                             child: Container(
                               decoration: BoxDecoration(
-                                color: colors.surfaceContainerHighest
-                                    .withValues(
-                                      alpha:
-                                          theme.brightness == Brightness.light
-                                          ? 0.4
-                                          : 0.08,
-                                    ),
+                                color:
+                                    colors.surfaceContainerHighest.withValues(
+                                  alpha: theme.brightness == Brightness.light
+                                      ? 0.4
+                                      : 0.08,
+                                ),
                                 borderRadius: const BorderRadius.vertical(
                                   top: Radius.circular(24),
                                 ),
@@ -695,8 +697,7 @@ class _SearchPageState extends State<SearchPage> {
                                   ),
                                 ),
                               ),
-                              child:
-                                  _searchController.text.trim().isNotEmpty ||
+                              child: _searchController.text.trim().isNotEmpty ||
                                       _searchResults.isNotEmpty
                                   ? _buildSearchResults(
                                       collectionsState,
@@ -843,8 +844,7 @@ class _SearchPageState extends State<SearchPage> {
                       child: SizedBox(
                         height: Responsive.isMobile(context) ? 120 : 140,
                         width: Responsive.isMobile(context) ? 90 : 105,
-                        child:
-                            item.posterPath != null &&
+                        child: item.posterPath != null &&
                                 item.posterPath!.isNotEmpty
                             ? CachedNetworkImage(
                                 imageUrl:
@@ -951,13 +951,12 @@ class _SearchPageState extends State<SearchPage> {
                                 vertical: 6,
                               ),
                               decoration: BoxDecoration(
-                                color: colors.surfaceContainerHighest
-                                    .withValues(
-                                      alpha:
-                                          theme.brightness == Brightness.light
-                                          ? 0.7
-                                          : 0.25,
-                                    ),
+                                color:
+                                    colors.surfaceContainerHighest.withValues(
+                                  alpha: theme.brightness == Brightness.light
+                                      ? 0.7
+                                      : 0.25,
+                                ),
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
                                   color: colors.outlineVariant.withValues(
@@ -1115,8 +1114,8 @@ class _SearchPageState extends State<SearchPage> {
               Text(
                 AppLocalizations.of(context)!.searchHistory,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontSize: Responsive.isMobile(context) ? 20 : 24,
-                ),
+                      fontSize: Responsive.isMobile(context) ? 20 : 24,
+                    ),
               ),
               if (_searchHistory.isNotEmpty)
                 TextButton(
@@ -1156,16 +1155,16 @@ class _SearchPageState extends State<SearchPage> {
                   ),
                 )
               : isMobile
-              ? _buildRecentSearchesList(
-                  collectionsState,
-                  collectionsBloc,
-                  horizontalPadding,
-                )
-              : _buildRecentSearchesGrid(
-                  collectionsState,
-                  collectionsBloc,
-                  horizontalPadding,
-                ),
+                  ? _buildRecentSearchesList(
+                      collectionsState,
+                      collectionsBloc,
+                      horizontalPadding,
+                    )
+                  : _buildRecentSearchesGrid(
+                      collectionsState,
+                      collectionsBloc,
+                      horizontalPadding,
+                    ),
         ),
       ],
     );
@@ -1235,8 +1234,7 @@ class _SearchPageState extends State<SearchPage> {
                       child: SizedBox(
                         height: Responsive.isMobile(context) ? 120 : 140,
                         width: Responsive.isMobile(context) ? 90 : 105,
-                        child:
-                            item.posterPath != null &&
+                        child: item.posterPath != null &&
                                 item.posterPath!.isNotEmpty
                             ? CachedNetworkImage(
                                 imageUrl:
@@ -1343,13 +1341,12 @@ class _SearchPageState extends State<SearchPage> {
                                 vertical: 6,
                               ),
                               decoration: BoxDecoration(
-                                color: colors.surfaceContainerHighest
-                                    .withValues(
-                                      alpha:
-                                          theme.brightness == Brightness.light
-                                          ? 0.7
-                                          : 0.25,
-                                    ),
+                                color:
+                                    colors.surfaceContainerHighest.withValues(
+                                  alpha: theme.brightness == Brightness.light
+                                      ? 0.7
+                                      : 0.25,
+                                ),
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
                                   color: colors.outlineVariant.withValues(

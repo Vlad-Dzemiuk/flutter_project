@@ -264,8 +264,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             size: isDesktop
                                 ? 28
                                 : isTablet
-                                ? 26
-                                : 24,
+                                    ? 26
+                                    : 24,
                           ),
                           SizedBox(width: spacing * 0.6),
                           Text(
@@ -275,8 +275,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               fontSize: isDesktop
                                   ? 24
                                   : isTablet
-                                  ? 22
-                                  : 20,
+                                      ? 22
+                                      : 20,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
@@ -289,8 +289,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           horizontal: isDesktop
                               ? 18
                               : isTablet
-                              ? 16
-                              : 14,
+                                  ? 16
+                                  : 14,
                           vertical: isDesktop ? 8 : 4,
                         ),
                         decoration: BoxDecoration(
@@ -314,7 +314,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           decoration: InputDecoration(
                             labelText: AppLocalizations.of(
                               context,
-                            )!.currentPassword,
+                            )!
+                                .currentPassword,
                             labelStyle: TextStyle(
                               color: colors.onSurfaceVariant,
                               fontSize: isDesktop ? 16 : 14,
@@ -337,8 +338,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           horizontal: isDesktop
                               ? 18
                               : isTablet
-                              ? 16
-                              : 14,
+                                  ? 16
+                                  : 14,
                           vertical: isDesktop ? 8 : 4,
                         ),
                         decoration: BoxDecoration(
@@ -362,7 +363,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           decoration: InputDecoration(
                             labelText: AppLocalizations.of(
                               context,
-                            )!.newPassword,
+                            )!
+                                .newPassword,
                             labelStyle: TextStyle(
                               color: colors.onSurfaceVariant,
                               fontSize: isDesktop ? 16 : 14,
@@ -385,8 +387,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           horizontal: isDesktop
                               ? 18
                               : isTablet
-                              ? 16
-                              : 14,
+                                  ? 16
+                                  : 14,
                           vertical: isDesktop ? 8 : 4,
                         ),
                         decoration: BoxDecoration(
@@ -410,7 +412,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           decoration: InputDecoration(
                             labelText: AppLocalizations.of(
                               context,
-                            )!.confirmPassword,
+                            )!
+                                .confirmPassword,
                             labelStyle: TextStyle(
                               color: colors.onSurfaceVariant,
                               fontSize: isDesktop ? 16 : 14,
@@ -557,8 +560,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 isDesktop
                                     ? 32
                                     : isTablet
-                                    ? 24
-                                    : 20,
+                                        ? 24
+                                        : 20,
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -573,8 +576,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                 size: isDesktop
                                                     ? 80
                                                     : isTablet
-                                                    ? 72
-                                                    : 64,
+                                                        ? 72
+                                                        : 64,
                                                 color: colors.onSurfaceVariant
                                                     .withValues(alpha: 0.75),
                                               ),
@@ -582,7 +585,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                               Text(
                                                 AppLocalizations.of(
                                                   context,
-                                                )!.authorizeFirst,
+                                                )!
+                                                    .authorizeFirst,
                                                 style: TextStyle(
                                                   color: colors.onSurface,
                                                   fontSize: isDesktop ? 22 : 18,
@@ -593,12 +597,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                               FilledButton(
                                                 style: FilledButton.styleFrom(
                                                   padding: EdgeInsets.symmetric(
-                                                    horizontal: isDesktop
-                                                        ? 32
-                                                        : 24,
-                                                    vertical: isDesktop
-                                                        ? 18
-                                                        : 16,
+                                                    horizontal:
+                                                        isDesktop ? 32 : 24,
+                                                    vertical:
+                                                        isDesktop ? 18 : 16,
                                                   ),
                                                 ),
                                                 onPressed: () {
@@ -611,11 +613,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                 child: Text(
                                                   AppLocalizations.of(
                                                     context,
-                                                  )!.signIn,
+                                                  )!
+                                                      .signIn,
                                                   style: TextStyle(
-                                                    fontSize: isDesktop
-                                                        ? 16
-                                                        : 14,
+                                                    fontSize:
+                                                        isDesktop ? 16 : 14,
                                                   ),
                                                 ),
                                               ),
@@ -635,22 +637,22 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                     radius: isDesktop
                                                         ? 80
                                                         : isTablet
-                                                        ? 72
-                                                        : 64,
+                                                            ? 72
+                                                            : 64,
                                                     backgroundColor: colors
                                                         .surfaceContainerHighest,
                                                     backgroundImage:
                                                         _avatarImageProvider(),
-                                                    child:
-                                                        _avatarPath == null ||
+                                                    child: _avatarPath ==
+                                                                null ||
                                                             _avatarPath!.isEmpty
                                                         ? Icon(
                                                             Icons.person,
                                                             size: isDesktop
                                                                 ? 60
                                                                 : isTablet
-                                                                ? 54
-                                                                : 48,
+                                                                    ? 54
+                                                                    : 48,
                                                             color: colors
                                                                 .onSurfaceVariant,
                                                           )
@@ -661,13 +663,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                       backgroundColor: colors
                                                           .surfaceContainerHighest
                                                           .withValues(
-                                                            alpha:
-                                                                theme.brightness ==
+                                                        alpha:
+                                                            theme.brightness ==
                                                                     Brightness
                                                                         .light
                                                                 ? 0.8
                                                                 : 0.3,
-                                                          ),
+                                                      ),
                                                       padding: EdgeInsets.all(
                                                         isDesktop ? 8 : 6,
                                                       ),
@@ -693,16 +695,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                 color: colors
                                                     .surfaceContainerHighest
                                                     .withValues(
-                                                      alpha:
-                                                          theme.brightness ==
-                                                              Brightness.light
-                                                          ? 0.5
-                                                          : 0.2,
-                                                    ),
+                                                  alpha: theme.brightness ==
+                                                          Brightness.light
+                                                      ? 0.5
+                                                      : 0.2,
+                                                ),
                                                 borderRadius:
                                                     BorderRadius.circular(
-                                                      isDesktop ? 16 : 14,
-                                                    ),
+                                                  isDesktop ? 16 : 14,
+                                                ),
                                                 border: Border.all(
                                                   color: colors.outlineVariant
                                                       .withValues(alpha: 0.5),
@@ -717,26 +718,26 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                 decoration: InputDecoration(
                                                   labelText:
                                                       AppLocalizations.of(
-                                                        context,
-                                                      )!.username,
+                                                    context,
+                                                  )!
+                                                          .username,
                                                   helperText:
                                                       AppLocalizations.of(
-                                                        context,
-                                                      )!.canBeEmpty,
+                                                    context,
+                                                  )!
+                                                          .canBeEmpty,
                                                   labelStyle: TextStyle(
                                                     color:
                                                         colors.onSurfaceVariant,
-                                                    fontSize: isDesktop
-                                                        ? 16
-                                                        : 14,
+                                                    fontSize:
+                                                        isDesktop ? 16 : 14,
                                                   ),
                                                   helperStyle: TextStyle(
                                                     color: colors
                                                         .onSurfaceVariant
                                                         .withValues(alpha: 0.7),
-                                                    fontSize: isDesktop
-                                                        ? 14
-                                                        : 12,
+                                                    fontSize:
+                                                        isDesktop ? 14 : 12,
                                                   ),
                                                   border: InputBorder.none,
                                                 ),
@@ -751,8 +752,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                 shape: RoundedRectangleBorder(
                                                   borderRadius:
                                                       BorderRadius.circular(
-                                                        isDesktop ? 16 : 14,
-                                                      ),
+                                                    isDesktop ? 16 : 14,
+                                                  ),
                                                 ),
                                                 padding: EdgeInsets.symmetric(
                                                   vertical: isDesktop ? 18 : 14,
@@ -766,7 +767,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                               label: Text(
                                                 AppLocalizations.of(
                                                   context,
-                                                )!.saveChanges,
+                                                )!
+                                                    .saveChanges,
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.w800,
                                                   fontSize: isDesktop ? 16 : 14,
@@ -782,7 +784,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                             SizedBox(height: spacing),
                                             // Адаптивна сітка для кнопок на десктопі
                                             LayoutBuilder(
-                                              builder: (context, buttonConstraints) {
+                                              builder:
+                                                  (context, buttonConstraints) {
                                                 if (isDesktop) {
                                                   // На десктопі: 2 колонки
                                                   return GridView.count(
@@ -795,26 +798,25 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                     childAspectRatio: 2.5,
                                                     children: [
                                                       FilledButton.tonalIcon(
-                                                        style: FilledButton.styleFrom(
+                                                        style: FilledButton
+                                                            .styleFrom(
                                                           backgroundColor: colors
                                                               .surfaceContainerHighest
                                                               .withValues(
-                                                                alpha:
-                                                                    theme.brightness ==
-                                                                        Brightness
-                                                                            .light
-                                                                    ? 0.5
-                                                                    : 0.2,
-                                                              ),
+                                                            alpha: theme.brightness ==
+                                                                    Brightness
+                                                                        .light
+                                                                ? 0.5
+                                                                : 0.2,
+                                                          ),
                                                           foregroundColor: colors
                                                               .onSurfaceVariant,
-                                                          padding:
-                                                              EdgeInsets.symmetric(
-                                                                vertical:
-                                                                    isDesktop
-                                                                    ? 16
-                                                                    : 14,
-                                                              ),
+                                                          padding: EdgeInsets
+                                                              .symmetric(
+                                                            vertical: isDesktop
+                                                                ? 16
+                                                                : 14,
+                                                          ),
                                                         ),
                                                         onPressed:
                                                             _openPasswordSheet,
@@ -824,30 +826,30 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                         label: Text(
                                                           AppLocalizations.of(
                                                             context,
-                                                          )!.changePassword,
+                                                          )!
+                                                              .changePassword,
                                                         ),
                                                       ),
                                                       FilledButton.tonal(
-                                                        style: FilledButton.styleFrom(
+                                                        style: FilledButton
+                                                            .styleFrom(
                                                           backgroundColor: colors
                                                               .surfaceContainerHighest
                                                               .withValues(
-                                                                alpha:
-                                                                    theme.brightness ==
-                                                                        Brightness
-                                                                            .light
-                                                                    ? 0.5
-                                                                    : 0.2,
-                                                              ),
+                                                            alpha: theme.brightness ==
+                                                                    Brightness
+                                                                        .light
+                                                                ? 0.5
+                                                                : 0.2,
+                                                          ),
                                                           foregroundColor: colors
                                                               .onSurfaceVariant,
-                                                          padding:
-                                                              EdgeInsets.symmetric(
-                                                                vertical:
-                                                                    isDesktop
-                                                                    ? 16
-                                                                    : 14,
-                                                              ),
+                                                          padding: EdgeInsets
+                                                              .symmetric(
+                                                            vertical: isDesktop
+                                                                ? 16
+                                                                : 14,
+                                                          ),
                                                         ),
                                                         onPressed: () async {
                                                           await _authRepository
@@ -864,7 +866,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                         child: Text(
                                                           AppLocalizations.of(
                                                             context,
-                                                          )!.signOut,
+                                                          )!
+                                                              .signOut,
                                                         ),
                                                       ),
                                                     ],
@@ -874,17 +877,17 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                   return Column(
                                                     children: [
                                                       FilledButton.tonalIcon(
-                                                        style: FilledButton.styleFrom(
+                                                        style: FilledButton
+                                                            .styleFrom(
                                                           backgroundColor: colors
                                                               .surfaceContainerHighest
                                                               .withValues(
-                                                                alpha:
-                                                                    theme.brightness ==
-                                                                        Brightness
-                                                                            .light
-                                                                    ? 0.5
-                                                                    : 0.2,
-                                                              ),
+                                                            alpha: theme.brightness ==
+                                                                    Brightness
+                                                                        .light
+                                                                ? 0.5
+                                                                : 0.2,
+                                                          ),
                                                           foregroundColor: colors
                                                               .onSurfaceVariant,
                                                         ),
@@ -896,22 +899,23 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                         label: Text(
                                                           AppLocalizations.of(
                                                             context,
-                                                          )!.changePassword,
+                                                          )!
+                                                              .changePassword,
                                                         ),
                                                       ),
                                                       SizedBox(height: spacing),
                                                       FilledButton.tonal(
-                                                        style: FilledButton.styleFrom(
+                                                        style: FilledButton
+                                                            .styleFrom(
                                                           backgroundColor: colors
                                                               .surfaceContainerHighest
                                                               .withValues(
-                                                                alpha:
-                                                                    theme.brightness ==
-                                                                        Brightness
-                                                                            .light
-                                                                    ? 0.5
-                                                                    : 0.2,
-                                                              ),
+                                                            alpha: theme.brightness ==
+                                                                    Brightness
+                                                                        .light
+                                                                ? 0.5
+                                                                : 0.2,
+                                                          ),
                                                           foregroundColor: colors
                                                               .onSurfaceVariant,
                                                         ),
@@ -930,7 +934,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                                         child: Text(
                                                           AppLocalizations.of(
                                                             context,
-                                                          )!.signOut,
+                                                          )!
+                                                              .signOut,
                                                         ),
                                                       ),
                                                     ],
@@ -959,7 +964,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                               child: Text(
                                                 AppLocalizations.of(
                                                   context,
-                                                )!.deleteAccount,
+                                                )!
+                                                    .deleteAccount,
                                                 style: TextStyle(
                                                   color: colors.error,
                                                   fontSize: isDesktop ? 16 : 14,

@@ -82,9 +82,8 @@ class FavoritesPage extends StatelessWidget {
                               AppLocalizations.of(context)!.favorites,
                               style: TextStyle(
                                 color: colors.onSurface,
-                                fontSize: Responsive.isMobile(context)
-                                    ? 20
-                                    : 24,
+                                fontSize:
+                                    Responsive.isMobile(context) ? 20 : 24,
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
@@ -178,8 +177,7 @@ class FavoritesPage extends StatelessWidget {
                         child: SizedBox(
                           height: Responsive.isMobile(context) ? 120 : 140,
                           width: Responsive.isMobile(context) ? 90 : 105,
-                          child:
-                              item.posterPath != null &&
+                          child: item.posterPath != null &&
                                   item.posterPath!.isNotEmpty
                               ? CachedNetworkImage(
                                   imageUrl:
@@ -209,23 +207,23 @@ class FavoritesPage extends StatelessWidget {
                                   ),
                                   errorWidget: (context, url, error) =>
                                       Container(
-                                        decoration: BoxDecoration(
-                                          gradient: LinearGradient(
-                                            begin: Alignment.topLeft,
-                                            end: Alignment.bottomRight,
-                                            colors: [
-                                              Colors.blueGrey.shade900,
-                                              Colors.blueGrey.shade700,
-                                            ],
-                                          ),
-                                        ),
-                                        child: Icon(
-                                          Icons.movie,
-                                          color: colors.onSurfaceVariant
-                                              .withValues(alpha: 0.7),
-                                          size: 32,
-                                        ),
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                        colors: [
+                                          Colors.blueGrey.shade900,
+                                          Colors.blueGrey.shade700,
+                                        ],
                                       ),
+                                    ),
+                                    child: Icon(
+                                      Icons.movie,
+                                      color: colors.onSurfaceVariant
+                                          .withValues(alpha: 0.7),
+                                      size: 32,
+                                    ),
+                                  ),
                                 )
                               : Container(
                                   decoration: BoxDecoration(
@@ -288,13 +286,12 @@ class FavoritesPage extends StatelessWidget {
                                   vertical: 6,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: colors.surfaceContainerHighest
-                                      .withValues(
-                                        alpha:
-                                            theme.brightness == Brightness.light
-                                            ? 0.7
-                                            : 0.25,
-                                      ),
+                                  color:
+                                      colors.surfaceContainerHighest.withValues(
+                                    alpha: theme.brightness == Brightness.light
+                                        ? 0.7
+                                        : 0.25,
+                                  ),
                                   borderRadius: BorderRadius.circular(12),
                                   border: Border.all(
                                     color: colors.outlineVariant.withValues(

@@ -5,7 +5,6 @@ import 'package:project/features/home/home_bloc.dart';
 import 'package:project/features/home/home_event.dart';
 import 'package:project/features/home/domain/usecases/get_popular_content_usecase.dart';
 import 'package:project/features/home/domain/usecases/search_media_usecase.dart';
-import 'package:project/features/home/home_media_item.dart';
 import '../../helpers/test_helpers.dart';
 
 void main() {

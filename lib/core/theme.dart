@@ -136,8 +136,8 @@ class ThemeControllerScope extends InheritedWidget {
   });
 
   static ThemeController of(BuildContext context) {
-    final scope = context
-        .dependOnInheritedWidgetOfExactType<ThemeControllerScope>();
+    final scope =
+        context.dependOnInheritedWidgetOfExactType<ThemeControllerScope>();
     assert(scope != null, 'ThemeControllerScope not found in context');
     return scope!.controller;
   }

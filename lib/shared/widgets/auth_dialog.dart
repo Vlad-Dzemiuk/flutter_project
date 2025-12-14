@@ -28,8 +28,7 @@ class AuthDialog extends StatelessWidget {
       barrierColor: Colors.black.withValues(alpha: 0.5),
       builder: (ctx) => AuthDialog(
         title: title ?? (l10n?.authorizationRequired ?? 'Потрібна авторизація'),
-        message:
-            message ??
+        message: message ??
             (l10n?.loginToAddToFavorites ??
                 'Увійдіть, щоб додати до вподобань.'),
         icon: icon,
@@ -82,8 +81,8 @@ class AuthDialog extends StatelessWidget {
             isDesktop
                 ? 28
                 : isTablet
-                ? 24
-                : 20,
+                    ? 24
+                    : 20,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,

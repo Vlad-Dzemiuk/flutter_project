@@ -47,18 +47,19 @@ class ScalePageRoute<T> extends PageRouteBuilder<T> {
   final Widget child;
 
   ScalePageRoute({required this.child})
-    : super(
-        pageBuilder: (context, animation, secondaryAnimation) => child,
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return ScaleTransition(
-            scale: Tween<double>(begin: 0.0, end: 1.0).animate(
-              CurvedAnimation(parent: animation, curve: Curves.easeInOutCubic),
-            ),
-            child: child,
-          );
-        },
-        transitionDuration: const Duration(milliseconds: 300),
-      );
+      : super(
+          pageBuilder: (context, animation, secondaryAnimation) => child,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return ScaleTransition(
+              scale: Tween<double>(begin: 0.0, end: 1.0).animate(
+                CurvedAnimation(
+                    parent: animation, curve: Curves.easeInOutCubic),
+              ),
+              child: child,
+            );
+          },
+          transitionDuration: const Duration(milliseconds: 300),
+        );
 }
 
 /// Кастомний перехід для детальних сторінок з підтримкою Hero-анімацій
@@ -67,47 +68,18 @@ class DetailPageRoute<T> extends PageRouteBuilder<T> {
   final Widget child;
 
   DetailPageRoute({required this.child})
-    : super(
-        pageBuilder: (context, animation, secondaryAnimation) => child,
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          // Комбінуємо fade та slide для плавного переходу
-          return FadeTransition(
-            opacity: CurvedAnimation(
-              parent: animation,
-              curve: Curves.easeInOut,
-            ),
-            child: SlideTransition(
-              position:
-                  Tween<Offset>(
-                    begin: const Offset(0.0, 0.05),
-                    end: Offset.zero,
-                  ).animate(
-                    CurvedAnimation(
-                      parent: animation,
-                      curve: Curves.easeOutCubic,
-                    ),
-                  ),
-              child: child,
-            ),
-          );
-        },
-        transitionDuration: const Duration(milliseconds: 350),
-        reverseTransitionDuration: const Duration(milliseconds: 250),
-      );
-}
-
-/// Кастомний перехід для списків (MediaListPage)
-class ListPageRoute<T> extends PageRouteBuilder<T> {
-  final Widget child;
-
-  ListPageRoute({required this.child})
-    : super(
-        pageBuilder: (context, animation, secondaryAnimation) => child,
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return SlideTransition(
-            position:
-                Tween<Offset>(
-                  begin: const Offset(0.0, 0.1),
+      : super(
+          pageBuilder: (context, animation, secondaryAnimation) => child,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            // Комбінуємо fade та slide для плавного переходу
+            return FadeTransition(
+              opacity: CurvedAnimation(
+                parent: animation,
+                curve: Curves.easeInOut,
+              ),
+              child: SlideTransition(
+                position: Tween<Offset>(
+                  begin: const Offset(0.0, 0.05),
                   end: Offset.zero,
                 ).animate(
                   CurvedAnimation(
@@ -115,9 +87,36 @@ class ListPageRoute<T> extends PageRouteBuilder<T> {
                     curve: Curves.easeOutCubic,
                   ),
                 ),
-            child: FadeTransition(opacity: animation, child: child),
-          );
-        },
-        transitionDuration: const Duration(milliseconds: 300),
-      );
+                child: child,
+              ),
+            );
+          },
+          transitionDuration: const Duration(milliseconds: 350),
+          reverseTransitionDuration: const Duration(milliseconds: 250),
+        );
+}
+
+/// Кастомний перехід для списків (MediaListPage)
+class ListPageRoute<T> extends PageRouteBuilder<T> {
+  final Widget child;
+
+  ListPageRoute({required this.child})
+      : super(
+          pageBuilder: (context, animation, secondaryAnimation) => child,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(0.0, 0.1),
+                end: Offset.zero,
+              ).animate(
+                CurvedAnimation(
+                  parent: animation,
+                  curve: Curves.easeOutCubic,
+                ),
+              ),
+              child: FadeTransition(opacity: animation, child: child),
+            );
+          },
+          transitionDuration: const Duration(milliseconds: 300),
+        );
 }

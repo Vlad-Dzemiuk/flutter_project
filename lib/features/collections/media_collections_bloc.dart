@@ -60,14 +60,14 @@ class MediaCollectionsState extends Equatable {
 
   @override
   List<Object?> get props => [
-    loading,
-    authorized,
-    error,
-    favorites,
-    watchlist,
-    favoriteKeys,
-    watchlistKeys,
-  ];
+        loading,
+        authorized,
+        error,
+        favorites,
+        watchlist,
+        favoriteKeys,
+        watchlistKeys,
+      ];
 }
 
 class MediaCollectionsBloc
@@ -77,15 +77,15 @@ class MediaCollectionsBloc
     required ToggleFavoriteUseCase toggleFavoriteUseCase,
     required AddToWatchlistUseCase addToWatchlistUseCase,
     required AuthRepository authRepository,
-  }) : _getMediaCollectionsUseCase = getMediaCollectionsUseCase,
-       _toggleFavoriteUseCase = toggleFavoriteUseCase,
-       _addToWatchlistUseCase = addToWatchlistUseCase,
-       _authRepository = authRepository,
-       super(
-         authRepository.currentUser != null
-             ? const MediaCollectionsState(loading: true)
-             : const MediaCollectionsState(loading: false, authorized: false),
-       ) {
+  })  : _getMediaCollectionsUseCase = getMediaCollectionsUseCase,
+        _toggleFavoriteUseCase = toggleFavoriteUseCase,
+        _addToWatchlistUseCase = addToWatchlistUseCase,
+        _authRepository = authRepository,
+        super(
+          authRepository.currentUser != null
+              ? const MediaCollectionsState(loading: true)
+              : const MediaCollectionsState(loading: false, authorized: false),
+        ) {
     on<LoadCollectionsEvent>(_onLoadCollections);
     on<ToggleFavoriteEvent>(_onToggleFavorite);
     on<RecordWatchEvent>(_onRecordWatch);

@@ -64,18 +64,18 @@ class HomeState extends Equatable {
 
   @override
   List<Object?> get props => [
-    popularMovies,
-    popularTvShows,
-    allMovies,
-    allTvShows,
-    searchResults,
-    loading,
-    searching,
-    loadingMore,
-    error,
-    searchQuery,
-    hasMoreResults,
-  ];
+        popularMovies,
+        popularTvShows,
+        allMovies,
+        allTvShows,
+        searchResults,
+        loading,
+        searching,
+        loadingMore,
+        error,
+        searchQuery,
+        hasMoreResults,
+      ];
 }
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
@@ -128,9 +128,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
 
     try {
-      int currentPage = event.loadMore
-          ? (state.searchResults.length ~/ 20) + 1
-          : 1;
+      int currentPage =
+          event.loadMore ? (state.searchResults.length ~/ 20) + 1 : 1;
 
       // Використання use case з retry механізмом для мережевих помилок
       final result = await RetryHelper.retry(

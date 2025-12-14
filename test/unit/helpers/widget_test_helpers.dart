@@ -126,8 +126,7 @@ class WidgetTestHelper {
     bool isAuthenticated = false,
   }) {
     final bloc = MockAuthBloc();
-    final state =
-        initialState ??
+    final state = initialState ??
         (isAuthenticated
             ? AuthAuthenticated(
                 UserMapper.toEntity(TestDataFactory.createLocalUser()),

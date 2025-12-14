@@ -5,7 +5,6 @@ import 'package:project/features/profile/profile_bloc.dart';
 import 'package:project/features/profile/profile_event.dart';
 import 'package:project/features/profile/domain/usecases/get_user_profile_usecase.dart';
 import 'package:project/features/profile/domain/repositories/profile_repository.dart';
-import '../../helpers/test_helpers.dart';
 
 void main() {
   late ProfileBloc profileBloc;
@@ -126,9 +125,7 @@ void main() {
       act: (bloc) => bloc.add(const LoadProfileEvent()),
       expect: () => [
         isA<ProfileState>().having((s) => s.loading, 'loading', true),
-        isA<ProfileState>()
-            .having((s) => s.loading, 'loading', false)
-            .having(
+        isA<ProfileState>().having((s) => s.loading, 'loading', false).having(
               (s) => s.error,
               'error',
               contains('Не вдалося завантажити профіль'),

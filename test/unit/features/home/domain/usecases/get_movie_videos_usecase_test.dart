@@ -1,8 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:project/features/home/domain/usecases/get_movie_videos_usecase.dart';
-import 'package:project/features/home/home_repository.dart';
-import 'package:project/features/home/domain/entities/video.dart';
 import '../../../../helpers/test_helpers.dart';
 
 void main() {

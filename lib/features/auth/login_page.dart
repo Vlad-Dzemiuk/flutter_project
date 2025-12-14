@@ -101,8 +101,7 @@ class _LoginPageState extends State<LoginPage> {
                           child: ConstrainedBox(
                             constraints: BoxConstraints(
                               maxWidth: maxFormWidth,
-                              minHeight:
-                                  constraints.maxHeight -
+                              minHeight: constraints.maxHeight -
                                   (verticalPadding.top +
                                       verticalPadding.bottom * 2),
                             ),
@@ -150,10 +149,12 @@ class _LoginPageState extends State<LoginPage> {
                                             _isLogin
                                                 ? AppLocalizations.of(
                                                     context,
-                                                  )!.returnToStories
+                                                  )!
+                                                    .returnToStories
                                                 : AppLocalizations.of(
                                                     context,
-                                                  )!.createAccount,
+                                                  )!
+                                                    .createAccount,
                                             style: TextStyle(
                                               color: colors.onSurface
                                                   .withValues(alpha: 0.65),
@@ -171,8 +172,8 @@ class _LoginPageState extends State<LoginPage> {
                                     isDesktop
                                         ? 24
                                         : isTablet
-                                        ? 20
-                                        : 18,
+                                            ? 20
+                                            : 18,
                                   ),
                                   decoration: BoxDecoration(
                                     color: theme.cardColor,
@@ -187,8 +188,7 @@ class _LoginPageState extends State<LoginPage> {
                                     boxShadow: [
                                       BoxShadow(
                                         color: Colors.black.withValues(
-                                          alpha:
-                                              theme.brightness ==
+                                          alpha: theme.brightness ==
                                                   Brightness.light
                                               ? 0.08
                                               : 0.25,
@@ -209,7 +209,8 @@ class _LoginPageState extends State<LoginPage> {
                                           controller: _emailController,
                                           label: AppLocalizations.of(
                                             context,
-                                          )!.email,
+                                          )!
+                                              .email,
                                           icon: Icons.alternate_email,
                                           keyboardType:
                                               TextInputType.emailAddress,
@@ -232,7 +233,8 @@ class _LoginPageState extends State<LoginPage> {
                                           controller: _passwordController,
                                           label: AppLocalizations.of(
                                             context,
-                                          )!.password,
+                                          )!
+                                              .password,
                                           icon: Icons.lock_outline,
                                           obscureText: true,
                                           validator: (value) {
@@ -298,12 +300,13 @@ class _LoginPageState extends State<LoginPage> {
                                                 ? const SizedBox(
                                                     width: 20,
                                                     height: 20,
-                                                    child: CircularProgressIndicator(
+                                                    child:
+                                                        CircularProgressIndicator(
                                                       strokeWidth: 2,
                                                       valueColor:
                                                           AlwaysStoppedAnimation<
-                                                            Color
-                                                          >(Colors.white),
+                                                                  Color>(
+                                                              Colors.white),
                                                     ),
                                                   )
                                                 : const Icon(Icons.login),
@@ -311,10 +314,12 @@ class _LoginPageState extends State<LoginPage> {
                                               _isLogin
                                                   ? AppLocalizations.of(
                                                       context,
-                                                    )!.signIn
+                                                    )!
+                                                      .signIn
                                                   : AppLocalizations.of(
                                                       context,
-                                                    )!.signUp,
+                                                    )!
+                                                      .signUp,
                                               style: const TextStyle(
                                                 fontWeight: FontWeight.w800,
                                               ),
@@ -337,10 +342,12 @@ class _LoginPageState extends State<LoginPage> {
                                             _isLogin
                                                 ? AppLocalizations.of(
                                                     context,
-                                                  )!.noAccount
+                                                  )!
+                                                    .noAccount
                                                 : AppLocalizations.of(
                                                     context,
-                                                  )!.hasAccount,
+                                                  )!
+                                                    .hasAccount,
                                           ),
                                         ),
                                       ],
@@ -362,8 +369,8 @@ class _LoginPageState extends State<LoginPage> {
                                           );
                                         },
                                   style: TextButton.styleFrom(
-                                    foregroundColor: colors.onSurface
-                                        .withValues(alpha: 0.6),
+                                    foregroundColor:
+                                        colors.onSurface.withValues(alpha: 0.6),
                                   ),
                                   child: Text(
                                     AppLocalizations.of(context)!.skip,

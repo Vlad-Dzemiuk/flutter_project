@@ -80,8 +80,8 @@ class AboutAppPage extends StatelessWidget {
                                 isDesktop
                                     ? 32
                                     : isTablet
-                                    ? 24
-                                    : 20,
+                                        ? 24
+                                        : 20,
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,7 +100,8 @@ class AboutAppPage extends StatelessWidget {
                                               Text(
                                                 AppLocalizations.of(
                                                   context,
-                                                )!.appName,
+                                                )!
+                                                    .appName,
                                                 style: TextStyle(
                                                   fontSize: 32,
                                                   fontWeight: FontWeight.bold,
@@ -111,7 +112,8 @@ class AboutAppPage extends StatelessWidget {
                                               Text(
                                                 AppLocalizations.of(
                                                   context,
-                                                )!.aboutAppDescription,
+                                                )!
+                                                    .aboutAppDescription,
                                                 style: TextStyle(
                                                   fontSize: 18,
                                                   color:
@@ -133,18 +135,16 @@ class AboutAppPage extends StatelessWidget {
                                             border: Border.all(
                                               color: colors.outlineVariant
                                                   .withValues(
-                                                    alpha:
-                                                        theme.brightness ==
-                                                            Brightness.light
-                                                        ? 1
-                                                        : 0.4,
-                                                  ),
+                                                alpha: theme.brightness ==
+                                                        Brightness.light
+                                                    ? 1
+                                                    : 0.4,
+                                              ),
                                             ),
                                             boxShadow: [
                                               BoxShadow(
                                                 color: Colors.black.withValues(
-                                                  alpha:
-                                                      theme.brightness ==
+                                                  alpha: theme.brightness ==
                                                           Brightness.light
                                                       ? 0.08
                                                       : 0.25,
@@ -165,7 +165,8 @@ class AboutAppPage extends StatelessWidget {
                                               Text(
                                                 AppLocalizations.of(
                                                   context,
-                                                )!.version('1.0.0'),
+                                                )!
+                                                    .version('1.0.0'),
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.w600,
                                                   color: colors.onSurface,
@@ -194,7 +195,8 @@ class AboutAppPage extends StatelessWidget {
                                         Text(
                                           AppLocalizations.of(
                                             context,
-                                          )!.aboutAppDescription,
+                                          )!
+                                              .aboutAppDescription,
                                           style: TextStyle(
                                             fontSize: isTablet ? 17 : 16,
                                             color: colors.onSurfaceVariant,
@@ -215,18 +217,16 @@ class AboutAppPage extends StatelessWidget {
                                             border: Border.all(
                                               color: colors.outlineVariant
                                                   .withValues(
-                                                    alpha:
-                                                        theme.brightness ==
-                                                            Brightness.light
-                                                        ? 1
-                                                        : 0.4,
-                                                  ),
+                                                alpha: theme.brightness ==
+                                                        Brightness.light
+                                                    ? 1
+                                                    : 0.4,
+                                              ),
                                             ),
                                             boxShadow: [
                                               BoxShadow(
                                                 color: Colors.black.withValues(
-                                                  alpha:
-                                                      theme.brightness ==
+                                                  alpha: theme.brightness ==
                                                           Brightness.light
                                                       ? 0.08
                                                       : 0.25,
@@ -252,7 +252,8 @@ class AboutAppPage extends StatelessWidget {
                                               Text(
                                                 AppLocalizations.of(
                                                   context,
-                                                )!.version('1.0.0'),
+                                                )!
+                                                    .version('1.0.0'),
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.w600,
                                                   color: colors.onSurface,

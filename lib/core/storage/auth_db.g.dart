@@ -68,12 +68,12 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
   );
   @override
   List<GeneratedColumn> get $columns => [
-    id,
-    email,
-    password,
-    displayName,
-    avatarUrl,
-  ];
+        id,
+        email,
+        password,
+        displayName,
+        avatarUrl,
+      ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -231,21 +231,21 @@ class User extends DataClass implements Insertable<User> {
     String? password,
     Value<String?> displayName = const Value.absent(),
     Value<String?> avatarUrl = const Value.absent(),
-  }) => User(
-    id: id ?? this.id,
-    email: email ?? this.email,
-    password: password ?? this.password,
-    displayName: displayName.present ? displayName.value : this.displayName,
-    avatarUrl: avatarUrl.present ? avatarUrl.value : this.avatarUrl,
-  );
+  }) =>
+      User(
+        id: id ?? this.id,
+        email: email ?? this.email,
+        password: password ?? this.password,
+        displayName: displayName.present ? displayName.value : this.displayName,
+        avatarUrl: avatarUrl.present ? avatarUrl.value : this.avatarUrl,
+      );
   User copyWithCompanion(UsersCompanion data) {
     return User(
       id: data.id.present ? data.id.value : this.id,
       email: data.email.present ? data.email.value : this.email,
       password: data.password.present ? data.password.value : this.password,
-      displayName: data.displayName.present
-          ? data.displayName.value
-          : this.displayName,
+      displayName:
+          data.displayName.present ? data.displayName.value : this.displayName,
       avatarUrl: data.avatarUrl.present ? data.avatarUrl.value : this.avatarUrl,
     );
   }
@@ -294,8 +294,8 @@ class UsersCompanion extends UpdateCompanion<User> {
     required String password,
     this.displayName = const Value.absent(),
     this.avatarUrl = const Value.absent(),
-  }) : email = Value(email),
-       password = Value(password);
+  })  : email = Value(email),
+        password = Value(password);
   static Insertable<User> custom({
     Expression<int>? id,
     Expression<String>? email,
@@ -373,22 +373,20 @@ abstract class _$AuthDatabase extends GeneratedDatabase {
   List<DatabaseSchemaEntity> get allSchemaEntities => [users];
 }
 
-typedef $$UsersTableCreateCompanionBuilder =
-    UsersCompanion Function({
-      Value<int> id,
-      required String email,
-      required String password,
-      Value<String?> displayName,
-      Value<String?> avatarUrl,
-    });
-typedef $$UsersTableUpdateCompanionBuilder =
-    UsersCompanion Function({
-      Value<int> id,
-      Value<String> email,
-      Value<String> password,
-      Value<String?> displayName,
-      Value<String?> avatarUrl,
-    });
+typedef $$UsersTableCreateCompanionBuilder = UsersCompanion Function({
+  Value<int> id,
+  required String email,
+  required String password,
+  Value<String?> displayName,
+  Value<String?> avatarUrl,
+});
+typedef $$UsersTableUpdateCompanionBuilder = UsersCompanion Function({
+  Value<int> id,
+  Value<String> email,
+  Value<String> password,
+  Value<String?> displayName,
+  Value<String?> avatarUrl,
+});
 
 class $$UsersTableFilterComposer extends Composer<_$AuthDatabase, $UsersTable> {
   $$UsersTableFilterComposer({
@@ -399,29 +397,29 @@ class $$UsersTableFilterComposer extends Composer<_$AuthDatabase, $UsersTable> {
     super.$removeJoinBuilderFromRootComposer,
   });
   ColumnFilters<int> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
+        column: $table.id,
+        builder: (column) => ColumnFilters(column),
+      );
 
   ColumnFilters<String> get email => $composableBuilder(
-    column: $table.email,
-    builder: (column) => ColumnFilters(column),
-  );
+        column: $table.email,
+        builder: (column) => ColumnFilters(column),
+      );
 
   ColumnFilters<String> get password => $composableBuilder(
-    column: $table.password,
-    builder: (column) => ColumnFilters(column),
-  );
+        column: $table.password,
+        builder: (column) => ColumnFilters(column),
+      );
 
   ColumnFilters<String> get displayName => $composableBuilder(
-    column: $table.displayName,
-    builder: (column) => ColumnFilters(column),
-  );
+        column: $table.displayName,
+        builder: (column) => ColumnFilters(column),
+      );
 
   ColumnFilters<String> get avatarUrl => $composableBuilder(
-    column: $table.avatarUrl,
-    builder: (column) => ColumnFilters(column),
-  );
+        column: $table.avatarUrl,
+        builder: (column) => ColumnFilters(column),
+      );
 }
 
 class $$UsersTableOrderingComposer
@@ -478,90 +476,85 @@ class $$UsersTableAnnotationComposer
       $composableBuilder(column: $table.password, builder: (column) => column);
 
   GeneratedColumn<String> get displayName => $composableBuilder(
-    column: $table.displayName,
-    builder: (column) => column,
-  );
+        column: $table.displayName,
+        builder: (column) => column,
+      );
 
   GeneratedColumn<String> get avatarUrl =>
       $composableBuilder(column: $table.avatarUrl, builder: (column) => column);
 }
 
-class $$UsersTableTableManager
-    extends
-        RootTableManager<
-          _$AuthDatabase,
-          $UsersTable,
-          User,
-          $$UsersTableFilterComposer,
-          $$UsersTableOrderingComposer,
-          $$UsersTableAnnotationComposer,
-          $$UsersTableCreateCompanionBuilder,
-          $$UsersTableUpdateCompanionBuilder,
-          (User, BaseReferences<_$AuthDatabase, $UsersTable, User>),
-          User,
-          PrefetchHooks Function()
-        > {
+class $$UsersTableTableManager extends RootTableManager<
+    _$AuthDatabase,
+    $UsersTable,
+    User,
+    $$UsersTableFilterComposer,
+    $$UsersTableOrderingComposer,
+    $$UsersTableAnnotationComposer,
+    $$UsersTableCreateCompanionBuilder,
+    $$UsersTableUpdateCompanionBuilder,
+    (User, BaseReferences<_$AuthDatabase, $UsersTable, User>),
+    User,
+    PrefetchHooks Function()> {
   $$UsersTableTableManager(_$AuthDatabase db, $UsersTable table)
-    : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$UsersTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$UsersTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$UsersTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback:
-              ({
-                Value<int> id = const Value.absent(),
-                Value<String> email = const Value.absent(),
-                Value<String> password = const Value.absent(),
-                Value<String?> displayName = const Value.absent(),
-                Value<String?> avatarUrl = const Value.absent(),
-              }) => UsersCompanion(
-                id: id,
-                email: email,
-                password: password,
-                displayName: displayName,
-                avatarUrl: avatarUrl,
-              ),
-          createCompanionCallback:
-              ({
-                Value<int> id = const Value.absent(),
-                required String email,
-                required String password,
-                Value<String?> displayName = const Value.absent(),
-                Value<String?> avatarUrl = const Value.absent(),
-              }) => UsersCompanion.insert(
-                id: id,
-                email: email,
-                password: password,
-                displayName: displayName,
-                avatarUrl: avatarUrl,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
-              .toList(),
-          prefetchHooksCallback: null,
-        ),
-      );
+      : super(
+          TableManagerState(
+            db: db,
+            table: table,
+            createFilteringComposer: () =>
+                $$UsersTableFilterComposer($db: db, $table: table),
+            createOrderingComposer: () =>
+                $$UsersTableOrderingComposer($db: db, $table: table),
+            createComputedFieldComposer: () =>
+                $$UsersTableAnnotationComposer($db: db, $table: table),
+            updateCompanionCallback: ({
+              Value<int> id = const Value.absent(),
+              Value<String> email = const Value.absent(),
+              Value<String> password = const Value.absent(),
+              Value<String?> displayName = const Value.absent(),
+              Value<String?> avatarUrl = const Value.absent(),
+            }) =>
+                UsersCompanion(
+              id: id,
+              email: email,
+              password: password,
+              displayName: displayName,
+              avatarUrl: avatarUrl,
+            ),
+            createCompanionCallback: ({
+              Value<int> id = const Value.absent(),
+              required String email,
+              required String password,
+              Value<String?> displayName = const Value.absent(),
+              Value<String?> avatarUrl = const Value.absent(),
+            }) =>
+                UsersCompanion.insert(
+              id: id,
+              email: email,
+              password: password,
+              displayName: displayName,
+              avatarUrl: avatarUrl,
+            ),
+            withReferenceMapper: (p0) => p0
+                .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+                .toList(),
+            prefetchHooksCallback: null,
+          ),
+        );
 }
 
-typedef $$UsersTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AuthDatabase,
-      $UsersTable,
-      User,
-      $$UsersTableFilterComposer,
-      $$UsersTableOrderingComposer,
-      $$UsersTableAnnotationComposer,
-      $$UsersTableCreateCompanionBuilder,
-      $$UsersTableUpdateCompanionBuilder,
-      (User, BaseReferences<_$AuthDatabase, $UsersTable, User>),
-      User,
-      PrefetchHooks Function()
-    >;
+typedef $$UsersTableProcessedTableManager = ProcessedTableManager<
+    _$AuthDatabase,
+    $UsersTable,
+    User,
+    $$UsersTableFilterComposer,
+    $$UsersTableOrderingComposer,
+    $$UsersTableAnnotationComposer,
+    $$UsersTableCreateCompanionBuilder,
+    $$UsersTableUpdateCompanionBuilder,
+    (User, BaseReferences<_$AuthDatabase, $UsersTable, User>),
+    User,
+    PrefetchHooks Function()>;
 
 class $AuthDatabaseManager {
   final _$AuthDatabase _db;

@@ -95,8 +95,7 @@ class _HomePageState extends State<HomePage> {
               !state.loading && state.searchResults.isEmpty;
 
           // Всі категорії мають дані
-          final allMediaLoaded =
-              isLoadingComplete &&
+          final allMediaLoaded = isLoadingComplete &&
               state.popularMovies.isNotEmpty &&
               state.popularTvShows.isNotEmpty &&
               state.allMovies.isNotEmpty &&
@@ -150,98 +149,111 @@ class _HomePageState extends State<HomePage> {
                     state.searchResults.isNotEmpty
                         ? _buildSearchResults(context, state)
                         : state.error.isNotEmpty
-                        ? _buildErrorWidget(context, state.error)
-                        : RefreshIndicator(
-                            onRefresh: () async {
-                              context.read<HomeBloc>().add(
-                                const LoadContentEvent(),
-                              );
-                            },
-                            edgeOffset: 80,
-                            child: LayoutBuilder(
-                              builder: (context, constraints) {
-                                final horizontalPadding =
-                                    Responsive.getHorizontalPadding(context);
-                                return ListView(
-                                  physics: const BouncingScrollPhysics(),
-                                  padding: EdgeInsets.only(
-                                    left: horizontalPadding.left,
-                                    right: horizontalPadding.right,
-                                    bottom: 24,
-                                    top: 0,
-                                  ),
-                                  children: [
-                                    const HomeHeaderWidget(),
-                                    SizedBox(
-                                      height: Responsive.getSpacing(context),
-                                    ),
-                                    MediaSliderSection(
-                                      title: AppLocalizations.of(
-                                        context,
-                                      )!.popularMovies,
-                                      items: state.popularMovies
-                                          .take(10)
-                                          .toList(),
-                                      onSeeMore: () => _openMediaList(
-                                        context,
-                                        MediaListCategory.popularMovies,
-                                        AppLocalizations.of(
-                                          context,
-                                        )!.popularMovies,
+                            ? _buildErrorWidget(context, state.error)
+                            : RefreshIndicator(
+                                onRefresh: () async {
+                                  context.read<HomeBloc>().add(
+                                        const LoadContentEvent(),
+                                      );
+                                },
+                                edgeOffset: 80,
+                                child: LayoutBuilder(
+                                  builder: (context, constraints) {
+                                    final horizontalPadding =
+                                        Responsive.getHorizontalPadding(
+                                            context);
+                                    return ListView(
+                                      physics: const BouncingScrollPhysics(),
+                                      padding: EdgeInsets.only(
+                                        left: horizontalPadding.left,
+                                        right: horizontalPadding.right,
+                                        bottom: 24,
+                                        top: 0,
                                       ),
-                                      onAuthRequired: () =>
-                                          _showAuthRequiredDialog(context),
-                                    ),
-                                    MediaSliderSection(
-                                      title: AppLocalizations.of(
-                                        context,
-                                      )!.popularTvShows,
-                                      items: state.popularTvShows
-                                          .take(10)
-                                          .toList(),
-                                      onSeeMore: () => _openMediaList(
-                                        context,
-                                        MediaListCategory.popularTv,
-                                        AppLocalizations.of(
-                                          context,
-                                        )!.popularTvShows,
-                                      ),
-                                      onAuthRequired: () =>
-                                          _showAuthRequiredDialog(context),
-                                    ),
-                                    MediaSliderSection(
-                                      title: AppLocalizations.of(
-                                        context,
-                                      )!.allMovies,
-                                      items: state.allMovies.take(10).toList(),
-                                      onSeeMore: () => _openMediaList(
-                                        context,
-                                        MediaListCategory.allMovies,
-                                        AppLocalizations.of(context)!.allMovies,
-                                      ),
-                                      onAuthRequired: () =>
-                                          _showAuthRequiredDialog(context),
-                                    ),
-                                    MediaSliderSection(
-                                      title: AppLocalizations.of(
-                                        context,
-                                      )!.allTvShows,
-                                      items: state.allTvShows.take(10).toList(),
-                                      onSeeMore: () => _openMediaList(
-                                        context,
-                                        MediaListCategory.allTv,
-                                        AppLocalizations.of(
-                                          context,
-                                        )!.allTvShows,
-                                      ),
-                                      onAuthRequired: () =>
-                                          _showAuthRequiredDialog(context),
-                                    ),
-                                  ],
-                                );
-                              },
-                            ),
-                          ),
+                                      children: [
+                                        const HomeHeaderWidget(),
+                                        SizedBox(
+                                          height:
+                                              Responsive.getSpacing(context),
+                                        ),
+                                        MediaSliderSection(
+                                          title: AppLocalizations.of(
+                                            context,
+                                          )!
+                                              .popularMovies,
+                                          items: state.popularMovies
+                                              .take(10)
+                                              .toList(),
+                                          onSeeMore: () => _openMediaList(
+                                            context,
+                                            MediaListCategory.popularMovies,
+                                            AppLocalizations.of(
+                                              context,
+                                            )!
+                                                .popularMovies,
+                                          ),
+                                          onAuthRequired: () =>
+                                              _showAuthRequiredDialog(context),
+                                        ),
+                                        MediaSliderSection(
+                                          title: AppLocalizations.of(
+                                            context,
+                                          )!
+                                              .popularTvShows,
+                                          items: state.popularTvShows
+                                              .take(10)
+                                              .toList(),
+                                          onSeeMore: () => _openMediaList(
+                                            context,
+                                            MediaListCategory.popularTv,
+                                            AppLocalizations.of(
+                                              context,
+                                            )!
+                                                .popularTvShows,
+                                          ),
+                                          onAuthRequired: () =>
+                                              _showAuthRequiredDialog(context),
+                                        ),
+                                        MediaSliderSection(
+                                          title: AppLocalizations.of(
+                                            context,
+                                          )!
+                                              .allMovies,
+                                          items:
+                                              state.allMovies.take(10).toList(),
+                                          onSeeMore: () => _openMediaList(
+                                            context,
+                                            MediaListCategory.allMovies,
+                                            AppLocalizations.of(context)!
+                                                .allMovies,
+                                          ),
+                                          onAuthRequired: () =>
+                                              _showAuthRequiredDialog(context),
+                                        ),
+                                        MediaSliderSection(
+                                          title: AppLocalizations.of(
+                                            context,
+                                          )!
+                                              .allTvShows,
+                                          items: state.allTvShows
+                                              .take(10)
+                                              .toList(),
+                                          onSeeMore: () => _openMediaList(
+                                            context,
+                                            MediaListCategory.allTv,
+                                            AppLocalizations.of(
+                                              context,
+                                            )!
+                                                .allTvShows,
+                                          ),
+                                          onAuthRequired: () =>
+                                              _showAuthRequiredDialog(context),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                ),
+                              ),
                   ],
                 ),
               ),
@@ -288,14 +300,14 @@ class _HomePageState extends State<HomePage> {
                       child: Text(
                         'Результати пошуку (${state.searchResults.length}${state.hasMoreResults ? '+' : ''})',
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
+                              fontWeight: FontWeight.w700,
+                            ),
                       ),
                     ),
                     TextButton(
                       onPressed: () => context.read<HomeBloc>().add(
-                        const ClearSearchEvent(),
-                      ),
+                            const ClearSearchEvent(),
+                          ),
                       child: Text(AppLocalizations.of(context)!.clear),
                     ),
                   ],
@@ -401,8 +413,8 @@ class _HomePageState extends State<HomePage> {
                     child: SizedBox(
                       height: 120,
                       width: 90,
-                      child:
-                          item.posterPath != null && item.posterPath!.isNotEmpty
+                      child: item.posterPath != null &&
+                              item.posterPath!.isNotEmpty
                           ? CachedNetworkImage(
                               imageUrl:
                                   'https://image.tmdb.org/t/p/w300${item.posterPath}',
@@ -502,13 +514,12 @@ class _HomePageState extends State<HomePage> {
                                 vertical: 6,
                               ),
                               decoration: BoxDecoration(
-                                color: colors.surfaceContainerHighest
-                                    .withValues(
-                                      alpha:
-                                          theme.brightness == Brightness.light
-                                          ? 0.7
-                                          : 0.25,
-                                    ),
+                                color:
+                                    colors.surfaceContainerHighest.withValues(
+                                  alpha: theme.brightness == Brightness.light
+                                      ? 0.7
+                                      : 0.25,
+                                ),
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
                                   color: colors.outlineVariant.withValues(
@@ -538,8 +549,8 @@ class _HomePageState extends State<HomePage> {
                             IconButton(
                               onPressed: canModifyCollections
                                   ? () => collectionsBloc.add(
-                                      ToggleFavoriteEvent(item),
-                                    )
+                                        ToggleFavoriteEvent(item),
+                                      )
                                   : () => _showAuthRequiredDialog(context),
                               icon: Icon(
                                 isFavorite
@@ -756,8 +767,8 @@ class MediaSliderSection extends StatelessWidget {
                     Text(
                       title,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
+                            fontWeight: FontWeight.w700,
+                          ),
                     ),
                   ],
                 ),
@@ -772,18 +783,18 @@ class MediaSliderSection extends StatelessWidget {
           items.isEmpty
               ? Center(child: Text(AppLocalizations.of(context)!.noData))
               : isMobile
-              ? _buildHorizontalList(
-                  context,
-                  collectionsBloc,
-                  collectionsState,
-                  canModifyCollections,
-                )
-              : _buildGrid(
-                  context,
-                  collectionsBloc,
-                  collectionsState,
-                  canModifyCollections,
-                ),
+                  ? _buildHorizontalList(
+                      context,
+                      collectionsBloc,
+                      collectionsState,
+                      canModifyCollections,
+                    )
+                  : _buildGrid(
+                      context,
+                      collectionsBloc,
+                      collectionsState,
+                      canModifyCollections,
+                    ),
         ],
       ),
     );
@@ -921,15 +932,14 @@ class MediaPosterCard extends StatelessWidget {
         // Розраховуємо доступну висоту для тексту (загальна висота мінус постер і відступи)
         final cardWidth = width;
         final cardHeight = height;
-        final posterHeight = cardWidth != null
-            ? cardWidth * 1.5
-            : constraints.maxWidth * 1.5;
+        final posterHeight =
+            cardWidth != null ? cardWidth * 1.5 : constraints.maxWidth * 1.5;
         final totalHeight = cardHeight ?? constraints.maxHeight;
         final availableHeight = totalHeight > 0
             ? totalHeight -
-                  posterHeight -
-                  8 -
-                  4 // poster + spacing + title spacing
+                posterHeight -
+                8 -
+                4 // poster + spacing + title spacing
             : null;
 
         return Column(
@@ -944,8 +954,8 @@ class MediaPosterCard extends StatelessWidget {
                 child: Stack(
                   children: [
                     Positioned.fill(
-                      child:
-                          item.posterPath != null && item.posterPath!.isNotEmpty
+                      child: item.posterPath != null &&
+                              item.posterPath!.isNotEmpty
                           ? CachedNetworkImage(
                               imageUrl:
                                   'https://image.tmdb.org/t/p/w500${item.posterPath}',
@@ -1060,7 +1070,9 @@ class MediaPosterCard extends StatelessWidget {
                             const SizedBox(width: 6),
                             Text(
                               item.rating.toStringAsFixed(1),
-                              style: Theme.of(context).textTheme.bodySmall
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
                                   ?.copyWith(fontWeight: FontWeight.w700),
                             ),
                           ],
@@ -1098,11 +1110,14 @@ class MediaPosterCard extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-                        height: 1.3,
-                      ),
+                            color: Theme.of(
+                              context,
+                            )
+                                .colorScheme
+                                .onSurfaceVariant
+                                .withValues(alpha: 0.7),
+                            height: 1.3,
+                          ),
                     ),
                   )
                 : Text(
@@ -1110,11 +1125,11 @@ class MediaPosterCard extends StatelessWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-                      height: 1.3,
-                    ),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                          height: 1.3,
+                        ),
                   ),
           ],
         );

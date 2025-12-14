@@ -1,8 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:project/features/collections/domain/usecases/toggle_favorite_usecase.dart';
-import 'package:project/features/collections/domain/repositories/media_collections_repository.dart';
-import 'package:project/features/home/home_media_item.dart';
 import 'package:project/features/collections/media_collection_entry.dart';
 import '../../../../helpers/test_helpers.dart';
 

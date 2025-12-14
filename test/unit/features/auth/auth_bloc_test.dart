@@ -4,10 +4,8 @@ import 'package:mocktail/mocktail.dart';
 import 'package:project/features/auth/auth_bloc.dart';
 import 'package:project/features/auth/auth_event.dart';
 import 'package:project/features/auth/auth_state.dart';
-import 'package:project/features/auth/auth_repository.dart';
 import 'package:project/features/auth/domain/usecases/sign_in_usecase.dart';
 import 'package:project/features/auth/domain/usecases/register_usecase.dart';
-import 'package:project/features/auth/data/models/local_user.dart';
 import 'package:project/features/auth/domain/entities/user.dart';
 import '../../helpers/test_helpers.dart';
 

@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:project/features/home/domain/usecases/search_by_name_usecase.dart';
-import 'package:project/features/home/home_repository.dart';
 import '../../../../helpers/test_helpers.dart';
 
 void main() {
