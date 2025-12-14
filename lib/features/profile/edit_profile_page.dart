@@ -74,6 +74,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   Future<void> _pickAvatar(ImageSource source) async {
+    // Зберігаємо посилання на context залежності до async операцій
+    final l10n = AppLocalizations.of(context)!;
     try {
       final picked = await _picker.pickImage(
         source: source,
@@ -88,7 +90,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
       });
     } catch (e) {
       if (!context.mounted) return;
-      final l10n = AppLocalizations.of(context)!;
       // Обробляємо помилки камери (особливо для емуляторів)
       if (e.toString().contains('camera') ||
           e.toString().contains('Camera') ||
@@ -143,6 +144,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   Future<void> _saveProfile() async {
+    // Зберігаємо посилання на context залежності до async операцій
+    final l10n = AppLocalizations.of(context)!;
     try {
       final trimmedName = _nameController.text.trim();
 
@@ -162,12 +165,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
         ),
       );
       if (!context.mounted) return;
-      final l10n = AppLocalizations.of(context)!;
       AppNotification.showSuccess(context, l10n.profileUpdated(updated.email));
       Navigator.of(context).maybePop();
     } catch (error) {
       if (!context.mounted) return;
-      final l10n = AppLocalizations.of(context)!;
       AppNotification.showError(context, l10n.error(error.toString()));
     }
   }
@@ -192,15 +193,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
         bool isLoading = false;
         return StatefulBuilder(
           builder: (ctx, setModalState) {
+            // Зберігаємо посилання на context залежності до async операцій
+            final l10n = AppLocalizations.of(ctx)!;
             Future<void> submit() async {
-              final l10n = AppLocalizations.of(context)!;
               if (newController.text.trim().isEmpty ||
                   currentController.text.trim().isEmpty) {
-                AppNotification.showWarning(context, l10n.fillAllFields);
+                AppNotification.showWarning(ctx, l10n.fillAllFields);
                 return;
               }
               if (newController.text != confirmController.text) {
-                AppNotification.showWarning(context, l10n.passwordsDoNotMatch);
+                AppNotification.showWarning(ctx, l10n.passwordsDoNotMatch);
                 return;
               }
               setModalState(() => isLoading = true);
@@ -209,13 +211,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   currentPassword: currentController.text,
                   newPassword: newController.text,
                 );
-                if (!context.mounted) return;
+                if (!ctx.mounted) return;
                 Navigator.of(ctx).pop(true);
               } catch (error) {
                 setModalState(() => isLoading = false);
-                if (!context.mounted) return;
+                if (!ctx.mounted) return;
                 AppNotification.showError(
-                  context,
+                  ctx,
                   l10n.error(error.toString()),
                 );
               }
