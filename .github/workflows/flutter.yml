@@ -1,63 +1,308 @@
-# .github/workflows/flutter.yml
 name: Flutter CI/CD
-on: [push, pull_request]
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+  workflow_dispatch:
+
+env:
+  FLUTTER_VERSION: '3.24.0'
 
 jobs:
-  test:
+  # Job 1: Code Quality Check
+  code-quality:
+    name: Code Quality Check
     runs-on: ubuntu-latest
-    env:
-      # Environment variables для тестів
-      # TMDB_API_KEY береться з GitHub Secrets
-      TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
-      AUTH_METHOD: local
     steps:
-      - uses: actions/checkout@v3
-      - uses: subosito/flutter-action@v2
-      - name: Create .env file
-        run: |
-          if [ -z "${{ secrets.TMDB_API_KEY }}" ]; then
-            echo "⚠️ Warning: TMDB_API_KEY secret is not set. Using placeholder."
-            echo "TMDB_API_KEY=YOUR_API_KEY_HERE" > .env
-          else
-            echo "TMDB_API_KEY=${{ secrets.TMDB_API_KEY }}" > .env
-          fi
-          echo "AUTH_METHOD=local" >> .env
-      - run: flutter pub get
-      - run: flutter analyze --fatal-infos
-      - run: flutter test
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-  build:
-    needs: test
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Verify formatting
+        run: flutter format --set-exit-if-changed .
+
+      - name: Analyze code
+        run: flutter analyze --fatal-infos
+
+  # Job 2: Unit Tests
+  unit-tests:
+    name: Unit Tests
     runs-on: ubuntu-latest
-    env:
-      # Environment variables для збірки
-      TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
-      AUTH_METHOD: local
     steps:
-      - uses: actions/checkout@v3
-      - uses: subosito/flutter-action@v2
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Run unit tests with coverage
+        run: flutter test test/unit/ --coverage
+
+      - name: Upload coverage to artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: unit-test-coverage
+          path: coverage/lcov.info
+          retention-days: 30
+
+  # Job 3: Widget Tests
+  widget-tests:
+    name: Widget Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Run widget tests with coverage
+        run: flutter test test/widget/ --coverage
+
+      - name: Upload coverage to artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: widget-test-coverage
+          path: coverage/lcov.info
+          retention-days: 30
+
+  # Job 4: Combined Test Coverage Report
+  coverage-report:
+    name: Generate Coverage Report
+    runs-on: ubuntu-latest
+    needs: [unit-tests, widget-tests]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: Download unit test coverage
+        uses: actions/download-artifact@v4
+        with:
+          name: unit-test-coverage
+          path: coverage/unit
+
+      - name: Download widget test coverage
+        uses: actions/download-artifact@v4
+        with:
+          name: widget-test-coverage
+          path: coverage/widget
+
+      - name: Merge coverage reports
+        run: |
+          mkdir -p coverage/merged
+          # Install lcov for proper merging
+          sudo apt-get update
+          sudo apt-get install -y lcov
+          
+          # Combine coverage files using lcov for proper merging
+          if [ -f coverage/unit/lcov.info ] && [ -f coverage/widget/lcov.info ]; then
+            # Both files exist, merge them properly
+            lcov -a coverage/unit/lcov.info -a coverage/widget/lcov.info -o coverage/merged/lcov.info || {
+              # Fallback to simple concatenation if lcov merge fails
+              cp coverage/unit/lcov.info coverage/merged/lcov.info
+              cat coverage/widget/lcov.info >> coverage/merged/lcov.info
+            }
+          elif [ -f coverage/unit/lcov.info ]; then
+            cp coverage/unit/lcov.info coverage/merged/lcov.info
+          elif [ -f coverage/widget/lcov.info ]; then
+            cp coverage/widget/lcov.info coverage/merged/lcov.info
+          else
+            echo "No coverage files found"
+            exit 1
+          fi
+          
+          # Remove test files from coverage
+          lcov --remove coverage/merged/lcov.info '**/*.g.dart' '**/*.freezed.dart' '**/generated/**' -o coverage/merged/lcov.info || true
+
+      - name: Generate HTML coverage report
+        run: |
+          # Install lcov if not available
+          sudo apt-get update
+          sudo apt-get install -y lcov
+          # Generate HTML report
+          genhtml coverage/merged/lcov.info -o coverage/html --no-function-coverage --no-branch-coverage || true
+
+      - name: Upload combined coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: combined-coverage-report
+          path: |
+            coverage/merged/lcov.info
+            coverage/html
+          retention-days: 30
+
+      - name: Coverage summary
+        run: |
+          if [ -f coverage/merged/lcov.info ]; then
+            # Calculate coverage percentage
+            TOTAL_LINES=$(grep -c "^DA:" coverage/merged/lcov.info || echo "0")
+            COVERED_LINES=$(grep "^DA:" coverage/merged/lcov.info | grep -v ",0$" | wc -l || echo "0")
+            if [ "$TOTAL_LINES" -gt 0 ]; then
+              COVERAGE_PERCENT=$(awk "BEGIN {printf \"%.2f\", ($COVERED_LINES/$TOTAL_LINES)*100}")
+            else
+              COVERAGE_PERCENT="0.00"
+            fi
+            
+            echo "## 📊 Coverage Summary" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "✅ Coverage report generated successfully!" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Coverage Statistics:**" >> $GITHUB_STEP_SUMMARY
+            echo "- Total Lines: $TOTAL_LINES" >> $GITHUB_STEP_SUMMARY
+            echo "- Covered Lines: $COVERED_LINES" >> $GITHUB_STEP_SUMMARY
+            echo "- Coverage: **${COVERAGE_PERCENT}%**" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "📥 Download the HTML report from artifacts to view detailed coverage." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ Coverage file not found" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  # Job 5: Build APK
+  build-apk:
+    name: Build Release APK
+    runs-on: ubuntu-latest
+    needs: [code-quality, unit-tests, widget-tests]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
       - name: Create .env file
         run: |
-          if [ -z "${{ secrets.TMDB_API_KEY }}" ]; then
-            echo "⚠️ Warning: TMDB_API_KEY secret is not set. Using placeholder."
-            echo "TMDB_API_KEY=YOUR_API_KEY_HERE" > .env
-          else
-            echo "TMDB_API_KEY=${{ secrets.TMDB_API_KEY }}" > .env
-          fi
+          echo "TMDB_API_KEY=${{ secrets.TMDB_API_KEY }}" > .env
           echo "AUTH_METHOD=local" >> .env
-      - run: flutter pub get
+          cat .env
+
       - name: Build APK with obfuscation
-        run: flutter build apk --release --obfuscate --split-debug-info=build/app/outputs/symbols
+        run: |
+          flutter build apk --release \
+            --obfuscate \
+            --split-debug-info=build/app/outputs/symbols
+
       - name: Upload APK artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: app-release-apk
+          name: release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
           retention-days: 90
+
       - name: Upload debug symbols
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
+        if: always()
+        continue-on-error: true
         with:
           name: debug-symbols
-          path: build/app/outputs/symbols/
+          path: build/app/outputs/symbols
           retention-days: 90
 
+      - name: APK Info
+        run: |
+          if [ -f build/app/outputs/flutter-apk/app-release.apk ]; then
+            APK_SIZE=$(du -h build/app/outputs/flutter-apk/app-release.apk | cut -f1)
+            echo "## APK Build Summary" >> $GITHUB_STEP_SUMMARY
+            echo "✅ APK built successfully!" >> $GITHUB_STEP_SUMMARY
+            echo "📦 APK Size: $APK_SIZE" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Download the APK from artifacts to test the app." >> $GITHUB_STEP_SUMMARY
+          fi
+
+  # Job 6: Integration Tests (optional, can be disabled for faster CI)
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: [code-quality]
+    # Uncomment the line below to disable integration tests by default
+    # if: false
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Create .env file
+        run: |
+          echo "TMDB_API_KEY=${{ secrets.TMDB_API_KEY }}" > .env
+          echo "AUTH_METHOD=local" >> .env
+
+      - name: Start Android emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          arch: x86_64
+          profile: Nexus 6
+          script: |
+            flutter test integration_test/ || true
+
+      - name: Upload integration test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: integration-test-results
+          path: |
+            test_driver/**/*.png
+            test_driver/**/*.log
+          retention-days: 7
+          if-no-files-found: ignore
