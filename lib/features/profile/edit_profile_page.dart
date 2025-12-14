@@ -84,12 +84,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
         imageQuality: 85,
       );
       if (picked == null) return;
-      if (!context.mounted) return;
+      if (!mounted) return;
       setState(() {
         _avatarPath = picked.path;
       });
     } catch (e) {
-      if (!context.mounted) return;
+      if (!mounted) return;
       // Обробляємо помилки камери (особливо для емуляторів)
       if (e.toString().contains('camera') ||
           e.toString().contains('Camera') ||
@@ -164,11 +164,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
           ),
         ),
       );
-      if (!context.mounted) return;
+      if (!mounted) return;
       AppNotification.showSuccess(context, l10n.profileUpdated(updated.email));
       Navigator.of(context).maybePop();
     } catch (error) {
-      if (!context.mounted) return;
+      if (!mounted) return;
       AppNotification.showError(context, l10n.error(error.toString()));
     }
   }
