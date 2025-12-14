@@ -708,12 +708,18 @@ class _ThemeOption extends StatelessWidget {
                 ),
               ),
             ),
-            Radio<ThemeMode>(
-              value: value,
-              groupValue: groupValue,
-              onChanged: onChanged,
-              activeColor: colors.primary,
-            ),
+            if (isSelected)
+              Icon(
+                Icons.radio_button_checked,
+                color: colors.primary,
+                size: isDesktop ? 24 : 22,
+              )
+            else
+              Icon(
+                Icons.radio_button_unchecked,
+                color: colors.onSurfaceVariant.withValues(alpha: 0.5),
+                size: isDesktop ? 24 : 22,
+              ),
           ],
         ),
       ),
