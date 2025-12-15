@@ -8,8 +8,16 @@ plugins {
 
 android {
     namespace = "com.example.project"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
+
+    defaultConfig {
+        applicationId = "com.example.project"
+        minSdk = flutter.minSdkVersion
+        targetSdk = 36
+        versionCode = 1
+        versionName = "1.0"
+    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -26,9 +34,9 @@ android {
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
+        targetSdk = 36
+        versionCode = 1
+        versionName = "1.0"
     }
 
     sourceSets {
@@ -75,7 +83,7 @@ flutter {
 
 dependencies {
     // Google Play Core library for split install and deferred components
-    implementation("com.google.android.play:core:1.10.3")
+
 
     // Google API Client libraries for Tink and HTTP transport
     implementation("com.google.crypto.tink:tink-android:1.7.0")
@@ -90,4 +98,15 @@ dependencies {
 
     // Joda-Convert for @FromString and @ToString annotations
     implementation("org.joda:joda-convert:2.2.3")
+}
+
+configurations.all {
+    resolutionStrategy.eachDependency {
+        if (requested.group == "com.google.android.play") {
+            when (requested.name) {
+                "core" -> useVersion("1.10.3")
+                "core-common" -> useVersion("2.0.3")
+            }
+        }
+    }
 }
