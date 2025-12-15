@@ -20,6 +20,7 @@ allprojects {
 }
 
 // Налаштування JVM версій після того, як всі проекти оцінені та задачі створені
+// Використовуємо whenReady, щоб застосувати налаштування після того, як AGP вже налаштував bootclasspath
 gradle.taskGraph.whenReady {
     allprojects {
         // Налаштування Kotlin для всіх модулів
@@ -28,16 +29,12 @@ gradle.taskGraph.whenReady {
                 jvmTarget = "17"
             }
         }
-        
-        // Налаштування Java тільки для не-Android модулів
-        // Android модулі мають налаштування через android.compileOptions
-        // Не встановлюємо sourceCompatibility/targetCompatibility для Android модулів,
-        // щоб не заважати Android Gradle Plugin налаштувати bootclasspath
-        if (!project.hasProperty("android")) {
-            tasks.withType<JavaCompile>().configureEach {
-                sourceCompatibility = "17"
-                targetCompatibility = "17"
-            }
+
+        // Налаштування Java для всіх модулів (включаючи Android)
+        // На цей момент AGP вже налаштував bootclasspath, тому це не заважає
+        tasks.withType<JavaCompile>().configureEach {
+            sourceCompatibility = "17"
+            targetCompatibility = "17"
         }
     }
 }
@@ -51,36 +48,56 @@ rootProject.layout.buildDirectory.value(newBuildDir)
 subprojects {
     val newSubprojectBuildDir: Directory = newBuildDir.dir(project.name)
     project.layout.buildDirectory.value(newSubprojectBuildDir)
-    
+
     // Налаштування Android модулів через afterEvaluate
     afterEvaluate {
-        // Для Android модулів налаштування Java версії вже встановлені через android.compileOptions
-        // Додатково переконуємося, що Kotlin використовує правильну версію
+        // Для всіх модулів (включаючи Android) встановлюємо Kotlin JVM target 17
         tasks.withType<KotlinCompile>().configureEach {
             kotlinOptions {
                 jvmTarget = "17"
             }
         }
-        
-        // Для Android модулів переконуємося, що compileOptions встановлені правильно
+
+        // Для Android модулів встановлюємо Java 17 через android.compileOptions
         if (project.hasProperty("android")) {
             val android = project.extensions.findByName("android")
             if (android != null) {
-                // Використовуємо Kotlin DSL для безпечного доступу до compileOptions
                 try {
-                    val compileOptionsMethod = android.javaClass.methods.find { it.name == "getCompileOptions" || it.name == "compileOptions" }
+                    val compileOptionsMethod = android.javaClass.methods.find {
+                        it.name == "getCompileOptions" || it.name == "compileOptions"
+                    }
                     if (compileOptionsMethod != null) {
                         val compileOptions = compileOptionsMethod.invoke(android)
-                        val setSourceMethod = compileOptions.javaClass.methods.find { it.name == "setSourceCompatibility" }
-                        val setTargetMethod = compileOptions.javaClass.methods.find { it.name == "setTargetCompatibility" }
+                        val setSourceMethod = compileOptions.javaClass.methods.find {
+                            it.name == "setSourceCompatibility"
+                        }
+                        val setTargetMethod = compileOptions.javaClass.methods.find {
+                            it.name == "setTargetCompatibility"
+                        }
                         if (setSourceMethod != null && setTargetMethod != null) {
                             setSourceMethod.invoke(compileOptions, JavaVersion.VERSION_17)
                             setTargetMethod.invoke(compileOptions, JavaVersion.VERSION_17)
                         }
                     }
                 } catch (e: Exception) {
-                    // Якщо не вдалося встановити через reflection, залишаємо як є
+                    // Якщо reflection не спрацював, застосовуємо через tasks
+                    tasks.withType<JavaCompile>().configureEach {
+                        sourceCompatibility = "17"
+                        targetCompatibility = "17"
+                    }
                 }
+            } else {
+                // Якщо не вдалося отримати android extension, застосовуємо через tasks
+                tasks.withType<JavaCompile>().configureEach {
+                    sourceCompatibility = "17"
+                    targetCompatibility = "17"
+                }
+            }
+        } else {
+            // Для НЕ-Android модулів встановлюємо Java 17
+            tasks.withType<JavaCompile>().configureEach {
+                sourceCompatibility = "17"
+                targetCompatibility = "17"
             }
         }
     }
